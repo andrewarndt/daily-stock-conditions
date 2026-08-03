@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Stock Market Conditions</title>
+<style>
+  :root {
+    --ink: #16211f;
+    --ink-soft: #445250;
+    --paper: #f2f4f2;
+    --paper-raised: #ffffff;
+    --line: #d7ddda;
+    --accent: #a67c2e;
+    --accent-soft: #f1e6d0;
+    --up: #1f6f54;
+    --up-bg: #e5f1ec;
+    --down: #a8392f;
+    --down-bg: #f6e6e4;
+    --font-display: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --font-body: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", Consolas, monospace;
+  }
+
+  :root[data-theme="dark"] {
+    --ink: #e8ece9;
+    --ink-soft: #a7b3af;
+    --paper: #14181a;
+    --paper-raised: #1b2124;
+    --line: #2c3437;
+    --accent: #d9ac5c;
+    --accent-soft: #33291a;
+    --up: #4fb890;
+    --up-bg: #16261f;
+    --down: #e07567;
+    --down-bg: #2a1a18;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #e8ece9;
+      --ink-soft: #a7b3af;
+      --paper: #14181a;
+      --paper-raised: #1b2124;
+      --line: #2c3437;
+      --accent: #d9ac5c;
+      --accent-soft: #33291a;
+      --up: #4fb890;
+      --up-bg: #16261f;
+      --down: #e07567;
+      --down-bg: #2a1a18;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    line-height: 1.5;
+  }
+
+  .page {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 5rem;
+  }
+
+  header.masthead {
+    border-bottom: 3px solid var(--ink);
+    padding-bottom: 1.25rem;
+    margin-bottom: 2rem;
+  }
+
+  .eyebrow {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 0.6rem;
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(2rem, 5vw, 3rem);
+    letter-spacing: -0.01em;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  .subhead {
+    font-family: var(--font-body);
+    color: var(--ink-soft);
+    font-size: 0.98rem;
+    margin-top: 0.5rem;
+  }
+
+  .notice {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 1rem;
+    padding: 0.35rem 0.7rem;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    color: var(--ink);
+    font-size: 0.78rem;
+    border-radius: 3px;
+  }
+
+  .notice::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex: none;
+  }
+
+  section {
+    margin-bottom: 2.75rem;
+  }
+
+  h2 {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin: 0 0 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .indices {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+  }
+
+  .index-card {
+    background: var(--paper-raised);
+    padding: 1.1rem 1.2rem;
+  }
+
+  .index-name {
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .index-value {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 1.55rem;
+    margin-top: 0.3rem;
+  }
+
+  .index-change {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 0.85rem;
+    margin-top: 0.35rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.15rem 0.45rem;
+    border-radius: 2px;
+  }
+
+  .index-change.up { color: var(--up); background: var(--up-bg); }
+  .index-change.down { color: var(--down); background: var(--down-bg); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--line);
+  }
+
+  th, td {
+    text-align: left;
+    padding: 0.65rem 0.9rem;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+  }
+
+  th {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-soft);
+    background: var(--paper-raised);
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  td.num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+
+  td.change.up { color: var(--up); }
+  td.change.down { color: var(--down); }
+
+  .ticker {
+    font-weight: 600;
+  }
+
+  footer {
+    margin-top: 3rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--line);
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .index-card, tr { transition: background-color 0.15s ease; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="masthead">
+    <div class="eyebrow">
+      <span>Market Desk</span>
+      <span id="today-date">Monday, August 3, 2026</span>
+    </div>
+    <h1>Daily Stock Market Conditions</h1>
+    <p class="subhead">A snapshot of major indices, rates, and notable movers.</p>
+    <span class="notice">Illustrative sample data — not live market feeds</span>
+  </header>
+
+  <section>
+    <h2>Major Indices</h2>
+    <div class="indices">
+      <div class="index-card">
+        <div class="index-name">S&amp;P 500</div>
+        <div class="index-value">5,612.44</div>
+        <div class="index-change up">▲ 0.62%</div>
+      </div>
+      <div class="index-card">
+        <div class="index-name">Dow Jones</div>
+        <div class="index-value">41,238.10</div>
+        <div class="index-change up">▲ 0.34%</div>
+      </div>
+      <div class="index-card">
+        <div class="index-name">Nasdaq Composite</div>
+        <div class="index-value">17,904.77</div>
+        <div class="index-change down">▼ 0.18%</div>
+      </div>
+      <div class="index-card">
+        <div class="index-name">10-Yr Treasury</div>
+        <div class="index-value">4.21%</div>
+        <div class="index-change down">▼ 0.03 pt</div>
+      </div>
+      <div class="index-card">
+        <div class="index-name">VIX</div>
+        <div class="index-value">14.62</div>
+        <div class="index-change down">▼ 1.10</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Notable Movers</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Ticker</th>
+            <th>Company</th>
+            <th>Price</th>
+            <th>Change</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="ticker">NVDA</td>
+            <td>NVIDIA Corp.</td>
+            <td class="num">$128.55</td>
+            <td class="num change up">+3.12%</td>
+          </tr>
+          <tr>
+            <td class="ticker">AAPL</td>
+            <td>Apple Inc.</td>
+            <td class="num">$221.09</td>
+            <td class="num change up">+0.84%</td>
+          </tr>
+          <tr>
+            <td class="ticker">TSLA</td>
+            <td>Tesla, Inc.</td>
+            <td class="num">$246.30</td>
+            <td class="num change down">-2.41%</td>
+          </tr>
+          <tr>
+            <td class="ticker">XOM</td>
+            <td>Exxon Mobil Corp.</td>
+            <td class="num">$118.72</td>
+            <td class="num change down">-1.05%</td>
+          </tr>
+          <tr>
+            <td class="ticker">JPM</td>
+            <td>JPMorgan Chase &amp; Co.</td>
+            <td class="num">$214.88</td>
+            <td class="num change up">+0.47%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    Figures on this page are placeholder values for layout purposes and do not reflect real market activity.
+  </footer>
+</div>
+</body>
+</html>
