@@ -3,206 +3,77 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Overview — Market Desk</title>
-<link rel="stylesheet" href="assets/style.css">
-</head>
-<body>
-
-<div class="topbar">
-  <div class="topbar-inner">
-    <div class="brand-row">
-      <a class="brand" href="index.html">Market <span>Desk</span></a>
-      <div class="top-meta">
-        <span class="notice" id="live-notice">Illustrative sample data — not live market feeds</span>
-        <span class="refresh-stamp"><span class="dot"></span>Last refresh: <span id="refresh-time">Aug 7, 2026, 4:15&nbsp;PM ET</span></span>
-      </div>
-    </div>
-    <nav class="tabs">
-      <a href="index.html" class="tab active">Overview</a>
-      <a href="fed-economic.html" class="tab">Fed &amp; Economic</a>
-      <a href="sentiment.html" class="tab">Sentiment</a>
-      <a href="sector-ratios.html" class="tab">Sector Ratios</a>
-    </nav>
-  </div>
-</div>
-
-<div class="page">
-  <div class="page-head">
-    <h1>Overview</h1>
-    <p>Where the market stands right now — index levels, the dollar and key commodities, and the latest economic prints, all in one glance.</p>
-  </div>
-
-  <section>
-    <div class="section-head">
-      <h2>Major Indices</h2>
-      <span class="section-note" id="indices-asof">As of market close</span>
-    </div>
-    <div class="metric-grid" id="indices-grid">
-      <!-- populated from data/indices.json; see script at bottom of page -->
-    </div>
-  </section>
-
-  <section>
-    <div class="section-head">
-      <h2>Dollar &amp; Commodities</h2>
-      <span class="section-note">Spot, as of last print</span>
-    </div>
-    <div class="metric-grid" id="commodities-grid">
-      <!-- populated from data/overview.json; see script at bottom of page -->
-    </div>
-  </section>
-
-  <section>
-    <div class="section-head">
-      <h2>Economic Snapshot<span class="placeholder-flag">static</span></h2>
-      <span class="section-note">CPI · PMI · PPI · Unemployment · ISM</span>
-    </div>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr><th>Indicator</th><th>Latest</th><th>Prior</th><th>As of</th></tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><span class="indicator-name">CPI, Year-over-Year</span><span class="indicator-desc">Bureau of Labor Statistics</span></td>
-            <td class="num change down">2.9%</td><td class="num muted">3.1%</td><td class="muted">Jun 2026</td>
-          </tr>
-          <tr>
-            <td><span class="indicator-name">PMI, Composite</span><span class="indicator-desc">S&amp;P Global, flash</span></td>
-            <td class="num change down">51.8</td><td class="num muted">52.4</td><td class="muted">Jul 2026</td>
-          </tr>
-          <tr>
-            <td><span class="indicator-name">PPI, Year-over-Year</span><span class="indicator-desc">Bureau of Labor Statistics</span></td>
-            <td class="num change down">2.2%</td><td class="num muted">2.4%</td><td class="muted">Jun 2026</td>
-          </tr>
-          <tr>
-            <td><span class="indicator-name">Unemployment Rate</span><span class="indicator-desc">Bureau of Labor Statistics</span></td>
-            <td class="num change up">4.1%</td><td class="num muted">4.0%</td><td class="muted">Jul 2026</td>
-          </tr>
-          <tr>
-            <td><span class="indicator-name">ISM Manufacturing</span><span class="indicator-desc">Institute for Supply Management</span></td>
-            <td class="num change up">48.6</td><td class="num muted">47.9</td><td class="muted">Jul 2026</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <footer>
-    <p>Figures on this page are placeholder values for layout purposes and do not reflect real market activity.</p>
-    <p>For the full detail behind each economic print and the Fed's rate path, see <a href="fed-economic.html">Fed &amp; Economic</a>.</p>
-  </footer>
-</div>
-
-
-<script>
-(function () {
-  "use strict";
-
-  // Shown only if data/indices.json can't be fetched (e.g. opened via
-  // file:// locally, where browsers block fetch() of local files) so the
-  // page never renders empty.
-  var FALLBACK = {
-    updated: "2026-08-07T20:15:00Z",
-    source: "seed",
-    indices: [
-      { id: "sp500", name: "S&P 500", ticker: "SPY", value: 773.26, change: 0.61, changeType: "pct", unit: "$", live: false },
-      { id: "dow", name: "Dow Jones", ticker: "DIA", value: 539.62, change: 0.27, changeType: "pct", unit: "$", live: false },
-      { id: "nasdaq", name: "Nasdaq-100", ticker: "QQQ", value: 723.03, change: 1.17, changeType: "pct", unit: "$", live: false },
-      { id: "ust10y", name: "10-Yr Treasury", value: 4.21, change: -0.03, changeType: "pt", unit: "%", live: false },
-      { id: "vix", name: "VIX", value: 14.62, change: -1.10, changeType: "abs", live: false }
-    ],
-    commodities: [
-      { id: "dxy", name: "US Dollar Index", ticker: "$DXY", value: 99.60, change: -0.36, changeType: "pct", live: false },
-      { id: "btc", name: "Bitcoin", value: 65081.24, change: 0.24, changeType: "pct", unit: "$", live: false },
-      { id: "gold", name: "Gold", value: 4342.35, change: -0.01, changeType: "pct", unit: "$", live: false },
-      { id: "silver", name: "Silver", ticker: "SLV", value: 57.50, change: 2.95, changeType: "pct", unit: "$", live: false },
-      { id: "oil", name: "Crude Oil", ticker: "/CL", value: 78.18, change: -2.69, changeType: "pct", unit: "$", live: false }
-    ]
-  };
-
-  function fmtValue(item) {
-    var formatted = item.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    if (item.unit === "%") return item.value.toFixed(2) + "%";
-    if (item.unit === "$") return "$" + formatted;
-    return formatted;
+<title>4A Holdings Company</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #ffffff;
+    --fg: #1a1a1a;
+    --muted: #5b5b5b;
+    --accent: #1f5eff;
+    --border: #e2e2e2;
   }
-
-  function fmtChange(item) {
-    var up = item.change >= 0;
-    var abs = Math.abs(item.change).toFixed(2);
-    var suffix = item.changeType === "pct" ? "%" : item.changeType === "pt" ? " pt" : "";
-    return { text: (up ? "▲ " : "▼ ") + abs + suffix, cls: up ? "up" : "down" };
-  }
-
-  var lastRenderedUpdate = null;
-
-  function renderGrid(gridId, items) {
-    var grid = document.getElementById(gridId);
-    grid.innerHTML = "";
-    items.forEach(function (item) {
-      var chg = fmtChange(item);
-      var card = document.createElement("div");
-      card.className = "metric-card";
-      var label = item.name + (item.ticker ? " (" + item.ticker + ")" : "");
-      var staticFlag = item.live === false ? '<span class="placeholder-flag">static</span>' : "";
-      card.innerHTML =
-        '<div class="metric-name">' + label + staticFlag + '</div>' +
-        '<div class="metric-value">' + fmtValue(item) + '</div>' +
-        '<div class="metric-change ' + chg.cls + '">' + chg.text + '</div>';
-      grid.appendChild(card);
-    });
-  }
-
-  function render(data) {
-    if (data.updated === lastRenderedUpdate) return; // nothing new since last poll — skip re-render
-    lastRenderedUpdate = data.updated;
-
-    renderGrid("indices-grid", data.indices);
-    renderGrid("commodities-grid", data.commodities || []);
-
-    var d = new Date(data.updated);
-    var stamp = isNaN(d) ? "unknown" : d.toLocaleString("en-US", {
-      month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", timeZone: "America/New_York"
-    }) + " ET";
-    document.getElementById("refresh-time").textContent = stamp;
-    document.getElementById("indices-asof").textContent = "As of last refresh";
-
-    var notice = document.getElementById("live-notice");
-    if (data.source === "live") {
-      notice.textContent = "Live data — Twelve Data & FRED, refreshed every 30 min on weekdays";
-    } else {
-      notice.textContent = "Illustrative sample data — not live market feeds";
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #111214;
+      --fg: #f2f2f2;
+      --muted: #a5a5a5;
+      --accent: #6d93ff;
+      --border: #2a2b2e;
     }
   }
-
-  // GitHub Pages serves every file with a fixed 10-minute Cache-Control,
-  // which we can't override. Appending a changing query string makes each
-  // request a distinct URL so neither the browser nor GitHub's CDN can
-  // serve a stale cached copy, regardless of that header.
-  function loadIndices() {
-    fetch("data/overview.json?t=" + Date.now(), { cache: "no-store" })
-      .then(function (res) { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); })
-      .then(render)
-      .catch(function (err) {
-        console.warn("Could not load data/overview.json, showing fallback values:", err);
-        render(FALLBACK);
-      });
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    padding: 2rem;
   }
-
-  loadIndices();
-
-  // Poll for fresh data while the tab is open and visible, so numbers
-  // update on their own with no manual refresh at all. Paused while the
-  // tab is hidden/backgrounded to avoid pointless requests.
-  var POLL_MS = 60000;
-  var pollTimer = setInterval(function () {
-    if (document.visibilityState === "visible") loadIndices();
-  }, POLL_MS);
-  document.addEventListener("visibilitychange", function () {
-    if (document.visibilityState === "visible") loadIndices();
-  });
-})();
-</script>
+  main {
+    max-width: 32rem;
+    text-align: center;
+  }
+  h1 {
+    font-size: 2rem;
+    margin: 0 0 0.5rem;
+  }
+  p {
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .links {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  a.button {
+    display: inline-block;
+    padding: 0.65rem 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    color: var(--fg);
+    text-decoration: none;
+  }
+  a.button:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>4A Holdings Company</h1>
+  <p>Site under construction. Check back soon.</p>
+  <div class="links">
+    <a class="button" href="market_report/index.html">Market Report →</a>
+  </div>
+</main>
 </body>
 </html>
