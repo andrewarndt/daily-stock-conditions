@@ -38,7 +38,9 @@
       <span class="section-note" id="sector-asof">All 11 GICS sectors, ~6-month trend</span>
     </div>
     <div class="legend">
-      <span class="legend-item"><span class="legend-swatch dashed" style="background:var(--ink-soft)"></span>5-day moving average</span>
+      <span class="legend-item"><span class="legend-swatch dashed" style="background:var(--ink-soft)"></span>10-day moving average</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--up)"></span>Ratio above its 10-day MA</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--down)"></span>Ratio below its 10-day MA</span>
     </div>
     <div class="sector-grid" id="sector-grid"></div>
   </section>
@@ -90,7 +92,7 @@
 
   <footer>
     <p>Sector/SPY ratios are live daily closes from Yahoo Finance, refreshed once per weekday after market close. Constituent Volatility, Core 3M, Dispersion Index, and Skew Structure below are still illustrative placeholders.</p>
-    <p>Badges mark each sector's ratio move over the trailing month: green outperforming SPY, red underperforming. The dashed line on each chart is the 5-day moving average of the ratio.</p>
+    <p>Badges mark each sector's ratio move over the trailing month: green outperforming SPY, red underperforming. The line color is a separate, shorter-term signal: green when the ratio is currently above its own 10-day moving average (dashed line), red when below.</p>
   </footer>
 </div>
 
@@ -100,8 +102,8 @@
   "use strict";
 
   var SECTOR_ORDER = ["xlk", "xlf", "xlv", "xly", "xlp", "xle", "xli", "xlb", "xlu", "xlre", "xlc"];
-  var MA_WINDOW = 5;
-  var CHANGE_LOOKBACK_DAYS = 21; // ~1 trading month
+  var MA_WINDOW = 10;
+  var CHANGE_LOOKBACK_DAYS = 21; // ~1 trading month, drives the % badge only
 
   var FALLBACK = {
     updated: "2026-08-07T20:15:00Z",
@@ -153,8 +155,13 @@
         '<svg id="sector-spark-' + id + '" width="196" height="46"></svg>';
       grid.appendChild(card);
 
+      // Chart color is a separate signal from the badge: green when the
+      // ratio is currently above its own 10-day MA, red when below --
+      // independent of the trailing-month % change the badge shows.
       var ma = MC.movingAverage(ratio, MA_WINDOW);
-      var color = up ? MC.css("--up") : MC.css("--down");
+      var maLast = ma[n - 1];
+      var aboveMa = maLast == null || current >= maLast;
+      var color = aboveMa ? MC.css("--up") : MC.css("--down");
       MC.sparkline(document.getElementById("sector-spark-" + id), ratio, color, { ma: ma });
     });
 

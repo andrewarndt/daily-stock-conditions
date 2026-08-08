@@ -106,18 +106,18 @@
     updated: "2026-08-07T20:15:00Z",
     source: "seed",
     indices: [
-      { id: "sp500", name: "S&P 500", proxy: "SPY", value: 773.26, change: 0.61, changeType: "pct", unit: "$", live: false },
-      { id: "dow", name: "Dow Jones", proxy: "DIA", value: 539.62, change: 0.27, changeType: "pct", unit: "$", live: false },
-      { id: "nasdaq", name: "Nasdaq-100", proxy: "QQQ", value: 723.03, change: 1.17, changeType: "pct", unit: "$", live: false },
+      { id: "sp500", name: "S&P 500", ticker: "SPY", value: 773.26, change: 0.61, changeType: "pct", unit: "$", live: false },
+      { id: "dow", name: "Dow Jones", ticker: "DIA", value: 539.62, change: 0.27, changeType: "pct", unit: "$", live: false },
+      { id: "nasdaq", name: "Nasdaq-100", ticker: "QQQ", value: 723.03, change: 1.17, changeType: "pct", unit: "$", live: false },
       { id: "ust10y", name: "10-Yr Treasury", value: 4.21, change: -0.03, changeType: "pt", unit: "%", live: false },
       { id: "vix", name: "VIX", value: 14.62, change: -1.10, changeType: "abs", live: false }
     ],
     commodities: [
-      { id: "dxy", name: "US Dollar Index", proxy: "UUP", value: 28.07, change: -0.43, changeType: "pct", unit: "$", live: false },
+      { id: "dxy", name: "US Dollar Index", ticker: "$DXY", value: 99.60, change: -0.36, changeType: "pct", live: false },
       { id: "btc", name: "Bitcoin", value: 65081.24, change: 0.24, changeType: "pct", unit: "$", live: false },
       { id: "gold", name: "Gold", value: 4342.35, change: -0.01, changeType: "pct", unit: "$", live: false },
-      { id: "silver", name: "Silver", proxy: "SLV", value: 57.50, change: 2.95, changeType: "pct", unit: "$", live: false },
-      { id: "oil", name: "Crude Oil (WTI)", proxy: "USO", value: 117.98, change: -0.75, changeType: "pct", unit: "$", live: false }
+      { id: "silver", name: "Silver", ticker: "SLV", value: 57.50, change: 2.95, changeType: "pct", unit: "$", live: false },
+      { id: "oil", name: "Crude Oil", ticker: "/CL", value: 78.18, change: -2.69, changeType: "pct", unit: "$", live: false }
     ]
   };
 
@@ -144,7 +144,7 @@
       var chg = fmtChange(item);
       var card = document.createElement("div");
       card.className = "metric-card";
-      var label = item.name + (item.proxy ? " (" + item.proxy + ")" : "");
+      var label = item.name + (item.ticker ? " (" + item.ticker + ")" : "");
       var staticFlag = item.live === false ? '<span class="placeholder-flag">static</span>' : "";
       card.innerHTML =
         '<div class="metric-name">' + label + staticFlag + '</div>' +

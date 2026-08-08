@@ -5,15 +5,22 @@
  *
  * Sources:
  *   - Twelve Data (free tier) -> equity indices via ETF proxies, plus
- *     currencies/crypto/commodities. Raw index symbols (SPX/DJI/IXIC) and
- *     some raw commodity symbols (XAG/USD, WTI/USD) are paid-plan-gated on
- *     the free tier -- confirmed against the live API, not just docs. Where
- *     gated, we use the closest liquid ETF as a proxy; those entries carry
- *     a `proxy` field and the UI labels the card with the ticker rather
- *     than presenting the ETF price as the literal index/commodity value.
- *     Bitcoin (BTC/USD) and Gold (XAU/USD) ARE real spot quotes, no proxy
- *     needed.
+ *     Bitcoin/Gold (real spot quotes) and Silver (ETF proxy -- XAG/USD is
+ *     paid-plan-gated on the free tier). Raw index symbols (SPX/DJI/IXIC)
+ *     are also paid-plan-gated -- confirmed against the live API, not just
+ *     docs.
+ *   - Yahoo Finance's unofficial chart endpoint -> the true US Dollar Index
+ *     level (DX-Y.NYB, ICE's own index -- NOT the UUP ETF, which trades at
+ *     a different scale) and the front-month WTI crude futures price
+ *     (CL=F), confirmed working live, no key needed. Same endpoint already
+ *     used for sector-ratio history in fetch-sector-ratios.mjs.
  *   - FRED (St. Louis Fed) -> 10-Yr Treasury constant maturity yield (DGS10).
+ *
+ * Every non-real-index/spot entry carries a `ticker` field so the UI can
+ * label the card unambiguously (e.g. "S&P 500 (SPY)" is an ETF price, not
+ * the index level; "US Dollar Index ($DXY)" and "Crude Oil (/CL)" ARE the
+ * real index/futures values -- the ticker there is just how traders refer
+ * to those instruments, $ for a cash index and / for a futures contract).
  *
  * VIX is intentionally NOT fetched: no free source for the real spot VIX
  * level exists, and the closest free proxy (VIXY, a futures ETF) decays
@@ -21,9 +28,10 @@
  * decision it stays a static/illustrative entry, carried forward untouched.
  *
  * Twelve Data's free tier is capped at 8 requests/minute. This script makes
- * 7 Twelve Data calls per run (3 indices + 4 commodities), so they're fired
- * sequentially with a short stagger rather than all at once, to stay clear
- * of that ceiling with some margin.
+ * 5 Twelve Data calls per run (3 indices + Bitcoin + Gold + Silver = 5, see
+ * below), fired sequentially with a short stagger to stay clear of that
+ * ceiling with margin. The 2 Yahoo calls (DXY, oil) run independently --
+ * separate provider, no shared rate limit.
  *
  * Requires env vars TWELVEDATA_API_KEY and FRED_API_KEY (see .github/workflows).
  * On any single-symbol failure, falls back to the previous value already in
@@ -40,18 +48,23 @@ const OUT_PATH = path.join(__dirname, "..", "data", "overview.json");
 const TWELVEDATA_API_KEY = process.env.TWELVEDATA_API_KEY;
 const FRED_API_KEY = process.env.FRED_API_KEY;
 
+const YAHOO_HEADERS = { "User-Agent": "Mozilla/5.0 (compatible; MarketDeskBot/1.0; +https://andrewarndt.github.io/daily-stock-conditions/)" };
+
 const INDEX_SYMBOLS = {
-  sp500: { name: "S&P 500", symbol: "SPY", changeType: "pct", unit: "$", proxy: "SPY" },
-  dow: { name: "Dow Jones", symbol: "DIA", changeType: "pct", unit: "$", proxy: "DIA" },
-  nasdaq: { name: "Nasdaq-100", symbol: "QQQ", changeType: "pct", unit: "$", proxy: "QQQ" }
+  sp500: { name: "S&P 500", symbol: "SPY", changeType: "pct", unit: "$", ticker: "SPY" },
+  dow: { name: "Dow Jones", symbol: "DIA", changeType: "pct", unit: "$", ticker: "DIA" },
+  nasdaq: { name: "Nasdaq-100", symbol: "QQQ", changeType: "pct", unit: "$", ticker: "QQQ" }
 };
 
 const COMMODITY_SYMBOLS = {
-  dxy: { name: "US Dollar Index", symbol: "UUP", changeType: "pct", unit: "$", proxy: "UUP" },
   btc: { name: "Bitcoin", symbol: "BTC/USD", changeType: "pct", unit: "$" },
   gold: { name: "Gold", symbol: "XAU/USD", changeType: "pct", unit: "$" },
-  silver: { name: "Silver", symbol: "SLV", changeType: "pct", unit: "$", proxy: "SLV" },
-  oil: { name: "Crude Oil (WTI)", symbol: "USO", changeType: "pct", unit: "$", proxy: "USO" }
+  silver: { name: "Silver", symbol: "SLV", changeType: "pct", unit: "$", ticker: "SLV" }
+};
+
+const YAHOO_SYMBOLS = {
+  dxy: { name: "US Dollar Index", symbol: "DX-Y.NYB", ticker: "$DXY" }, // real index level, unitless
+  oil: { name: "Crude Oil", symbol: "CL=F", ticker: "/CL", unit: "$" } // real front-month futures price
 };
 
 const INDEX_ORDER = ["sp500", "dow", "nasdaq", "ust10y", "vix"];
@@ -91,7 +104,7 @@ async function fetchTwelveData(id, def, previous) {
     if (!Number.isFinite(value)) throw new Error(`Bad value for ${def.symbol}`);
     const item = { id, name: def.name, value, change: changePct, changeType: def.changeType, live: true };
     if (def.unit) item.unit = def.unit;
-    if (def.proxy) item.proxy = def.proxy;
+    if (def.ticker) item.ticker = def.ticker;
     return item;
   } catch (err) {
     console.warn(`[twelvedata] failed for ${id} (${def.symbol}): ${err.message}. Keeping previous value.`);
@@ -106,6 +119,31 @@ async function fetchTwelveDataSequential(defsById, previous) {
     await sleep(300); // stay well clear of the 8 req/min free-tier ceiling
   }
   return out;
+}
+
+async function fetchYahooCommodity(id, def, previous) {
+  const prev = previous[id];
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(def.symbol)}?range=5d&interval=1d`;
+  try {
+    const res = await fetch(url, { headers: YAHOO_HEADERS });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    const meta = json?.chart?.result?.[0]?.meta;
+    const price = meta?.regularMarketPrice;
+    const prevClose = meta?.chartPreviousClose;
+    if (!Number.isFinite(price) || !Number.isFinite(prevClose) || prevClose === 0) {
+      throw new Error("missing regularMarketPrice/chartPreviousClose");
+    }
+    const item = {
+      id, name: def.name, value: price, change: ((price - prevClose) / prevClose) * 100,
+      changeType: "pct", ticker: def.ticker, live: true
+    };
+    if (def.unit) item.unit = def.unit;
+    return item;
+  } catch (err) {
+    console.warn(`[yahoo] failed for ${id} (${def.symbol}): ${err.message}. Keeping previous value.`);
+    return prev ? { ...prev, live: false } : null;
+  }
 }
 
 async function fetchTreasuryYield(previous) {
@@ -150,9 +188,11 @@ function sortByOrder(items, order) {
 async function main() {
   const previous = await loadPrevious();
 
-  const [indexResults, treasury] = await Promise.all([
+  const [indexResults, treasury, dxy, oil] = await Promise.all([
     fetchTwelveDataSequential(INDEX_SYMBOLS, previous),
-    fetchTreasuryYield(previous)
+    fetchTreasuryYield(previous),
+    fetchYahooCommodity("dxy", YAHOO_SYMBOLS.dxy, previous),
+    fetchYahooCommodity("oil", YAHOO_SYMBOLS.oil, previous)
   ]);
   const commodityResults = await fetchTwelveDataSequential(COMMODITY_SYMBOLS, previous);
 
@@ -161,7 +201,7 @@ async function main() {
     INDEX_ORDER
   );
   const commodities = sortByOrder(
-    [commodityResults.dxy, commodityResults.btc, commodityResults.gold, commodityResults.silver, commodityResults.oil],
+    [dxy, commodityResults.btc, commodityResults.gold, commodityResults.silver, oil],
     COMMODITY_ORDER
   );
 
