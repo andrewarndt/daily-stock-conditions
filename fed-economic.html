@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fed &amp; Economic — Market Desk</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand-row">
+      <a class="brand" href="index.html">Market <span>Desk</span></a>
+      <div class="top-meta">
+        <span class="notice">Illustrative sample data — not live market feeds</span>
+        <span class="refresh-stamp"><span class="dot"></span>Last refresh: Aug 7, 2026, 4:15&nbsp;PM ET</span>
+      </div>
+    </div>
+    <nav class="tabs">
+      <a href="index.html" class="tab">Overview</a>
+      <a href="fed-economic.html" class="tab active">Fed &amp; Economic</a>
+      <a href="sentiment.html" class="tab">Sentiment</a>
+      <a href="sector-ratios.html" class="tab">Sector Ratios</a>
+    </nav>
+  </div>
+</div>
+
+<div class="page">
+  <div class="page-head">
+    <h1>Fed &amp; Economic Overview</h1>
+    <p>The data the Fed is watching, what the market thinks the Fed does next, and where yields sit across the curve.</p>
+  </div>
+
+  <section>
+    <div class="section-head">
+      <h2>Economic Indicators</h2>
+      <span class="section-note">Last 6 releases</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Indicator</th><th>Latest</th><th>Prior</th><th>As of</th><th>Trend</th></tr>
+        </thead>
+        <tbody id="fed-indicator-rows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Fed Watch</h2>
+      <span class="section-note">Implied rate-path odds, fed funds futures</span>
+    </div>
+    <div class="legend">
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--ink-soft)"></span>Hold</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--up)"></span>Cut 25 bp</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--accent)"></span>Cut 50 bp</span>
+    </div>
+    <div class="fedwatch-meeting">
+      <h3>FOMC — Sep 16–17, 2026</h3>
+      <div class="fw-row"><span class="fw-label">Hold</span><div class="fw-track"><div class="fw-fill hold" style="width:58%"></div></div><span class="fw-pct">58%</span></div>
+      <div class="fw-row"><span class="fw-label">Cut 25 bp</span><div class="fw-track"><div class="fw-fill cut25" style="width:37%"></div></div><span class="fw-pct">37%</span></div>
+      <div class="fw-row"><span class="fw-label">Cut 50 bp</span><div class="fw-track"><div class="fw-fill cut50" style="width:5%"></div></div><span class="fw-pct">5%</span></div>
+    </div>
+    <div class="fedwatch-meeting">
+      <h3>FOMC — Oct 28–29, 2026</h3>
+      <div class="fw-row"><span class="fw-label">Hold</span><div class="fw-track"><div class="fw-fill hold" style="width:31%"></div></div><span class="fw-pct">31%</span></div>
+      <div class="fw-row"><span class="fw-label">Cut 25 bp</span><div class="fw-track"><div class="fw-fill cut25" style="width:52%"></div></div><span class="fw-pct">52%</span></div>
+      <div class="fw-row"><span class="fw-label">Cut 50 bp</span><div class="fw-track"><div class="fw-fill cut50" style="width:17%"></div></div><span class="fw-pct">17%</span></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Treasury Yields</h2>
+      <span class="section-note">2s10s spread: <strong style="color:var(--up)">+29 bps</strong> (steepening)</span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <div class="metric-name">2-Year</div>
+        <div class="metric-value">3.92%</div>
+        <div class="metric-change down">▼ 0.02 pt</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-name">10-Year</div>
+        <div class="metric-value">4.21%</div>
+        <div class="metric-change down">▼ 0.03 pt</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-name">30-Year</div>
+        <div class="metric-value">4.48%</div>
+        <div class="metric-change down">▼ 0.01 pt</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Yield Curve</h2>
+      <span class="section-note">Constant-maturity Treasury</span>
+    </div>
+    <div class="chart-card">
+      <h3>UST Curve — today vs. 1 month ago</h3>
+      <p class="chart-sub">Yield (%) by maturity</p>
+      <div class="legend">
+        <span class="legend-item"><span class="legend-swatch" style="background:var(--accent)"></span>Today</span>
+        <span class="legend-item"><span class="legend-swatch dashed" style="background:var(--ink-soft)"></span>1 month ago</span>
+      </div>
+      <svg id="chart-yield-curve" width="900" height="260"></svg>
+    </div>
+  </section>
+
+  <footer>
+    <p>Fed Watch odds are illustrative and do not reflect actual fed funds futures pricing.</p>
+    <p>For sector-level and options-market detail, see <a href="sector-ratios.html">Sector Ratios</a>.</p>
+  </footer>
+</div>
+
+<script src="assets/charts.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var econRows = [
+    { name: "CPI, Year-over-Year", desc: "Bureau of Labor Statistics", latest: "2.9%", prior: "3.1%", asof: "Jun 2026", dir: "down", trend: [3.6, 3.4, 3.3, 3.2, 3.1, 2.9] },
+    { name: "PMI, Composite", desc: "S&P Global, flash", latest: "51.8", prior: "52.4", asof: "Jul 2026", dir: "down", trend: [53.1, 52.9, 52.6, 52.7, 52.4, 51.8] },
+    { name: "PPI, Year-over-Year", desc: "Bureau of Labor Statistics", latest: "2.2%", prior: "2.4%", asof: "Jun 2026", dir: "down", trend: [2.8, 2.7, 2.6, 2.5, 2.4, 2.2] },
+    { name: "Unemployment Rate", desc: "Bureau of Labor Statistics", latest: "4.1%", prior: "4.0%", asof: "Jul 2026", dir: "up", trend: [3.8, 3.9, 3.9, 4.0, 4.0, 4.1] },
+    { name: "ISM Manufacturing", desc: "Institute for Supply Management", latest: "48.6", prior: "47.9", asof: "Jul 2026", dir: "up", trend: [46.8, 47.1, 47.5, 47.6, 47.9, 48.6] }
+  ];
+
+  var tbody = document.getElementById("fed-indicator-rows");
+  econRows.forEach(function (r, idx) {
+    var tr = document.createElement("tr");
+    tr.innerHTML =
+      '<td><span class="indicator-name">' + r.name + '</span><span class="indicator-desc">' + r.desc + '</span></td>' +
+      '<td class="num change ' + r.dir + '">' + r.latest + '</td>' +
+      '<td class="num muted">' + r.prior + '</td>' +
+      '<td class="muted">' + r.asof + '</td>' +
+      '<td class="trend-cell"><svg id="econ-trend-' + idx + '" width="100" height="32"></svg></td>';
+    tbody.appendChild(tr);
+  });
+  econRows.forEach(function (r, idx) {
+    MC.sparkline(document.getElementById("econ-trend-" + idx), r.trend, r.dir === "up" ? MC.css("--up") : MC.css("--down"));
+  });
+
+  MC.lineChart(document.getElementById("chart-yield-curve"), {
+    xLabels: ["1M", "3M", "6M", "1Y", "2Y", "5Y", "10Y", "30Y"],
+    series: [
+      { name: "Today", color: MC.css("--accent"), data: [4.98, 4.85, 4.62, 4.20, 3.92, 3.95, 4.21, 4.48] },
+      { name: "1M ago", color: MC.css("--ink-soft"), dashed: true, data: [5.05, 4.95, 4.78, 4.40, 4.05, 4.02, 4.24, 4.46] }
+    ],
+    yFmt: function (v) { return v.toFixed(1) + "%"; },
+    maxXLabels: 8
+  });
+})();
+</script>
+</body>
+</html>

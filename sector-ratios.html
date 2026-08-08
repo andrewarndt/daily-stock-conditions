@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sector Ratios — Market Desk</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand-row">
+      <a class="brand" href="index.html">Market <span>Desk</span></a>
+      <div class="top-meta">
+        <span class="notice">Illustrative sample data — not live market feeds</span>
+        <span class="refresh-stamp"><span class="dot"></span>Last refresh: Aug 7, 2026, 4:15&nbsp;PM ET</span>
+      </div>
+    </div>
+    <nav class="tabs">
+      <a href="index.html" class="tab">Overview</a>
+      <a href="fed-economic.html" class="tab">Fed &amp; Economic</a>
+      <a href="sentiment.html" class="tab">Sentiment</a>
+      <a href="sector-ratios.html" class="tab active">Sector Ratios</a>
+    </nav>
+  </div>
+</div>
+
+<div class="page">
+  <div class="page-head">
+    <h1>Sector Ratios</h1>
+    <p>Relative strength of each S&amp;P sector against SPY, plus the volatility-and-dispersion picture underneath the index.</p>
+  </div>
+
+  <section>
+    <div class="section-head">
+      <h2>Sector / SPY Ratio</h2>
+      <span class="section-note">All 11 GICS sectors, 20-day trend</span>
+    </div>
+    <div class="legend">
+      <span class="legend-item"><span class="legend-swatch dashed" style="background:var(--ink-soft)"></span>5-day moving average</span>
+    </div>
+    <div class="sector-grid" id="sector-grid"></div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Constituent Volatility</h2>
+      <span class="section-note">Avg. single-name IV vs. index IV</span>
+    </div>
+    <div class="chart-card">
+      <h3>Constituent vs. index implied volatility</h3>
+      <p class="chart-sub">6-month trend, monthly</p>
+      <div class="legend">
+        <span class="legend-item"><span class="legend-swatch" style="background:var(--accent)"></span>Avg constituent IV</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:var(--blue)"></span>Index (SPX) IV</span>
+      </div>
+      <svg id="chart-constituent-vol" width="900" height="240"></svg>
+    </div>
+  </section>
+
+  <div class="chart-row" style="margin-bottom:2.75rem">
+    <div class="chart-card">
+      <h3>Core 3M</h3>
+      <p class="chart-sub">3-month at-the-money implied volatility, SPX</p>
+      <svg id="chart-core3m" width="420" height="200"></svg>
+    </div>
+    <div class="chart-card">
+      <h3>Dispersion Index</h3>
+      <p class="chart-sub">Constituent vs. index vol spread, index units</p>
+      <svg id="chart-dispersion" width="420" height="200"></svg>
+    </div>
+  </div>
+
+  <section>
+    <div class="section-head">
+      <h2>Skew Structure</h2>
+      <span class="section-note">SPX options, by strike</span>
+    </div>
+    <div class="chart-card">
+      <h3>Implied volatility by strike</h3>
+      <p class="chart-sub">Strike as % of spot</p>
+      <div class="legend">
+        <span class="legend-item"><span class="legend-swatch" style="background:var(--accent)"></span>Today</span>
+        <span class="legend-item"><span class="legend-swatch dashed" style="background:var(--ink-soft)"></span>1 month ago</span>
+      </div>
+      <svg id="chart-skew" width="900" height="260"></svg>
+    </div>
+  </section>
+
+  <footer>
+    <p>Ratio and volatility figures are illustrative placeholders, not calculated from live options or price data.</p>
+    <p>Badges mark each sector's ratio move over the trailing month: green outperforming SPY, red underperforming. The dashed line on each chart is the 5-day moving average of the ratio.</p>
+  </footer>
+</div>
+
+<script src="assets/charts.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var sectors = [
+    { name: "Technology", ticker: "XLK/SPY", value: 0.612, chg: 1.8 },
+    { name: "Financials", ticker: "XLF/SPY", value: 0.198, chg: 0.6 },
+    { name: "Health Care", ticker: "XLV/SPY", value: 0.145, chg: -1.2 },
+    { name: "Consumer Disc.", ticker: "XLY/SPY", value: 0.163, chg: 0.4 },
+    { name: "Consumer Staples", ticker: "XLP/SPY", value: 0.092, chg: -0.8 },
+    { name: "Energy", ticker: "XLE/SPY", value: 0.055, chg: -2.4 },
+    { name: "Industrials", ticker: "XLI/SPY", value: 0.118, chg: 0.9 },
+    { name: "Materials", ticker: "XLB/SPY", value: 0.038, chg: -0.3 },
+    { name: "Utilities", ticker: "XLU/SPY", value: 0.031, chg: 0.2 },
+    { name: "Real Estate", ticker: "XLRE/SPY", value: 0.026, chg: -0.5 },
+    { name: "Communication Svcs.", ticker: "XLC/SPY", value: 0.142, chg: 2.1 }
+  ];
+  var DAYS = 20, MA_WINDOW = 5;
+
+  var grid = document.getElementById("sector-grid");
+  sectors.forEach(function (s, idx) {
+    var card = document.createElement("div");
+    card.className = "sector-card";
+    var up = s.chg >= 0;
+    card.innerHTML =
+      '<div class="sector-head"><span class="sector-name">' + s.name + '</span><span class="sector-ticker">' + s.ticker + '</span></div>' +
+      '<div class="sector-value-row"><span class="sector-value">' + s.value.toFixed(3) + '</span>' +
+      '<span class="sector-badge ' + (up ? "up" : "down") + '">' + (up ? "▲" : "▼") + ' ' + Math.abs(s.chg).toFixed(1) + '%</span></div>' +
+      '<svg id="sector-spark-' + idx + '" width="196" height="46"></svg>';
+    grid.appendChild(card);
+  });
+  sectors.forEach(function (s, idx) {
+    var daily = MC.mockDailySeries(s.ticker, s.value, s.chg, DAYS);
+    var ma = MC.movingAverage(daily, MA_WINDOW);
+    var color = s.chg >= 0 ? MC.css("--up") : MC.css("--down");
+    MC.sparkline(document.getElementById("sector-spark-" + idx), daily, color, { ma: ma });
+  });
+
+  MC.lineChart(document.getElementById("chart-constituent-vol"), {
+    xLabels: ["Mar", "Apr", "May", "Jun", "Jul", "Aug"],
+    series: [
+      { name: "Avg constituent IV", color: MC.css("--accent"), data: [27.5, 26.8, 29.1, 28.4, 25.9, 24.6] },
+      { name: "Index (SPX) IV", color: MC.css("--blue"), data: [14.2, 13.8, 15.6, 14.9, 13.5, 12.9] }
+    ],
+    yFmt: function (v) { return v.toFixed(0) + "%"; },
+    maxXLabels: 6
+  });
+
+  MC.lineChart(document.getElementById("chart-core3m"), {
+    xLabels: ["Mar", "Apr", "May", "Jun", "Jul", "Aug"],
+    series: [{ name: "3M ATM IV", color: MC.css("--accent"), area: true, data: [15.8, 14.9, 16.4, 15.2, 14.1, 13.6] }],
+    yFmt: function (v) { return v.toFixed(0) + "%"; },
+    maxXLabels: 6
+  });
+
+  MC.lineChart(document.getElementById("chart-dispersion"), {
+    xLabels: ["Mar", "Apr", "May", "Jun", "Jul", "Aug"],
+    series: [{ name: "Dispersion Index", color: MC.css("--blue"), area: true, data: [21.4, 22.8, 24.1, 23.0, 20.6, 19.8] }],
+    yFmt: function (v) { return v.toFixed(0); },
+    referenceLine: { value: 21.5, label: "12-mo avg" },
+    maxXLabels: 6
+  });
+
+  MC.lineChart(document.getElementById("chart-skew"), {
+    xLabels: ["80%", "85%", "90%", "95%", "100%", "105%", "110%", "115%", "120%"],
+    series: [
+      { name: "Today", color: MC.css("--accent"), data: [29.8, 25.6, 21.9, 18.2, 15.1, 13.2, 12.1, 11.6, 11.3] },
+      { name: "1M ago", color: MC.css("--ink-soft"), dashed: true, data: [28.2, 24.5, 21.0, 17.6, 14.8, 13.0, 12.0, 11.5, 11.2] }
+    ],
+    yFmt: function (v) { return v.toFixed(0) + "%"; },
+    maxXLabels: 9
+  });
+})();
+</script>
+</body>
+</html>

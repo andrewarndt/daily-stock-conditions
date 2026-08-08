@@ -1,0 +1,11 @@
+{
+  "updated": "2026-08-08T20:15:00Z",
+  "source": "seed",
+  "indices": [
+    { "id": "sp500", "name": "S&P 500", "value": 5612.44, "change": 0.62, "changeType": "pct" },
+    { "id": "dow", "name": "Dow Jones", "value": 41238.10, "change": 0.34, "changeType": "pct" },
+    { "id": "nasdaq", "name": "Nasdaq Composite", "value": 17904.77, "change": -0.18, "changeType": "pct" },
+    { "id": "ust10y", "name": "10-Yr Treasury", "value": 4.21, "change": -0.03, "changeType": "pt", "unit": "%" },
+    { "id": "vix", "name": "VIX", "value": 14.62, "change": -1.10, "changeType": "abs" }
+  ]
+}
