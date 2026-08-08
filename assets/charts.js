@@ -149,29 +149,6 @@
     });
   }
 
-  /** Deterministic pseudo-random daily series for mock data: starts near `current` scaled back by `chgPct`, ends exactly at `current`, seeded by `seedStr` so it's stable across reloads. */
-  function mockDailySeries(seedStr, current, chgPct, days) {
-    var seed = 0;
-    for (var i = 0; i < seedStr.length; i++) { seed = (seed << 5) - seed + seedStr.charCodeAt(i); seed |= 0; }
-    var rand = (function (s) {
-      return function () {
-        s |= 0; s = (s + 0x6D2B79F5) | 0;
-        var t = Math.imul(s ^ (s >>> 15), 1 | s);
-        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-      };
-    })(seed);
-    var start = current / (1 + chgPct / 100);
-    var vals = [];
-    for (var d = 0; d < days; d++) {
-      var target = start + (current - start) * (d / (days - 1));
-      var noise = (rand() - 0.5) * Math.abs(current) * 0.012;
-      vals.push(target + noise);
-    }
-    vals[days - 1] = current;
-    return vals;
-  }
-
   /** Fear/greed style semicircular gauge, value 0-100. */
   function gauge(svg, value) {
     svg.innerHTML = "";
@@ -210,6 +187,6 @@
 
   global.MC = {
     css: css, el: el, scale: scale, lineChart: lineChart, sparkline: sparkline, gauge: gauge,
-    movingAverage: movingAverage, mockDailySeries: mockDailySeries
+    movingAverage: movingAverage
   };
 })(window);

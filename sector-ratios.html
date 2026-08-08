@@ -13,8 +13,8 @@
     <div class="brand-row">
       <a class="brand" href="index.html">Market <span>Desk</span></a>
       <div class="top-meta">
-        <span class="notice">Illustrative sample data — not live market feeds</span>
-        <span class="refresh-stamp"><span class="dot"></span>Last refresh: Aug 7, 2026, 4:15&nbsp;PM ET</span>
+        <span class="notice" id="live-notice">Illustrative sample data — not live market feeds</span>
+        <span class="refresh-stamp"><span class="dot"></span>Last refresh: <span id="refresh-time">Aug 7, 2026, 4:15&nbsp;PM ET</span></span>
       </div>
     </div>
     <nav class="tabs">
@@ -35,7 +35,7 @@
   <section>
     <div class="section-head">
       <h2>Sector / SPY Ratio</h2>
-      <span class="section-note">All 11 GICS sectors, 20-day trend</span>
+      <span class="section-note" id="sector-asof">All 11 GICS sectors, ~6-month trend</span>
     </div>
     <div class="legend">
       <span class="legend-item"><span class="legend-swatch dashed" style="background:var(--ink-soft)"></span>5-day moving average</span>
@@ -89,7 +89,7 @@
   </section>
 
   <footer>
-    <p>Ratio and volatility figures are illustrative placeholders, not calculated from live options or price data.</p>
+    <p>Sector/SPY ratios are live daily closes from Yahoo Finance, refreshed once per weekday after market close. Constituent Volatility, Core 3M, Dispersion Index, and Skew Structure below are still illustrative placeholders.</p>
     <p>Badges mark each sector's ratio move over the trailing month: green outperforming SPY, red underperforming. The dashed line on each chart is the 5-day moving average of the ratio.</p>
   </footer>
 </div>
@@ -99,39 +99,85 @@
 (function () {
   "use strict";
 
-  var sectors = [
-    { name: "Technology", ticker: "XLK/SPY", value: 0.612, chg: 1.8 },
-    { name: "Financials", ticker: "XLF/SPY", value: 0.198, chg: 0.6 },
-    { name: "Health Care", ticker: "XLV/SPY", value: 0.145, chg: -1.2 },
-    { name: "Consumer Disc.", ticker: "XLY/SPY", value: 0.163, chg: 0.4 },
-    { name: "Consumer Staples", ticker: "XLP/SPY", value: 0.092, chg: -0.8 },
-    { name: "Energy", ticker: "XLE/SPY", value: 0.055, chg: -2.4 },
-    { name: "Industrials", ticker: "XLI/SPY", value: 0.118, chg: 0.9 },
-    { name: "Materials", ticker: "XLB/SPY", value: 0.038, chg: -0.3 },
-    { name: "Utilities", ticker: "XLU/SPY", value: 0.031, chg: 0.2 },
-    { name: "Real Estate", ticker: "XLRE/SPY", value: 0.026, chg: -0.5 },
-    { name: "Communication Svcs.", ticker: "XLC/SPY", value: 0.142, chg: 2.1 }
-  ];
-  var DAYS = 20, MA_WINDOW = 5;
+  var SECTOR_ORDER = ["xlk", "xlf", "xlv", "xly", "xlp", "xle", "xli", "xlb", "xlu", "xlre", "xlc"];
+  var MA_WINDOW = 5;
+  var CHANGE_LOOKBACK_DAYS = 21; // ~1 trading month
 
-  var grid = document.getElementById("sector-grid");
-  sectors.forEach(function (s, idx) {
-    var card = document.createElement("div");
-    card.className = "sector-card";
-    var up = s.chg >= 0;
-    card.innerHTML =
-      '<div class="sector-head"><span class="sector-name">' + s.name + '</span><span class="sector-ticker">' + s.ticker + '</span></div>' +
-      '<div class="sector-value-row"><span class="sector-value">' + s.value.toFixed(3) + '</span>' +
-      '<span class="sector-badge ' + (up ? "up" : "down") + '">' + (up ? "▲" : "▼") + ' ' + Math.abs(s.chg).toFixed(1) + '%</span></div>' +
-      '<svg id="sector-spark-' + idx + '" width="196" height="46"></svg>';
-    grid.appendChild(card);
-  });
-  sectors.forEach(function (s, idx) {
-    var daily = MC.mockDailySeries(s.ticker, s.value, s.chg, DAYS);
-    var ma = MC.movingAverage(daily, MA_WINDOW);
-    var color = s.chg >= 0 ? MC.css("--up") : MC.css("--down");
-    MC.sparkline(document.getElementById("sector-spark-" + idx), daily, color, { ma: ma });
-  });
+  var FALLBACK = {
+    updated: "2026-08-07T20:15:00Z",
+    source: "seed",
+    spyLive: false,
+    dates: ["2026-08-03", "2026-08-04", "2026-08-05", "2026-08-06", "2026-08-07"],
+    spy: [768.56, 770.10, 771.40, 772.20, 773.26],
+    sectors: {
+      xlk: { name: "Technology", ticker: "XLK", close: [469.80, 471.00, 472.60, 474.10, 473.20], live: false },
+      xlf: { name: "Financials", ticker: "XLF", close: [152.10, 152.50, 152.90, 153.10, 153.10], live: false },
+      xlv: { name: "Health Care", ticker: "XLV", close: [111.50, 111.60, 111.40, 111.30, 111.20], live: false },
+      xly: { name: "Consumer Disc.", ticker: "XLY", close: [125.20, 125.60, 125.90, 126.10, 125.90], live: false },
+      xlp: { name: "Consumer Staples", ticker: "XLP", close: [70.90, 70.80, 70.85, 70.75, 70.70], live: false },
+      xle: { name: "Energy", ticker: "XLE", close: [42.60, 42.50, 42.40, 42.30, 42.10], live: false },
+      xli: { name: "Industrials", ticker: "XLI", close: [91.20, 91.50, 91.70, 91.90, 91.70], live: false },
+      xlb: { name: "Materials", ticker: "XLB", close: [29.30, 29.35, 29.30, 29.25, 29.30], live: false },
+      xlu: { name: "Utilities", ticker: "XLU", close: [23.90, 23.92, 23.95, 23.90, 23.95], live: false },
+      xlre: { name: "Real Estate", ticker: "XLRE", close: [20.10, 20.05, 20.08, 20.02, 20.05], live: false },
+      xlc: { name: "Communication Svcs.", ticker: "XLC", close: [109.90, 110.50, 110.80, 110.20, 109.80], live: false }
+    }
+  };
+
+  function ratioSeries(sectorClose, spy) {
+    return sectorClose.map(function (c, i) { return c / spy[i]; });
+  }
+
+  function renderSectors(data) {
+    var grid = document.getElementById("sector-grid");
+    grid.innerHTML = "";
+    var n = data.dates.length;
+
+    SECTOR_ORDER.forEach(function (id) {
+      var sec = data.sectors[id];
+      if (!sec) return;
+      var ratio = ratioSeries(sec.close, data.spy);
+      var current = ratio[n - 1];
+      var lookbackIdx = Math.max(0, n - 1 - CHANGE_LOOKBACK_DAYS);
+      var chg = (current / ratio[lookbackIdx] - 1) * 100;
+      var up = chg >= 0;
+      var live = sec.live && data.spyLive;
+
+      var card = document.createElement("div");
+      card.className = "sector-card";
+      var staticFlag = live ? "" : '<span class="placeholder-flag">static</span>';
+      card.innerHTML =
+        '<div class="sector-head"><span class="sector-name">' + sec.name + staticFlag + '</span><span class="sector-ticker">' + sec.ticker + '/SPY</span></div>' +
+        '<div class="sector-value-row"><span class="sector-value">' + current.toFixed(3) + '</span>' +
+        '<span class="sector-badge ' + (up ? "up" : "down") + '">' + (up ? "▲" : "▼") + ' ' + Math.abs(chg).toFixed(1) + '%</span></div>' +
+        '<svg id="sector-spark-' + id + '" width="196" height="46"></svg>';
+      grid.appendChild(card);
+
+      var ma = MC.movingAverage(ratio, MA_WINDOW);
+      var color = up ? MC.css("--up") : MC.css("--down");
+      MC.sparkline(document.getElementById("sector-spark-" + id), ratio, color, { ma: ma });
+    });
+
+    var d = new Date(data.updated);
+    var stamp = isNaN(d) ? "unknown" : d.toLocaleString("en-US", {
+      month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", timeZone: "America/New_York"
+    }) + " ET";
+    document.getElementById("refresh-time").textContent = stamp;
+    document.getElementById("sector-asof").textContent = "All 11 GICS sectors, " + n + "-day trend, updated after close";
+
+    var notice = document.getElementById("live-notice");
+    notice.textContent = data.source === "live"
+      ? "Live data — Yahoo Finance daily closes, refreshed once per weekday after close"
+      : "Illustrative sample data — not live market feeds";
+  }
+
+  fetch("data/sector-ratios.json?t=" + Date.now(), { cache: "no-store" })
+    .then(function (res) { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); })
+    .then(renderSectors)
+    .catch(function (err) {
+      console.warn("Could not load data/sector-ratios.json, showing fallback values:", err);
+      renderSectors(FALLBACK);
+    });
 
   MC.lineChart(document.getElementById("chart-constituent-vol"), {
     xLabels: ["Mar", "Apr", "May", "Jun", "Jul", "Aug"],
