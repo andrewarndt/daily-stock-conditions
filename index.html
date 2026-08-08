@@ -47,32 +47,8 @@
       <h2>Dollar &amp; Commodities</h2>
       <span class="section-note">Spot, as of last print</span>
     </div>
-    <div class="metric-grid">
-      <div class="metric-card">
-        <div class="metric-name">US Dollar Index (DXY)</div>
-        <div class="metric-value">101.84</div>
-        <div class="metric-change down">▼ 0.22%</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-name">Bitcoin (BTC/USD)</div>
-        <div class="metric-value">$118,240</div>
-        <div class="metric-change up">▲ 2.15%</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-name">Gold (XAU/USD)</div>
-        <div class="metric-value">$2,486.30</div>
-        <div class="metric-change up">▲ 0.41%</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-name">Silver (XAG/USD)</div>
-        <div class="metric-value">$29.87</div>
-        <div class="metric-change up">▲ 0.85%</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-name">Crude Oil (WTI)</div>
-        <div class="metric-value">$76.42</div>
-        <div class="metric-change down">▼ 1.32%</div>
-      </div>
+    <div class="metric-grid" id="commodities-grid">
+      <!-- populated from data/overview.json; see script at bottom of page -->
     </div>
   </section>
 
@@ -130,18 +106,26 @@
     updated: "2026-08-07T20:15:00Z",
     source: "seed",
     indices: [
-      { id: "sp500", name: "S&P 500", proxy: "SPY", value: 773.26, change: 0.61, changeType: "pct", live: false },
-      { id: "dow", name: "Dow Jones", proxy: "DIA", value: 539.62, change: 0.27, changeType: "pct", live: false },
-      { id: "nasdaq", name: "Nasdaq-100", proxy: "QQQ", value: 723.03, change: 1.17, changeType: "pct", live: false },
+      { id: "sp500", name: "S&P 500", proxy: "SPY", value: 773.26, change: 0.61, changeType: "pct", unit: "$", live: false },
+      { id: "dow", name: "Dow Jones", proxy: "DIA", value: 539.62, change: 0.27, changeType: "pct", unit: "$", live: false },
+      { id: "nasdaq", name: "Nasdaq-100", proxy: "QQQ", value: 723.03, change: 1.17, changeType: "pct", unit: "$", live: false },
       { id: "ust10y", name: "10-Yr Treasury", value: 4.21, change: -0.03, changeType: "pt", unit: "%", live: false },
       { id: "vix", name: "VIX", value: 14.62, change: -1.10, changeType: "abs", live: false }
+    ],
+    commodities: [
+      { id: "dxy", name: "US Dollar Index", proxy: "UUP", value: 28.07, change: -0.43, changeType: "pct", unit: "$", live: false },
+      { id: "btc", name: "Bitcoin", value: 65081.24, change: 0.24, changeType: "pct", unit: "$", live: false },
+      { id: "gold", name: "Gold", value: 4342.35, change: -0.01, changeType: "pct", unit: "$", live: false },
+      { id: "silver", name: "Silver", proxy: "SLV", value: 57.50, change: 2.95, changeType: "pct", unit: "$", live: false },
+      { id: "oil", name: "Crude Oil (WTI)", proxy: "USO", value: 117.98, change: -0.75, changeType: "pct", unit: "$", live: false }
     ]
   };
 
   function fmtValue(item) {
+    var formatted = item.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     if (item.unit === "%") return item.value.toFixed(2) + "%";
-    if (item.proxy) return "$" + item.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    return item.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    if (item.unit === "$") return "$" + formatted;
+    return formatted;
   }
 
   function fmtChange(item) {
@@ -153,13 +137,10 @@
 
   var lastRenderedUpdate = null;
 
-  function render(data) {
-    if (data.updated === lastRenderedUpdate) return; // nothing new since last poll — skip re-render
-    lastRenderedUpdate = data.updated;
-
-    var grid = document.getElementById("indices-grid");
+  function renderGrid(gridId, items) {
+    var grid = document.getElementById(gridId);
     grid.innerHTML = "";
-    data.indices.forEach(function (item) {
+    items.forEach(function (item) {
       var chg = fmtChange(item);
       var card = document.createElement("div");
       card.className = "metric-card";
@@ -171,6 +152,14 @@
         '<div class="metric-change ' + chg.cls + '">' + chg.text + '</div>';
       grid.appendChild(card);
     });
+  }
+
+  function render(data) {
+    if (data.updated === lastRenderedUpdate) return; // nothing new since last poll — skip re-render
+    lastRenderedUpdate = data.updated;
+
+    renderGrid("indices-grid", data.indices);
+    renderGrid("commodities-grid", data.commodities || []);
 
     var d = new Date(data.updated);
     var stamp = isNaN(d) ? "unknown" : d.toLocaleString("en-US", {
@@ -192,11 +181,11 @@
   // request a distinct URL so neither the browser nor GitHub's CDN can
   // serve a stale cached copy, regardless of that header.
   function loadIndices() {
-    fetch("data/indices.json?t=" + Date.now(), { cache: "no-store" })
+    fetch("data/overview.json?t=" + Date.now(), { cache: "no-store" })
       .then(function (res) { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); })
       .then(render)
       .catch(function (err) {
-        console.warn("Could not load data/indices.json, showing fallback values:", err);
+        console.warn("Could not load data/overview.json, showing fallback values:", err);
         render(FALLBACK);
       });
   }

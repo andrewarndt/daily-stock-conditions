@@ -9,6 +9,7 @@
       "value": 773.26001,
       "change": 0.61153485,
       "changeType": "pct",
+      "unit": "$",
       "live": true
     },
     {
@@ -18,6 +19,7 @@
       "value": 539.62,
       "change": 0.26570406,
       "changeType": "pct",
+      "unit": "$",
       "live": true
     },
     {
@@ -27,6 +29,7 @@
       "value": 723.030029,
       "change": 1.1726,
       "changeType": "pct",
+      "unit": "$",
       "live": true
     },
     {
@@ -46,5 +49,12 @@
       "changeType": "abs",
       "live": false
     }
+  ],
+  "commodities": [
+    { "id": "dxy", "name": "US Dollar Index", "proxy": "UUP", "value": 28.07, "change": -0.43, "changeType": "pct", "unit": "$", "live": false },
+    { "id": "btc", "name": "Bitcoin", "value": 65081.24, "change": 0.24, "changeType": "pct", "unit": "$", "live": false },
+    { "id": "gold", "name": "Gold", "value": 4342.35, "change": -0.01, "changeType": "pct", "unit": "$", "live": false },
+    { "id": "silver", "name": "Silver", "proxy": "SLV", "value": 57.50, "change": 2.95, "changeType": "pct", "unit": "$", "live": false },
+    { "id": "oil", "name": "Crude Oil (WTI)", "proxy": "USO", "value": 117.98, "change": -0.75, "changeType": "pct", "unit": "$", "live": false }
   ]
 }

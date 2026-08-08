@@ -1,4 +1,4 @@
-name: Refresh index data
+name: Refresh overview data
 
 on:
   schedule:
@@ -11,7 +11,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: refresh-indices
+  group: refresh-overview
   cancel-in-progress: false
 
 jobs:
@@ -26,16 +26,16 @@ jobs:
         with:
           node-version: 20
 
-      - name: Fetch latest index data
+      - name: Fetch latest overview data
         env:
           TWELVEDATA_API_KEY: ${{ secrets.TWELVEDATA_API_KEY }}
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
-        run: node scripts/fetch-indices.mjs
+        run: node scripts/fetch-overview.mjs
 
       - name: Commit data if changed
         run: |
           git config user.name "market-desk-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add data/indices.json
-          git diff --cached --quiet || git commit -m "Refresh index data"
+          git add data/overview.json
+          git diff --cached --quiet || git commit -m "Refresh overview data"
           git push
