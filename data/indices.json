@@ -1,27 +1,33 @@
 {
-  "updated": "2026-08-08T07:30:34.489Z",
+  "updated": "2026-08-08T07:40:42.716Z",
   "source": "live",
   "indices": [
     {
       "id": "sp500",
       "name": "S&P 500",
-      "value": 5612.44,
-      "change": 0.62,
-      "changeType": "pct"
+      "proxy": "SPY",
+      "value": 773.26001,
+      "change": 0.61153485,
+      "changeType": "pct",
+      "live": true
     },
     {
       "id": "dow",
       "name": "Dow Jones",
-      "value": 41238.1,
-      "change": 0.34,
-      "changeType": "pct"
+      "proxy": "DIA",
+      "value": 539.62,
+      "change": 0.26570406,
+      "changeType": "pct",
+      "live": true
     },
     {
       "id": "nasdaq",
-      "name": "Nasdaq Composite",
-      "value": 17904.77,
-      "change": -0.18,
-      "changeType": "pct"
+      "name": "Nasdaq-100",
+      "proxy": "QQQ",
+      "value": 723.030029,
+      "change": 1.1726,
+      "changeType": "pct",
+      "live": true
     },
     {
       "id": "ust10y",
@@ -29,14 +35,16 @@
       "value": 4.69,
       "change": 0.06,
       "changeType": "pt",
-      "unit": "%"
+      "unit": "%",
+      "live": true
     },
     {
       "id": "vix",
       "name": "VIX",
       "value": 14.62,
       "change": -1.1,
-      "changeType": "abs"
+      "changeType": "abs",
+      "live": false
     }
   ]
 }
