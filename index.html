@@ -130,16 +130,17 @@
     updated: "2026-08-07T20:15:00Z",
     source: "seed",
     indices: [
-      { id: "sp500", name: "S&P 500", value: 5612.44, change: 0.62, changeType: "pct" },
-      { id: "dow", name: "Dow Jones", value: 41238.10, change: 0.34, changeType: "pct" },
-      { id: "nasdaq", name: "Nasdaq Composite", value: 17904.77, change: -0.18, changeType: "pct" },
-      { id: "ust10y", name: "10-Yr Treasury", value: 4.21, change: -0.03, changeType: "pt", unit: "%" },
-      { id: "vix", name: "VIX", value: 14.62, change: -1.10, changeType: "abs" }
+      { id: "sp500", name: "S&P 500", proxy: "SPY", value: 773.26, change: 0.61, changeType: "pct", live: false },
+      { id: "dow", name: "Dow Jones", proxy: "DIA", value: 539.62, change: 0.27, changeType: "pct", live: false },
+      { id: "nasdaq", name: "Nasdaq-100", proxy: "QQQ", value: 723.03, change: 1.17, changeType: "pct", live: false },
+      { id: "ust10y", name: "10-Yr Treasury", value: 4.21, change: -0.03, changeType: "pt", unit: "%", live: false },
+      { id: "vix", name: "VIX", value: 14.62, change: -1.10, changeType: "abs", live: false }
     ]
   };
 
   function fmtValue(item) {
     if (item.unit === "%") return item.value.toFixed(2) + "%";
+    if (item.proxy) return "$" + item.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     return item.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
@@ -157,8 +158,10 @@
       var chg = fmtChange(item);
       var card = document.createElement("div");
       card.className = "metric-card";
+      var label = item.name + (item.proxy ? " (" + item.proxy + ")" : "");
+      var staticFlag = item.live === false ? '<span class="placeholder-flag">static</span>' : "";
       card.innerHTML =
-        '<div class="metric-name">' + item.name + '</div>' +
+        '<div class="metric-name">' + label + staticFlag + '</div>' +
         '<div class="metric-value">' + fmtValue(item) + '</div>' +
         '<div class="metric-change ' + chg.cls + '">' + chg.text + '</div>';
       grid.appendChild(card);

@@ -257,6 +257,21 @@ h2 {
 .metric-change.down { color: var(--down); background: var(--down-bg); }
 .metric-change.flat { color: var(--ink-soft); background: var(--line); }
 
+.placeholder-flag {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  background: var(--accent-soft);
+  padding: 0.05rem 0.35rem;
+  border-radius: 2px;
+  margin-left: 0.4rem;
+  vertical-align: middle;
+}
+
 /* ---------- tables ---------- */
 
 table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
