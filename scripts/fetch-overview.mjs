@@ -41,9 +41,9 @@ const TWELVEDATA_API_KEY = process.env.TWELVEDATA_API_KEY;
 const FRED_API_KEY = process.env.FRED_API_KEY;
 
 const INDEX_SYMBOLS = {
-  sp500: { name: "S&P 500", symbol: "SPY", changeType: "pct", unit: "$" },
-  dow: { name: "Dow Jones", symbol: "DIA", changeType: "pct", unit: "$" },
-  nasdaq: { name: "Nasdaq-100", symbol: "QQQ", changeType: "pct", unit: "$" }
+  sp500: { name: "S&P 500", symbol: "SPY", changeType: "pct", unit: "$", proxy: "SPY" },
+  dow: { name: "Dow Jones", symbol: "DIA", changeType: "pct", unit: "$", proxy: "DIA" },
+  nasdaq: { name: "Nasdaq-100", symbol: "QQQ", changeType: "pct", unit: "$", proxy: "QQQ" }
 };
 
 const COMMODITY_SYMBOLS = {
