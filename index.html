@@ -151,7 +151,12 @@
     return { text: (up ? "▲ " : "▼ ") + abs + suffix, cls: up ? "up" : "down" };
   }
 
+  var lastRenderedUpdate = null;
+
   function render(data) {
+    if (data.updated === lastRenderedUpdate) return; // nothing new since last poll — skip re-render
+    lastRenderedUpdate = data.updated;
+
     var grid = document.getElementById("indices-grid");
     grid.innerHTML = "";
     data.indices.forEach(function (item) {
@@ -182,13 +187,32 @@
     }
   }
 
-  fetch("data/indices.json", { cache: "no-store" })
-    .then(function (res) { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); })
-    .then(render)
-    .catch(function (err) {
-      console.warn("Could not load data/indices.json, showing fallback values:", err);
-      render(FALLBACK);
-    });
+  // GitHub Pages serves every file with a fixed 10-minute Cache-Control,
+  // which we can't override. Appending a changing query string makes each
+  // request a distinct URL so neither the browser nor GitHub's CDN can
+  // serve a stale cached copy, regardless of that header.
+  function loadIndices() {
+    fetch("data/indices.json?t=" + Date.now(), { cache: "no-store" })
+      .then(function (res) { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); })
+      .then(render)
+      .catch(function (err) {
+        console.warn("Could not load data/indices.json, showing fallback values:", err);
+        render(FALLBACK);
+      });
+  }
+
+  loadIndices();
+
+  // Poll for fresh data while the tab is open and visible, so numbers
+  // update on their own with no manual refresh at all. Paused while the
+  // tab is hidden/backgrounded to avoid pointless requests.
+  var POLL_MS = 60000;
+  var pollTimer = setInterval(function () {
+    if (document.visibilityState === "visible") loadIndices();
+  }, POLL_MS);
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "visible") loadIndices();
+  });
 })();
 </script>
 </body>
