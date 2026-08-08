@@ -1,5 +1,5 @@
 {
-  "updated": "2026-08-08T16:34:19.617Z",
+  "updated": "2026-08-08T16:36:49.500Z",
   "source": "live",
   "indices": [
     {
@@ -9,7 +9,8 @@
       "change": 0.61153485,
       "changeType": "pct",
       "live": true,
-      "unit": "$"
+      "unit": "$",
+      "proxy": "SPY"
     },
     {
       "id": "dow",
@@ -18,7 +19,8 @@
       "change": 0.26570406,
       "changeType": "pct",
       "live": true,
-      "unit": "$"
+      "unit": "$",
+      "proxy": "DIA"
     },
     {
       "id": "nasdaq",
@@ -27,7 +29,8 @@
       "change": 1.1726,
       "changeType": "pct",
       "live": true,
-      "unit": "$"
+      "unit": "$",
+      "proxy": "QQQ"
     },
     {
       "id": "ust10y",
@@ -61,8 +64,8 @@
     {
       "id": "btc",
       "name": "Bitcoin",
-      "value": 65052.08,
-      "change": 0.19852691,
+      "value": 65046.7,
+      "change": 0.19024019,
       "changeType": "pct",
       "live": true,
       "unit": "$"
@@ -70,8 +73,8 @@
     {
       "id": "gold",
       "name": "Gold",
-      "value": 4342.31458,
-      "change": -0.00734324,
+      "value": 4342.23954,
+      "change": -0.0090712238,
       "changeType": "pct",
       "live": true,
       "unit": "$"
