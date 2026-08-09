@@ -4,11 +4,16 @@
  * live sources.
  *
  * Sources:
- *   - Twelve Data (free tier) -> equity indices via ETF proxies, plus
- *     Bitcoin/Gold (real spot quotes) and Silver (ETF proxy -- XAG/USD is
- *     paid-plan-gated on the free tier). Raw index symbols (SPX/DJI/IXIC)
- *     are also paid-plan-gated -- confirmed against the live API, not just
- *     docs.
+ *   - Alpaca Market Data (free tier) -> equity indices via ETF proxies
+ *     (SPY/DIA/QQQ snapshot, one batched call) and VIX via Alpaca's new
+ *     Indices Data API (GET /v1beta1/indices/latest/values, shipped June
+ *     2026). That indices endpoint is brand new -- not yet in Alpaca's main
+ *     docs index, only its changelog -- so the exact response shape wasn't
+ *     confirmable ahead of time. fetchAlpacaVix() tries several plausible
+ *     shapes and logs the raw response if none match, so a real run's logs
+ *     can be used to correct the parsing if needed.
+ *   - Twelve Data (free tier) -> Bitcoin/Gold (real spot quotes) and Silver
+ *     (ETF proxy -- XAG/USD is paid-plan-gated on the free tier).
  *   - Yahoo Finance's unofficial chart endpoint -> the true US Dollar Index
  *     level (DX-Y.NYB, ICE's own index -- NOT the UUP ETF, which trades at
  *     a different scale) and the front-month WTI crude futures price
@@ -22,19 +27,9 @@
  * real index/futures values -- the ticker there is just how traders refer
  * to those instruments, $ for a cash index and / for a futures contract).
  *
- * VIX is intentionally NOT fetched: no free source for the real spot VIX
- * level exists, and the closest free proxy (VIXY, a futures ETF) decays
- * over time and diverges from actual VIX moves beyond just scale. Per team
- * decision it stays a static/illustrative entry, carried forward untouched.
- *
- * Twelve Data's free tier is capped at 8 requests/minute. This script makes
- * 5 Twelve Data calls per run (3 indices + Bitcoin + Gold + Silver = 5, see
- * below), fired sequentially with a short stagger to stay clear of that
- * ceiling with margin. The 2 Yahoo calls (DXY, oil) run independently --
- * separate provider, no shared rate limit.
- *
- * Requires env vars TWELVEDATA_API_KEY and FRED_API_KEY (see .github/workflows).
- * On any single-symbol failure, falls back to the previous value already in
+ * Requires env vars ALPACA_API_KEY_ID, ALPACA_API_SECRET_KEY,
+ * TWELVEDATA_API_KEY, and FRED_API_KEY (see .github/workflows). On any
+ * single-symbol failure, falls back to the previous value already in
  * data/overview.json rather than failing the whole run.
  */
 
@@ -45,15 +40,22 @@ import path from "node:path";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUT_PATH = path.join(__dirname, "..", "data", "overview.json");
 
+const ALPACA_API_KEY_ID = process.env.ALPACA_API_KEY_ID;
+const ALPACA_API_SECRET_KEY = process.env.ALPACA_API_SECRET_KEY;
 const TWELVEDATA_API_KEY = process.env.TWELVEDATA_API_KEY;
 const FRED_API_KEY = process.env.FRED_API_KEY;
 
+const ALPACA_HEADERS = {
+  "APCA-API-KEY-ID": ALPACA_API_KEY_ID || "",
+  "APCA-API-SECRET-KEY": ALPACA_API_SECRET_KEY || ""
+};
+
 const YAHOO_HEADERS = { "User-Agent": "Mozilla/5.0 (compatible; MarketDeskBot/1.0; +https://andrewarndt.github.io/daily-stock-conditions/)" };
 
-const INDEX_SYMBOLS = {
-  sp500: { name: "S&P 500", symbol: "SPY", changeType: "pct", unit: "$", ticker: "SPY" },
-  dow: { name: "Dow Jones", symbol: "DIA", changeType: "pct", unit: "$", ticker: "DIA" },
-  nasdaq: { name: "Nasdaq-100", symbol: "QQQ", changeType: "pct", unit: "$", ticker: "QQQ" }
+const ALPACA_STOCK_SYMBOLS = {
+  sp500: { name: "S&P 500", symbol: "SPY", unit: "$", ticker: "SPY" },
+  dow: { name: "Dow Jones", symbol: "DIA", unit: "$", ticker: "DIA" },
+  nasdaq: { name: "Nasdaq-100", symbol: "QQQ", unit: "$", ticker: "QQQ" }
 };
 
 const COMMODITY_SYMBOLS = {
@@ -83,6 +85,81 @@ async function loadPrevious() {
     return byId;
   } catch {
     return {};
+  }
+}
+
+async function fetchAlpacaStocks(defsById, previous) {
+  const out = {};
+  const ids = Object.keys(defsById);
+  if (!ALPACA_API_KEY_ID || !ALPACA_API_SECRET_KEY) {
+    console.warn("[alpaca] no API credentials set, keeping previous values for", ids.join(", "));
+    for (const id of ids) out[id] = previous[id] ? { ...previous[id], live: false } : null;
+    return out;
+  }
+  const symbols = ids.map((id) => defsById[id].symbol).join(",");
+  const url = `https://data.alpaca.markets/v2/stocks/snapshots?symbols=${encodeURIComponent(symbols)}&feed=iex`;
+  try {
+    const res = await fetch(url, { headers: ALPACA_HEADERS });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    for (const id of ids) {
+      const def = defsById[id];
+      const snap = json[def.symbol];
+      try {
+        const price = snap?.latestTrade?.p ?? snap?.dailyBar?.c;
+        const prevClose = snap?.prevDailyBar?.c;
+        if (!Number.isFinite(price) || !Number.isFinite(prevClose) || prevClose === 0) {
+          throw new Error(`missing price/prevClose for ${def.symbol}`);
+        }
+        out[id] = {
+          id, name: def.name, value: price, change: ((price - prevClose) / prevClose) * 100,
+          changeType: "pct", unit: def.unit, ticker: def.ticker, live: true
+        };
+      } catch (err) {
+        console.warn(`[alpaca] failed for ${id} (${def.symbol}): ${err.message}. Keeping previous value.`);
+        out[id] = previous[id] ? { ...previous[id], live: false } : null;
+      }
+    }
+  } catch (err) {
+    console.warn(`[alpaca] snapshot request failed: ${err.message}. Keeping previous values for`, ids.join(", "));
+    for (const id of ids) out[id] = previous[id] ? { ...previous[id], live: false } : null;
+  }
+  return out;
+}
+
+async function fetchAlpacaVix(previous) {
+  const prev = previous.vix;
+  if (!ALPACA_API_KEY_ID || !ALPACA_API_SECRET_KEY) {
+    console.warn("[alpaca] no API credentials set, keeping previous value for vix");
+    return prev ? { ...prev, live: false } : { id: "vix", name: "VIX", value: 14.62, change: -1.10, changeType: "abs", live: false };
+  }
+  const url = "https://data.alpaca.markets/v1beta1/indices/latest/values?index_symbols=VIX";
+  try {
+    const res = await fetch(url, { headers: ALPACA_HEADERS });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+
+    // Response shape for this endpoint isn't confirmed against live docs
+    // (see file header) -- try the plausible shapes, log the raw payload
+    // if none match so it can be fixed from real output.
+    const entry =
+      json?.values?.VIX ?? json?.indices?.VIX ?? json?.VIX ??
+      (Array.isArray(json?.values) ? json.values.find((v) => v.symbol === "VIX" || v.S === "VIX") : null);
+
+    const value = Number(entry?.value ?? entry?.v ?? entry?.close ?? entry?.c);
+    if (!Number.isFinite(value)) {
+      console.warn("[alpaca] unrecognized VIX response shape, raw payload:", JSON.stringify(json));
+      throw new Error("could not parse VIX value from response");
+    }
+
+    // No prior-close field confirmed available from this endpoint yet;
+    // compute change against our own last-stored value as a same-day proxy
+    // until the real response shape (and any prevClose field) is confirmed.
+    const priorValue = prev && Number.isFinite(prev.value) ? prev.value : value;
+    return { id: "vix", name: "VIX", value, change: value - priorValue, changeType: "abs", live: true };
+  } catch (err) {
+    console.warn(`[alpaca] failed for vix: ${err.message}. Keeping previous value.`);
+    return prev ? { ...prev, live: false } : { id: "vix", name: "VIX", value: 14.62, change: -1.10, changeType: "abs", live: false };
   }
 }
 
@@ -175,12 +252,6 @@ async function fetchTreasuryYield(previous) {
   }
 }
 
-function carryForwardVix(previous) {
-  const prev = previous.vix;
-  if (prev) return { ...prev, live: false };
-  return { id: "vix", name: "VIX", value: 14.62, change: -1.10, changeType: "abs", live: false };
-}
-
 function sortByOrder(items, order) {
   return items.filter(Boolean).sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
 }
@@ -188,8 +259,9 @@ function sortByOrder(items, order) {
 async function main() {
   const previous = await loadPrevious();
 
-  const [indexResults, treasury, dxy, oil] = await Promise.all([
-    fetchTwelveDataSequential(INDEX_SYMBOLS, previous),
+  const [stockResults, vix, treasury, dxy, oil] = await Promise.all([
+    fetchAlpacaStocks(ALPACA_STOCK_SYMBOLS, previous),
+    fetchAlpacaVix(previous),
     fetchTreasuryYield(previous),
     fetchYahooCommodity("dxy", YAHOO_SYMBOLS.dxy, previous),
     fetchYahooCommodity("oil", YAHOO_SYMBOLS.oil, previous)
@@ -197,7 +269,7 @@ async function main() {
   const commodityResults = await fetchTwelveDataSequential(COMMODITY_SYMBOLS, previous);
 
   const indices = sortByOrder(
-    [indexResults.sp500, indexResults.dow, indexResults.nasdaq, treasury, carryForwardVix(previous)],
+    [stockResults.sp500, stockResults.dow, stockResults.nasdaq, treasury, vix],
     INDEX_ORDER
   );
   const commodities = sortByOrder(

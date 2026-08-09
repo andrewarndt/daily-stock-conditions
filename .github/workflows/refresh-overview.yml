@@ -28,6 +28,8 @@ jobs:
 
       - name: Fetch latest overview data
         env:
+          ALPACA_API_KEY_ID: ${{ secrets.ALPACA_API_KEY_ID }}
+          ALPACA_API_SECRET_KEY: ${{ secrets.ALPACA_API_SECRET_KEY }}
           TWELVEDATA_API_KEY: ${{ secrets.TWELVEDATA_API_KEY }}
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
         run: node market_report/scripts/fetch-overview.mjs
