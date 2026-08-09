@@ -1,0 +1,61 @@
+{
+  "updated": "2026-08-07T20:15:00Z",
+  "source": "seed",
+  "indicators": [
+    {
+      "id": "cpi",
+      "name": "CPI, Year-over-Year",
+      "desc": "Bureau of Labor Statistics",
+      "value": 2.9,
+      "prior": 3.1,
+      "asof": "2026-06-01",
+      "unit": "%",
+      "trend": [3.6, 3.4, 3.3, 3.2, 3.1, 2.9],
+      "live": false
+    },
+    {
+      "id": "pmi",
+      "name": "PMI, Composite",
+      "desc": "S&P Global, flash",
+      "value": 51.8,
+      "prior": 52.4,
+      "asof": "2026-07-01",
+      "unit": "",
+      "trend": [53.1, 52.9, 52.6, 52.7, 52.4, 51.8],
+      "live": false
+    },
+    {
+      "id": "ppi",
+      "name": "PPI, Year-over-Year",
+      "desc": "Bureau of Labor Statistics",
+      "value": 2.2,
+      "prior": 2.4,
+      "asof": "2026-06-01",
+      "unit": "%",
+      "trend": [2.8, 2.7, 2.6, 2.5, 2.4, 2.2],
+      "live": false
+    },
+    {
+      "id": "unemployment",
+      "name": "Unemployment Rate",
+      "desc": "Bureau of Labor Statistics",
+      "value": 4.1,
+      "prior": 4.0,
+      "asof": "2026-07-01",
+      "unit": "%",
+      "trend": [3.8, 3.9, 3.9, 4.0, 4.0, 4.1],
+      "live": false
+    },
+    {
+      "id": "ism",
+      "name": "ISM Manufacturing",
+      "desc": "Institute for Supply Management",
+      "value": 48.6,
+      "prior": 47.9,
+      "asof": "2026-07-01",
+      "unit": "",
+      "trend": [46.8, 47.1, 47.5, 47.6, 47.9, 48.6],
+      "live": false
+    }
+  ]
+}

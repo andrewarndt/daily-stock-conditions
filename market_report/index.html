@@ -54,35 +54,16 @@
 
   <section>
     <div class="section-head">
-      <h2>Economic Snapshot<span class="placeholder-flag">static</span></h2>
-      <span class="section-note">CPI · PMI · PPI · Unemployment · ISM</span>
+      <h2>Economic Snapshot</h2>
+      <span class="section-note" id="econ-asof">CPI · PMI · PPI · Unemployment · ISM</span>
     </div>
     <div class="table-wrap">
       <table>
         <thead>
           <tr><th>Indicator</th><th>Latest</th><th>Prior</th><th>As of</th></tr>
         </thead>
-        <tbody>
-          <tr>
-            <td><span class="indicator-name">CPI, Year-over-Year</span><span class="indicator-desc">Bureau of Labor Statistics</span></td>
-            <td class="num change down">2.9%</td><td class="num muted">3.1%</td><td class="muted">Jun 2026</td>
-          </tr>
-          <tr>
-            <td><span class="indicator-name">PMI, Composite</span><span class="indicator-desc">S&amp;P Global, flash</span></td>
-            <td class="num change down">51.8</td><td class="num muted">52.4</td><td class="muted">Jul 2026</td>
-          </tr>
-          <tr>
-            <td><span class="indicator-name">PPI, Year-over-Year</span><span class="indicator-desc">Bureau of Labor Statistics</span></td>
-            <td class="num change down">2.2%</td><td class="num muted">2.4%</td><td class="muted">Jun 2026</td>
-          </tr>
-          <tr>
-            <td><span class="indicator-name">Unemployment Rate</span><span class="indicator-desc">Bureau of Labor Statistics</span></td>
-            <td class="num change up">4.1%</td><td class="num muted">4.0%</td><td class="muted">Jul 2026</td>
-          </tr>
-          <tr>
-            <td><span class="indicator-name">ISM Manufacturing</span><span class="indicator-desc">Institute for Supply Management</span></td>
-            <td class="num change up">48.6</td><td class="num muted">47.9</td><td class="muted">Jul 2026</td>
-          </tr>
+        <tbody id="econ-rows">
+          <!-- populated from data/economic.json; see script at bottom of page -->
         </tbody>
       </table>
     </div>
@@ -135,7 +116,59 @@
     return { text: (up ? "▲ " : "▼ ") + abs + suffix, cls: up ? "up" : "down" };
   }
 
+  var ECON_FALLBACK = {
+    updated: "2026-08-07T20:15:00Z",
+    source: "seed",
+    indicators: [
+      { id: "cpi", name: "CPI, Year-over-Year", desc: "Bureau of Labor Statistics", value: 2.9, prior: 3.1, asof: "2026-06-01", unit: "%", live: false },
+      { id: "pmi", name: "PMI, Composite", desc: "S&P Global, flash", value: 51.8, prior: 52.4, asof: "2026-07-01", unit: "", live: false },
+      { id: "ppi", name: "PPI, Year-over-Year", desc: "Bureau of Labor Statistics", value: 2.2, prior: 2.4, asof: "2026-06-01", unit: "%", live: false },
+      { id: "unemployment", name: "Unemployment Rate", desc: "Bureau of Labor Statistics", value: 4.1, prior: 4.0, asof: "2026-07-01", unit: "%", live: false },
+      { id: "ism", name: "ISM Manufacturing", desc: "Institute for Supply Management", value: 48.6, prior: 47.9, asof: "2026-07-01", unit: "", live: false }
+    ]
+  };
+
   var lastRenderedUpdate = null;
+  var lastRenderedEconUpdate = null;
+
+  function fmtEconValue(v, unit) {
+    return unit === "%" ? v.toFixed(1) + "%" : v.toFixed(1);
+  }
+
+  function fmtEconAsOf(dateStr) {
+    var d = new Date(dateStr + "T00:00:00Z");
+    if (isNaN(d)) return dateStr;
+    return d.toLocaleString("en-US", { month: "short", year: "numeric", timeZone: "UTC" });
+  }
+
+  function renderEconRows(data) {
+    if (data.updated === lastRenderedEconUpdate) return;
+    lastRenderedEconUpdate = data.updated;
+
+    var tbody = document.getElementById("econ-rows");
+    tbody.innerHTML = "";
+    (data.indicators || []).forEach(function (r) {
+      var dir = r.value >= r.prior ? "up" : "down";
+      var staticFlag = r.live === false ? '<span class="placeholder-flag">static</span>' : "";
+      var tr = document.createElement("tr");
+      tr.innerHTML =
+        '<td><span class="indicator-name">' + r.name + staticFlag + '</span><span class="indicator-desc">' + r.desc + '</span></td>' +
+        '<td class="num change ' + dir + '">' + fmtEconValue(r.value, r.unit) + '</td>' +
+        '<td class="num muted">' + fmtEconValue(r.prior, r.unit) + '</td>' +
+        '<td class="muted">' + fmtEconAsOf(r.asof) + '</td>';
+      tbody.appendChild(tr);
+    });
+  }
+
+  function loadEconomic() {
+    fetch("data/economic.json?t=" + Date.now(), { cache: "no-store" })
+      .then(function (res) { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); })
+      .then(renderEconRows)
+      .catch(function (err) {
+        console.warn("Could not load data/economic.json, showing fallback values:", err);
+        renderEconRows(ECON_FALLBACK);
+      });
+  }
 
   function renderGrid(gridId, items) {
     var grid = document.getElementById(gridId);
@@ -191,16 +224,17 @@
   }
 
   loadIndices();
+  loadEconomic();
 
   // Poll for fresh data while the tab is open and visible, so numbers
   // update on their own with no manual refresh at all. Paused while the
   // tab is hidden/backgrounded to avoid pointless requests.
   var POLL_MS = 60000;
   var pollTimer = setInterval(function () {
-    if (document.visibilityState === "visible") loadIndices();
+    if (document.visibilityState === "visible") { loadIndices(); loadEconomic(); }
   }, POLL_MS);
   document.addEventListener("visibilitychange", function () {
-    if (document.visibilityState === "visible") loadIndices();
+    if (document.visibilityState === "visible") { loadIndices(); loadEconomic(); }
   });
 })();
 </script>

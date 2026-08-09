@@ -34,7 +34,7 @@
 
   <section>
     <div class="section-head">
-      <h2>Economic Indicators<span class="placeholder-flag">static</span></h2>
+      <h2>Economic Indicators</h2>
       <span class="section-note">Last 6 releases</span>
     </div>
     <div class="table-wrap">
@@ -122,28 +122,54 @@
 (function () {
   "use strict";
 
-  var econRows = [
-    { name: "CPI, Year-over-Year", desc: "Bureau of Labor Statistics", latest: "2.9%", prior: "3.1%", asof: "Jun 2026", dir: "down", trend: [3.6, 3.4, 3.3, 3.2, 3.1, 2.9] },
-    { name: "PMI, Composite", desc: "S&P Global, flash", latest: "51.8", prior: "52.4", asof: "Jul 2026", dir: "down", trend: [53.1, 52.9, 52.6, 52.7, 52.4, 51.8] },
-    { name: "PPI, Year-over-Year", desc: "Bureau of Labor Statistics", latest: "2.2%", prior: "2.4%", asof: "Jun 2026", dir: "down", trend: [2.8, 2.7, 2.6, 2.5, 2.4, 2.2] },
-    { name: "Unemployment Rate", desc: "Bureau of Labor Statistics", latest: "4.1%", prior: "4.0%", asof: "Jul 2026", dir: "up", trend: [3.8, 3.9, 3.9, 4.0, 4.0, 4.1] },
-    { name: "ISM Manufacturing", desc: "Institute for Supply Management", latest: "48.6", prior: "47.9", asof: "Jul 2026", dir: "up", trend: [46.8, 47.1, 47.5, 47.6, 47.9, 48.6] }
-  ];
+  var ECON_FALLBACK = {
+    updated: "2026-08-07T20:15:00Z",
+    source: "seed",
+    indicators: [
+      { id: "cpi", name: "CPI, Year-over-Year", desc: "Bureau of Labor Statistics", value: 2.9, prior: 3.1, asof: "2026-06-01", unit: "%", trend: [3.6, 3.4, 3.3, 3.2, 3.1, 2.9], live: false },
+      { id: "pmi", name: "PMI, Composite", desc: "S&P Global, flash", value: 51.8, prior: 52.4, asof: "2026-07-01", unit: "", trend: [53.1, 52.9, 52.6, 52.7, 52.4, 51.8], live: false },
+      { id: "ppi", name: "PPI, Year-over-Year", desc: "Bureau of Labor Statistics", value: 2.2, prior: 2.4, asof: "2026-06-01", unit: "%", trend: [2.8, 2.7, 2.6, 2.5, 2.4, 2.2], live: false },
+      { id: "unemployment", name: "Unemployment Rate", desc: "Bureau of Labor Statistics", value: 4.1, prior: 4.0, asof: "2026-07-01", unit: "%", trend: [3.8, 3.9, 3.9, 4.0, 4.0, 4.1], live: false },
+      { id: "ism", name: "ISM Manufacturing", desc: "Institute for Supply Management", value: 48.6, prior: 47.9, asof: "2026-07-01", unit: "", trend: [46.8, 47.1, 47.5, 47.6, 47.9, 48.6], live: false }
+    ]
+  };
 
-  var tbody = document.getElementById("fed-indicator-rows");
-  econRows.forEach(function (r, idx) {
-    var tr = document.createElement("tr");
-    tr.innerHTML =
-      '<td><span class="indicator-name">' + r.name + '</span><span class="indicator-desc">' + r.desc + '</span></td>' +
-      '<td class="num change ' + r.dir + '">' + r.latest + '</td>' +
-      '<td class="num muted">' + r.prior + '</td>' +
-      '<td class="muted">' + r.asof + '</td>' +
-      '<td class="trend-cell"><svg id="econ-trend-' + idx + '" width="100" height="32"></svg></td>';
-    tbody.appendChild(tr);
-  });
-  econRows.forEach(function (r, idx) {
-    MC.sparkline(document.getElementById("econ-trend-" + idx), r.trend, r.dir === "up" ? MC.css("--up") : MC.css("--down"));
-  });
+  function fmtEconValue(v, unit) {
+    return unit === "%" ? v.toFixed(1) + "%" : v.toFixed(1);
+  }
+
+  function fmtEconAsOf(dateStr) {
+    var d = new Date(dateStr + "T00:00:00Z");
+    if (isNaN(d)) return dateStr;
+    return d.toLocaleString("en-US", { month: "short", year: "numeric", timeZone: "UTC" });
+  }
+
+  function renderEconRows(data) {
+    var tbody = document.getElementById("fed-indicator-rows");
+    tbody.innerHTML = "";
+    var rows = data.indicators || [];
+    rows.forEach(function (r, idx) {
+      var dir = r.value >= r.prior ? "up" : "down";
+      var staticFlag = r.live === false ? '<span class="placeholder-flag">static</span>' : "";
+      var tr = document.createElement("tr");
+      tr.innerHTML =
+        '<td><span class="indicator-name">' + r.name + staticFlag + '</span><span class="indicator-desc">' + r.desc + '</span></td>' +
+        '<td class="num change ' + dir + '">' + fmtEconValue(r.value, r.unit) + '</td>' +
+        '<td class="num muted">' + fmtEconValue(r.prior, r.unit) + '</td>' +
+        '<td class="muted">' + fmtEconAsOf(r.asof) + '</td>' +
+        '<td class="trend-cell"><svg id="econ-trend-' + idx + '" width="100" height="32"></svg></td>';
+      tbody.appendChild(tr);
+      MC.sparkline(document.getElementById("econ-trend-" + idx), r.trend, dir === "up" ? MC.css("--up") : MC.css("--down"));
+    });
+  }
+
+  fetch("data/economic.json?t=" + Date.now(), { cache: "no-store" })
+    .then(function (res) { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); })
+    .then(renderEconRows)
+    .catch(function (err) {
+      console.warn("Could not load data/economic.json, showing fallback values:", err);
+      renderEconRows(ECON_FALLBACK);
+    });
 
   MC.lineChart(document.getElementById("chart-yield-curve"), {
     xLabels: ["1M", "3M", "6M", "1Y", "2Y", "5Y", "10Y", "30Y"],

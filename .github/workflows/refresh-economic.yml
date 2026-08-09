@@ -1,0 +1,42 @@
+name: Refresh economic data
+
+on:
+  schedule:
+    # Once per weekday, mid-morning ET, well after BLS's standard 8:30am ET
+    # release time for CPI/PPI/employment data (14:00 UTC = 10am EDT / 9am
+    # EST -- buffer covers both). Monthly releases so most runs are no-ops;
+    # committing is a no-op too when nothing changed (git diff --quiet guard).
+    - cron: "0 14 * * 1-5"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-economic
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Fetch latest economic data
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+        run: node market_report/scripts/fetch-economic.mjs
+
+      - name: Commit data if changed
+        run: |
+          git config user.name "market-desk-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add market_report/data/economic.json
+          git diff --cached --quiet || git commit -m "Refresh economic data"
+          git push
