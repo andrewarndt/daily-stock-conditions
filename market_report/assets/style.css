@@ -187,6 +187,43 @@ a { color: inherit; }
   max-width: 62ch;
 }
 
+.next-release-strip {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.7rem;
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  border-radius: 3px;
+  padding: 0.65rem 0.9rem;
+  margin-bottom: 2rem;
+  font-size: 0.88rem;
+}
+
+.next-release-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 600;
+  flex: none;
+}
+
+.next-release-text { color: var(--ink); }
+
+.next-release-sep { color: var(--ink-soft); margin: 0 0.55rem; }
+
+.countdown-badge {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  padding: 0.05rem 0.4rem;
+  border-radius: 2px;
+}
+
 section { margin-bottom: 2.75rem; }
 
 .section-head {

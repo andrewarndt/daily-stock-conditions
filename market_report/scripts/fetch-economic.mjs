@@ -23,6 +23,19 @@
  * fetch-overview.mjs -- stays a static/illustrative entry, carried forward
  * untouched, per team decision.
  *
+ * Each indicator also carries a `nextRelease` date (YYYY-MM-DD), used by the
+ * "Next up" strip on fed-economic.html so that line never needs hand-editing:
+ *   - cpi/ppi/unemployment: the actual next scheduled date from FRED's own
+ *     release calendar (fred/release/dates), looked up via fred/series/release
+ *     to map the series to its release_id. Genuinely live, same as the values.
+ *   - pmi/ism: no free calendar API exists for either, but both publishers'
+ *     release-day conventions are fixed and public, so the date is computed
+ *     from a rule (see nextIsmReleaseDate/nextPmiReleaseDate below) instead
+ *     of being hand-maintained. It advances on its own every run.
+ * FOMC dates are deliberately NOT included here -- fed-economic.html reads
+ * those straight off the Fed Watch section already on the page, so there's
+ * one source of truth instead of two hardcoded copies.
+ *
  * Requires env var FRED_API_KEY (see .github/workflows/refresh-economic.yml).
  * On any single-series failure, falls back to the previous value already in
  * data/economic.json rather than failing the whole run.
@@ -96,6 +109,66 @@ async function fetchFredSeries(id, def, previous) {
   }
 }
 
+async function fetchNextReleaseDate(seriesId, previous) {
+  if (!FRED_API_KEY) {
+    console.warn(`[fred] no API key set, keeping previous next-release date for ${seriesId}`);
+    return previous || null;
+  }
+  try {
+    const relRes = await fetch(`https://api.stlouisfed.org/fred/series/release?series_id=${seriesId}&api_key=${FRED_API_KEY}&file_type=json`);
+    const relJson = await relRes.json();
+    if (relJson.error_code) throw new Error(relJson.error_message || `FRED error looking up release for ${seriesId}`);
+    const releaseId = relJson.releases && relJson.releases[0] && relJson.releases[0].id;
+    if (!releaseId) throw new Error(`no release found for ${seriesId}`);
+
+    // realtime_start/end filter release/dates by the date value itself (not
+    // vintage, as on most other FRED endpoints), so this returns just the
+    // next scheduled date on or after today.
+    const today = new Date().toISOString().slice(0, 10);
+    const datesUrl = `https://api.stlouisfed.org/fred/release/dates?release_id=${releaseId}&realtime_start=${today}&api_key=${FRED_API_KEY}&file_type=json&sort_order=asc&limit=1&include_release_dates_with_no_data=true`;
+    const datesRes = await fetch(datesUrl);
+    const datesJson = await datesRes.json();
+    if (datesJson.error_code) throw new Error(datesJson.error_message || `FRED error fetching release dates for release ${releaseId}`);
+    const next = (datesJson.release_dates || [])[0];
+    if (!next || !next.date) throw new Error(`no upcoming release date for release ${releaseId}`);
+    return next.date;
+  } catch (err) {
+    console.warn(`[fred] failed to fetch next release date for ${seriesId}: ${err.message}. Keeping previous value.`);
+    return previous || null;
+  }
+}
+
+function isWeekend(d) {
+  const day = d.getUTCDay();
+  return day === 0 || day === 6;
+}
+
+function nextBusinessDayOnOrAfter(d) {
+  const c = new Date(d);
+  while (isWeekend(c)) c.setUTCDate(c.getUTCDate() + 1);
+  return c;
+}
+
+// ISM publishes Manufacturing PMI on the first business day of each month
+// (for the prior month). Doesn't account for federal holidays, so it can be
+// off by a day around e.g. New Year's/Labor Day -- close enough for a
+// "coming up" indicator.
+function nextIsmReleaseDate(today) {
+  let d = nextBusinessDayOnOrAfter(new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1)));
+  if (d <= today) d = nextBusinessDayOnOrAfter(new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth() + 1, 1)));
+  return d.toISOString().slice(0, 10);
+}
+
+// S&P Global's flash Composite PMI comes out around the 22nd-24th of each
+// month; unlike BLS/ISM, S&P doesn't publish a precise schedule far ahead
+// and offers no free calendar API. Approximated as the 22nd, nudged off a
+// weekend -- treat as "roughly this week", not exact to the day.
+function nextPmiReleaseDate(today) {
+  let d = nextBusinessDayOnOrAfter(new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 22)));
+  if (d <= today) d = nextBusinessDayOnOrAfter(new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth() + 1, 22)));
+  return d.toISOString().slice(0, 10);
+}
+
 function carryForwardStatic(id, previous) {
   const prev = previous[id];
   if (prev) return { ...prev, live: false };
@@ -108,15 +181,24 @@ function sortByOrder(items, order) {
 
 async function main() {
   const previous = await loadPrevious();
+  const today = new Date();
 
-  const [cpi, ppi, unemployment] = await Promise.all([
+  const [cpi, ppi, unemployment, cpiNextRelease, ppiNextRelease, unemploymentNextRelease] = await Promise.all([
     fetchFredSeries("cpi", { seriesId: "CPIAUCSL", units: "pc1", unit: "%", name: "CPI, Year-over-Year", desc: "Bureau of Labor Statistics" }, previous),
     fetchFredSeries("ppi", { seriesId: "PPIACO", units: "pc1", unit: "%", name: "PPI, Year-over-Year", desc: "Bureau of Labor Statistics" }, previous),
-    fetchFredSeries("unemployment", { seriesId: "UNRATE", unit: "%", name: "Unemployment Rate", desc: "Bureau of Labor Statistics" }, previous)
+    fetchFredSeries("unemployment", { seriesId: "UNRATE", unit: "%", name: "Unemployment Rate", desc: "Bureau of Labor Statistics" }, previous),
+    fetchNextReleaseDate("CPIAUCSL", previous.cpi && previous.cpi.nextRelease),
+    fetchNextReleaseDate("PPIACO", previous.ppi && previous.ppi.nextRelease),
+    fetchNextReleaseDate("UNRATE", previous.unemployment && previous.unemployment.nextRelease)
   ]);
+  if (cpi) cpi.nextRelease = cpiNextRelease;
+  if (ppi) ppi.nextRelease = ppiNextRelease;
+  if (unemployment) unemployment.nextRelease = unemploymentNextRelease;
 
   const pmi = carryForwardStatic("pmi", previous);
+  pmi.nextRelease = nextPmiReleaseDate(today);
   const ism = carryForwardStatic("ism", previous);
+  ism.nextRelease = nextIsmReleaseDate(today);
 
   const indicators = sortByOrder([cpi, pmi, ppi, unemployment, ism], INDICATOR_ORDER);
 

@@ -11,7 +11,8 @@
       "asof": "2026-06-01",
       "unit": "%",
       "trend": [3.6, 3.4, 3.3, 3.2, 3.1, 2.9],
-      "live": false
+      "live": false,
+      "nextRelease": "2026-08-13"
     },
     {
       "id": "pmi",
@@ -22,7 +23,8 @@
       "asof": "2026-07-01",
       "unit": "",
       "trend": [53.1, 52.9, 52.6, 52.7, 52.4, 51.8],
-      "live": false
+      "live": false,
+      "nextRelease": "2026-08-24"
     },
     {
       "id": "ppi",
@@ -33,7 +35,8 @@
       "asof": "2026-06-01",
       "unit": "%",
       "trend": [2.8, 2.7, 2.6, 2.5, 2.4, 2.2],
-      "live": false
+      "live": false,
+      "nextRelease": "2026-08-14"
     },
     {
       "id": "unemployment",
@@ -44,7 +47,8 @@
       "asof": "2026-07-01",
       "unit": "%",
       "trend": [3.8, 3.9, 3.9, 4.0, 4.0, 4.1],
-      "live": false
+      "live": false,
+      "nextRelease": "2026-09-04"
     },
     {
       "id": "ism",
@@ -55,7 +59,8 @@
       "asof": "2026-07-01",
       "unit": "",
       "trend": [46.8, 47.1, 47.5, 47.6, 47.9, 48.6],
-      "live": false
+      "live": false,
+      "nextRelease": "2026-09-01"
     }
   ]
 }

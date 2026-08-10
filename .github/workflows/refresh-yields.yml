@@ -1,0 +1,42 @@
+name: Refresh Treasury yields
+
+on:
+  schedule:
+    # Once per weekday, evening ET, after Treasury publishes its daily par
+    # yield table (~3:30pm ET) and FRED mirrors it (21:30 UTC = 5:30pm EDT /
+    # 4:30pm EST -- buffer covers both). Committing is a no-op when nothing
+    # changed (git diff --quiet guard).
+    - cron: "30 21 * * 1-5"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-yields
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Fetch latest Treasury yields
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+        run: node market_report/scripts/fetch-yields.mjs
+
+      - name: Commit data if changed
+        run: |
+          git config user.name "market-desk-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add market_report/data/yields.json
+          git diff --cached --quiet || git commit -m "Refresh Treasury yields"
+          git push

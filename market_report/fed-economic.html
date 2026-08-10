@@ -32,6 +32,11 @@
     <p>The data the Fed is watching, what the market thinks the Fed does next, and where yields sit across the curve.</p>
   </div>
 
+  <div class="next-release-strip">
+    <span class="next-release-label">Next up</span>
+    <span id="next-release-text" class="next-release-text">Loading&hellip;</span>
+  </div>
+
   <section>
     <div class="section-head">
       <h2>Economic Indicators</h2>
@@ -73,22 +78,22 @@
 
   <section>
     <div class="section-head">
-      <h2>Treasury Yields<span class="placeholder-flag">static</span></h2>
-      <span class="section-note">2s10s spread: <strong style="color:var(--up)">+29 bps</strong> (steepening)</span>
+      <h2>Treasury Yields</h2>
+      <span class="section-note">2s10s spread: <strong id="spread-value" style="color:var(--up)">+29 bps</strong> <span id="spread-trend">(steepening)</span></span>
     </div>
     <div class="metric-grid">
       <div class="metric-card">
-        <div class="metric-name">2-Year</div>
-        <div class="metric-value">3.92%</div>
-        <div class="metric-change down">▼ 0.02 pt</div>
+        <div class="metric-name">2-Year<span id="yield-2y-flag"></span></div>
+        <div class="metric-value" id="yield-2y-value">3.92%</div>
+        <div class="metric-change down" id="yield-2y-change">▼ 0.02 pt</div>
       </div>
       <div class="metric-card">
-        <div class="metric-name">10-Year</div>
-        <div class="metric-value">4.21%</div>
-        <div class="metric-change down">▼ 0.03 pt</div>
+        <div class="metric-name">10-Year<span id="yield-10y-flag"></span></div>
+        <div class="metric-value" id="yield-10y-value">4.21%</div>
+        <div class="metric-change down" id="yield-10y-change">▼ 0.03 pt</div>
       </div>
       <div class="metric-card">
-        <div class="metric-name">30-Year</div>
+        <div class="metric-name">30-Year<span class="placeholder-flag">static</span></div>
         <div class="metric-value">4.48%</div>
         <div class="metric-change down">▼ 0.01 pt</div>
       </div>
@@ -113,6 +118,8 @@
 
   <footer>
     <p>Fed Watch odds are illustrative and do not reflect actual fed funds futures pricing.</p>
+    <p>"Next up" dates: CPI/PPI/Jobs Report come from FRED's own release calendar. PMI and ISM Manufacturing have no free release-calendar API, so their dates are computed from each publisher's standard release-day pattern rather than fetched. FOMC date is read from the Fed Watch section above.</p>
+    <p>2-Year and 10-Year yields (and the 2s10s spread) come from FRED's daily Treasury series. 30-Year and the full yield curve chart above remain illustrative for now.</p>
     <p>For sector-level and options-market detail, see <a href="sector-ratios.html">Sector Ratios</a>.</p>
   </footer>
 </div>
@@ -126,13 +133,97 @@
     updated: "2026-08-07T20:15:00Z",
     source: "seed",
     indicators: [
-      { id: "cpi", name: "CPI, Year-over-Year", desc: "Bureau of Labor Statistics", value: 2.9, prior: 3.1, asof: "2026-06-01", unit: "%", trend: [3.6, 3.4, 3.3, 3.2, 3.1, 2.9], live: false },
-      { id: "pmi", name: "PMI, Composite", desc: "S&P Global, flash", value: 51.8, prior: 52.4, asof: "2026-07-01", unit: "", trend: [53.1, 52.9, 52.6, 52.7, 52.4, 51.8], live: false },
-      { id: "ppi", name: "PPI, Year-over-Year", desc: "Bureau of Labor Statistics", value: 2.2, prior: 2.4, asof: "2026-06-01", unit: "%", trend: [2.8, 2.7, 2.6, 2.5, 2.4, 2.2], live: false },
-      { id: "unemployment", name: "Unemployment Rate", desc: "Bureau of Labor Statistics", value: 4.1, prior: 4.0, asof: "2026-07-01", unit: "%", trend: [3.8, 3.9, 3.9, 4.0, 4.0, 4.1], live: false },
-      { id: "ism", name: "ISM Manufacturing", desc: "Institute for Supply Management", value: 48.6, prior: 47.9, asof: "2026-07-01", unit: "", trend: [46.8, 47.1, 47.5, 47.6, 47.9, 48.6], live: false }
+      { id: "cpi", name: "CPI, Year-over-Year", desc: "Bureau of Labor Statistics", value: 2.9, prior: 3.1, asof: "2026-06-01", unit: "%", trend: [3.6, 3.4, 3.3, 3.2, 3.1, 2.9], live: false, nextRelease: "2026-08-13" },
+      { id: "pmi", name: "PMI, Composite", desc: "S&P Global, flash", value: 51.8, prior: 52.4, asof: "2026-07-01", unit: "", trend: [53.1, 52.9, 52.6, 52.7, 52.4, 51.8], live: false, nextRelease: "2026-08-24" },
+      { id: "ppi", name: "PPI, Year-over-Year", desc: "Bureau of Labor Statistics", value: 2.2, prior: 2.4, asof: "2026-06-01", unit: "%", trend: [2.8, 2.7, 2.6, 2.5, 2.4, 2.2], live: false, nextRelease: "2026-08-14" },
+      { id: "unemployment", name: "Unemployment Rate", desc: "Bureau of Labor Statistics", value: 4.1, prior: 4.0, asof: "2026-07-01", unit: "%", trend: [3.8, 3.9, 3.9, 4.0, 4.0, 4.1], live: false, nextRelease: "2026-09-04" },
+      { id: "ism", name: "ISM Manufacturing", desc: "Institute for Supply Management", value: 48.6, prior: 47.9, asof: "2026-07-01", unit: "", trend: [46.8, 47.1, 47.5, 47.6, 47.9, 48.6], live: false, nextRelease: "2026-09-01" }
     ]
   };
+
+  // Friendlier labels than the table's "X, Year-over-Year" names for the
+  // one-line "Next up" strip.
+  var RELEASE_LABEL = {
+    cpi: "CPI",
+    ppi: "PPI",
+    unemployment: "Jobs Report / Unemployment Rate",
+    pmi: "PMI, Composite (flash)",
+    ism: "ISM Manufacturing"
+  };
+
+  function fmtCountdown(days) {
+    if (days === 0) return "today";
+    if (days === 1) return "tomorrow";
+    return "in " + days + " days";
+  }
+
+  function fmtReleaseDate(dateStr) {
+    var d = new Date(dateStr + "T00:00:00");
+    return d.toLocaleString("en-US", { month: "short", day: "numeric" });
+  }
+
+  // The period an indicator's *next* release will cover is one month after
+  // its current "as of" month (e.g. asof Jun 2026 -> next release covers Jul).
+  function periodAfter(asofStr) {
+    var d = new Date(asofStr + "T00:00:00Z");
+    if (isNaN(d)) return "";
+    d.setUTCMonth(d.getUTCMonth() + 1);
+    return d.toLocaleString("en-US", { month: "short", year: "numeric", timeZone: "UTC" });
+  }
+
+  // Reads FOMC meeting dates straight off the Fed Watch section below,
+  // rather than keeping a second hardcoded copy in sync with it.
+  function fomcReleases() {
+    var out = [];
+    document.querySelectorAll(".fedwatch-meeting h3").forEach(function (h3) {
+      // "FOMC — Sep 16–17, 2026" -> first day of the range.
+      var m = h3.textContent.match(/([A-Za-z]{3,9})\s+(\d{1,2})(?:[–-]\d{1,2})?,\s*(\d{4})/);
+      if (!m) return;
+      var d = new Date(m[1] + " " + m[2] + ", " + m[3]);
+      if (isNaN(d)) return;
+      var iso = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+      out.push({ name: "FOMC Rate Decision", period: "—", date: iso, desc: "Federal Reserve" });
+    });
+    return out;
+  }
+
+  function buildReleaseCalendar(data) {
+    var fromIndicators = (data.indicators || [])
+      .filter(function (r) { return r.nextRelease; })
+      .map(function (r) {
+        return { name: RELEASE_LABEL[r.id] || r.name, period: periodAfter(r.asof), date: r.nextRelease, desc: r.desc };
+      });
+    return fromIndicators.concat(fomcReleases());
+  }
+
+  function renderNextRelease(data) {
+    var el = document.getElementById("next-release-text");
+    var now = new Date();
+    now.setHours(0, 0, 0, 0);
+
+    var upcoming = buildReleaseCalendar(data)
+      .map(function (r) {
+        var d = new Date(r.date + "T00:00:00");
+        return { r: r, d: d, days: Math.round((d - now) / 86400000) };
+      })
+      .filter(function (x) { return x.days >= 0; })
+      .sort(function (a, b) { return a.days - b.days; });
+
+    if (!upcoming.length) {
+      el.textContent = "No upcoming releases on the calendar.";
+      return;
+    }
+
+    // Show everything landing within the next 7 days; if nothing is that
+    // close, just show the single nearest release.
+    var withinWeek = upcoming.filter(function (x) { return x.days <= 7; });
+    var items = withinWeek.length ? withinWeek : [upcoming[0]];
+
+    el.innerHTML = items.map(function (x) {
+      return '<strong>' + x.r.name + '</strong> (' + x.r.period + ') — ' +
+        fmtReleaseDate(x.r.date) + ' <span class="countdown-badge">' + fmtCountdown(x.days) + '</span>';
+    }).join('<span class="next-release-sep">&middot;</span>');
+  }
 
   function fmtEconValue(v, unit) {
     return unit === "%" ? v.toFixed(1) + "%" : v.toFixed(1);
@@ -163,12 +254,76 @@
     });
   }
 
+  function renderAll(data) {
+    renderEconRows(data);
+    renderNextRelease(data);
+  }
+
   fetch("data/economic.json?t=" + Date.now(), { cache: "no-store" })
     .then(function (res) { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); })
-    .then(renderEconRows)
+    .then(renderAll)
     .catch(function (err) {
       console.warn("Could not load data/economic.json, showing fallback values:", err);
-      renderEconRows(ECON_FALLBACK);
+      renderAll(ECON_FALLBACK);
+    });
+
+  var YIELDS_FALLBACK = {
+    updated: "2026-08-07T20:15:00Z",
+    source: "seed",
+    series: [
+      { id: "2y", name: "2-Year", value: 3.92, prior: 3.94, asof: "2026-08-07", live: false },
+      { id: "10y", name: "10-Year", value: 4.21, prior: 4.24, asof: "2026-08-07", live: false }
+    ]
+  };
+
+  function fmtYieldPct(v) {
+    return v.toFixed(2) + "%";
+  }
+
+  function renderYieldCard(id, entry) {
+    var valueEl = document.getElementById("yield-" + id + "-value");
+    var changeEl = document.getElementById("yield-" + id + "-change");
+    var flagEl = document.getElementById("yield-" + id + "-flag");
+    if (!entry || !valueEl) return;
+    var delta = entry.value - entry.prior;
+    var dir = delta > 0.0001 ? "up" : delta < -0.0001 ? "down" : "flat";
+    var arrow = dir === "up" ? "▲" : dir === "down" ? "▼" : "▬";
+    valueEl.textContent = fmtYieldPct(entry.value);
+    changeEl.className = "metric-change " + dir;
+    changeEl.textContent = arrow + " " + Math.abs(delta).toFixed(2) + " pt";
+    flagEl.innerHTML = entry.live === false ? '<span class="placeholder-flag">static</span>' : "";
+  }
+
+  function renderYields(data) {
+    var byId = {};
+    (data.series || []).forEach(function (s) { byId[s.id] = s; });
+    renderYieldCard("2y", byId["2y"]);
+    renderYieldCard("10y", byId["10y"]);
+
+    var two = byId["2y"], ten = byId["10y"];
+    var spreadEl = document.getElementById("spread-value");
+    var trendEl = document.getElementById("spread-trend");
+    if (!two || !ten || !spreadEl) return;
+
+    var spreadBps = (ten.value - two.value) * 100;
+    var priorSpreadBps = (ten.prior - two.prior) * 100;
+    var sign = spreadBps >= 0 ? "+" : "";
+    spreadEl.textContent = sign + Math.round(spreadBps) + " bps";
+    spreadEl.style.color = spreadBps < 0 ? "var(--down)" : "var(--up)";
+
+    var trend = spreadBps < 0 ? "inverted"
+      : spreadBps > priorSpreadBps + 0.05 ? "steepening"
+      : spreadBps < priorSpreadBps - 0.05 ? "flattening"
+      : "unchanged";
+    trendEl.textContent = "(" + trend + ")";
+  }
+
+  fetch("data/yields.json?t=" + Date.now(), { cache: "no-store" })
+    .then(function (res) { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); })
+    .then(renderYields)
+    .catch(function (err) {
+      console.warn("Could not load data/yields.json, showing fallback values:", err);
+      renderYields(YIELDS_FALLBACK);
     });
 
   MC.lineChart(document.getElementById("chart-yield-curve"), {
