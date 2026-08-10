@@ -1,18 +1,25 @@
 {
-  "updated": "2026-08-07T20:15:00Z",
-  "source": "seed",
+  "updated": "2026-08-10T15:02:41.168Z",
+  "source": "live",
   "indicators": [
     {
       "id": "cpi",
       "name": "CPI, Year-over-Year",
       "desc": "Bureau of Labor Statistics",
-      "value": 2.9,
-      "prior": 3.1,
+      "value": 3.46353,
+      "prior": 4.16661,
       "asof": "2026-06-01",
       "unit": "%",
-      "trend": [3.6, 3.4, 3.3, 3.2, 3.1, 2.9],
-      "live": false,
-      "nextRelease": "2026-08-13"
+      "trend": [
+        2.3912,
+        2.434,
+        3.28596,
+        3.77925,
+        4.16661,
+        3.46353
+      ],
+      "live": true,
+      "nextRelease": "2026-08-12"
     },
     {
       "id": "pmi",
@@ -22,7 +29,14 @@
       "prior": 52.4,
       "asof": "2026-07-01",
       "unit": "",
-      "trend": [53.1, 52.9, 52.6, 52.7, 52.4, 51.8],
+      "trend": [
+        53.1,
+        52.9,
+        52.6,
+        52.7,
+        52.4,
+        51.8
+      ],
       "live": false,
       "nextRelease": "2026-08-24"
     },
@@ -30,24 +44,38 @@
       "id": "ppi",
       "name": "PPI, Year-over-Year",
       "desc": "Bureau of Labor Statistics",
-      "value": 2.2,
-      "prior": 2.4,
+      "value": 10.11014,
+      "prior": 12.29753,
       "asof": "2026-06-01",
       "unit": "%",
-      "trend": [2.8, 2.7, 2.6, 2.5, 2.4, 2.2],
-      "live": false,
-      "nextRelease": "2026-08-14"
+      "trend": [
+        2.42773,
+        3.86785,
+        6.77729,
+        9.43799,
+        12.29753,
+        10.11014
+      ],
+      "live": true,
+      "nextRelease": "2026-08-13"
     },
     {
       "id": "unemployment",
       "name": "Unemployment Rate",
       "desc": "Bureau of Labor Statistics",
       "value": 4.1,
-      "prior": 4.0,
+      "prior": 4.2,
       "asof": "2026-07-01",
       "unit": "%",
-      "trend": [3.8, 3.9, 3.9, 4.0, 4.0, 4.1],
-      "live": false,
+      "trend": [
+        4.4,
+        4.3,
+        4.3,
+        4.3,
+        4.2,
+        4.1
+      ],
+      "live": true,
       "nextRelease": "2026-09-04"
     },
     {
@@ -58,7 +86,14 @@
       "prior": 47.9,
       "asof": "2026-07-01",
       "unit": "",
-      "trend": [46.8, 47.1, 47.5, 47.6, 47.9, 48.6],
+      "trend": [
+        46.8,
+        47.1,
+        47.5,
+        47.6,
+        47.9,
+        48.6
+      ],
       "live": false,
       "nextRelease": "2026-09-01"
     }
