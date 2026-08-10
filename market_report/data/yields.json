@@ -1,22 +1,22 @@
 {
-  "updated": "2026-08-07T20:15:00Z",
-  "source": "seed",
+  "updated": "2026-08-10T22:06:16.906Z",
+  "source": "live",
   "series": [
     {
       "id": "2y",
       "name": "2-Year",
-      "value": 3.92,
-      "prior": 3.94,
+      "value": 4.19,
+      "prior": 4.25,
       "asof": "2026-08-07",
-      "live": false
+      "live": true
     },
     {
       "id": "10y",
       "name": "10-Year",
-      "value": 4.21,
-      "prior": 4.24,
+      "value": 4.65,
+      "prior": 4.69,
       "asof": "2026-08-07",
-      "live": false
+      "live": true
     }
   ]
 }
