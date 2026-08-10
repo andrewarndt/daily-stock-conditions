@@ -5,20 +5,20 @@
  *
  * Sources:
  *   - Alpaca Market Data (free tier) -> equity indices via ETF proxies
- *     (SPY/DIA/QQQ snapshot, one batched call) and VIX via Alpaca's new
- *     Indices Data API (GET /v1beta1/indices/latest/values, shipped June
- *     2026). That indices endpoint is brand new -- not yet in Alpaca's main
- *     docs index, only its changelog -- so the exact response shape wasn't
- *     confirmable ahead of time. fetchAlpacaVix() tries several plausible
- *     shapes and logs the raw response if none match, so a real run's logs
- *     can be used to correct the parsing if needed.
+ *     (SPY/DIA/QQQ snapshot, one batched call, replacing Twelve Data --
+ *     free tier is 200 req/min vs. Twelve Data's 8 req/min).
+ *   - Yahoo Finance's unofficial chart endpoint -> real VIX (^VIX, the
+ *     actual CBOE Volatility Index, confirmed live), the true US Dollar
+ *     Index level (DX-Y.NYB, ICE's own index -- NOT the UUP ETF, which
+ *     trades at a different scale), and the front-month WTI crude futures
+ *     price (CL=F). No key needed. Same endpoint already used for
+ *     sector-ratio history in fetch-sector-ratios.mjs.
+ *     (VIX was tried via Alpaca's new Indices Data API first, but that
+ *     endpoint 403s on the free tier -- real-time index data needs the
+ *     paid Algo Trader Plus plan. Yahoo was already in use for DXY/Oil, so
+ *     reusing it for VIX avoids adding a 5th data provider.)
  *   - Twelve Data (free tier) -> Bitcoin/Gold (real spot quotes) and Silver
  *     (ETF proxy -- XAG/USD is paid-plan-gated on the free tier).
- *   - Yahoo Finance's unofficial chart endpoint -> the true US Dollar Index
- *     level (DX-Y.NYB, ICE's own index -- NOT the UUP ETF, which trades at
- *     a different scale) and the front-month WTI crude futures price
- *     (CL=F), confirmed working live, no key needed. Same endpoint already
- *     used for sector-ratio history in fetch-sector-ratios.mjs.
  *   - FRED (St. Louis Fed) -> 10-Yr Treasury constant maturity yield (DGS10).
  *
  * Every non-real-index/spot entry carries a `ticker` field so the UI can
@@ -65,6 +65,7 @@ const COMMODITY_SYMBOLS = {
 };
 
 const YAHOO_SYMBOLS = {
+  vix: { name: "VIX", symbol: "^VIX", changeType: "abs" }, // real CBOE Volatility Index level
   dxy: { name: "US Dollar Index", symbol: "DX-Y.NYB", ticker: "$DXY" }, // real index level, unitless
   oil: { name: "Crude Oil", symbol: "CL=F", ticker: "/CL", unit: "$" } // real front-month futures price
 };
@@ -127,42 +128,6 @@ async function fetchAlpacaStocks(defsById, previous) {
   return out;
 }
 
-async function fetchAlpacaVix(previous) {
-  const prev = previous.vix;
-  if (!ALPACA_API_KEY_ID || !ALPACA_API_SECRET_KEY) {
-    console.warn("[alpaca] no API credentials set, keeping previous value for vix");
-    return prev ? { ...prev, live: false } : { id: "vix", name: "VIX", value: 14.62, change: -1.10, changeType: "abs", live: false };
-  }
-  const url = "https://data.alpaca.markets/v1beta1/indices/latest/values?index_symbols=VIX";
-  try {
-    const res = await fetch(url, { headers: ALPACA_HEADERS });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const json = await res.json();
-
-    // Response shape for this endpoint isn't confirmed against live docs
-    // (see file header) -- try the plausible shapes, log the raw payload
-    // if none match so it can be fixed from real output.
-    const entry =
-      json?.values?.VIX ?? json?.indices?.VIX ?? json?.VIX ??
-      (Array.isArray(json?.values) ? json.values.find((v) => v.symbol === "VIX" || v.S === "VIX") : null);
-
-    const value = Number(entry?.value ?? entry?.v ?? entry?.close ?? entry?.c);
-    if (!Number.isFinite(value)) {
-      console.warn("[alpaca] unrecognized VIX response shape, raw payload:", JSON.stringify(json));
-      throw new Error("could not parse VIX value from response");
-    }
-
-    // No prior-close field confirmed available from this endpoint yet;
-    // compute change against our own last-stored value as a same-day proxy
-    // until the real response shape (and any prevClose field) is confirmed.
-    const priorValue = prev && Number.isFinite(prev.value) ? prev.value : value;
-    return { id: "vix", name: "VIX", value, change: value - priorValue, changeType: "abs", live: true };
-  } catch (err) {
-    console.warn(`[alpaca] failed for vix: ${err.message}. Keeping previous value.`);
-    return prev ? { ...prev, live: false } : { id: "vix", name: "VIX", value: 14.62, change: -1.10, changeType: "abs", live: false };
-  }
-}
-
 async function fetchTwelveData(id, def, previous) {
   const prev = previous[id];
   if (!TWELVEDATA_API_KEY) {
@@ -211,9 +176,12 @@ async function fetchYahooCommodity(id, def, previous) {
     if (!Number.isFinite(price) || !Number.isFinite(prevClose) || prevClose === 0) {
       throw new Error("missing regularMarketPrice/chartPreviousClose");
     }
+    const changeType = def.changeType || "pct";
     const item = {
-      id, name: def.name, value: price, change: ((price - prevClose) / prevClose) * 100,
-      changeType: "pct", ticker: def.ticker, live: true
+      id, name: def.name, ticker: def.ticker, live: true,
+      value: price,
+      change: changeType === "abs" ? price - prevClose : ((price - prevClose) / prevClose) * 100,
+      changeType
     };
     if (def.unit) item.unit = def.unit;
     return item;
@@ -261,7 +229,7 @@ async function main() {
 
   const [stockResults, vix, treasury, dxy, oil] = await Promise.all([
     fetchAlpacaStocks(ALPACA_STOCK_SYMBOLS, previous),
-    fetchAlpacaVix(previous),
+    fetchYahooCommodity("vix", YAHOO_SYMBOLS.vix, previous),
     fetchTreasuryYield(previous),
     fetchYahooCommodity("dxy", YAHOO_SYMBOLS.dxy, previous),
     fetchYahooCommodity("oil", YAHOO_SYMBOLS.oil, previous)
