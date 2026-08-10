@@ -1,12 +1,12 @@
 {
-  "updated": "2026-08-10T16:55:37.957Z",
+  "updated": "2026-08-10T17:53:23.441Z",
   "source": "live",
   "indices": [
     {
       "id": "sp500",
       "name": "S&P 500",
-      "value": 772.71,
-      "change": -0.058202700605299265,
+      "value": 772.655,
+      "change": -0.06531636401262293,
       "changeType": "pct",
       "unit": "$",
       "ticker": "SPY",
@@ -15,8 +15,8 @@
     {
       "id": "dow",
       "name": "Dow Jones",
-      "value": 538.62,
-      "change": -0.1779161570110153,
+      "value": 538.37,
+      "change": -0.22424848956596544,
       "changeType": "pct",
       "unit": "$",
       "ticker": "DIA",
@@ -25,8 +25,8 @@
     {
       "id": "nasdaq",
       "name": "Nasdaq-100",
-      "value": 721.34,
-      "change": -0.2144171312371114,
+      "value": 721.27,
+      "change": -0.22410048555105266,
       "changeType": "pct",
       "unit": "$",
       "ticker": "QQQ",
@@ -45,8 +45,8 @@
       "id": "vix",
       "name": "VIX",
       "live": true,
-      "value": 15.23,
-      "change": -1.2699999999999996,
+      "value": 15.29,
+      "change": -1.2100000000000009,
       "changeType": "abs"
     }
   ],
@@ -56,15 +56,15 @@
       "name": "US Dollar Index",
       "ticker": "$DXY",
       "live": true,
-      "value": 99.75,
-      "change": 0.060186578393020634,
+      "value": 99.783,
+      "change": 0.09328919650918199,
       "changeType": "pct"
     },
     {
       "id": "btc",
       "name": "Bitcoin",
-      "value": 63842.47,
-      "change": -1.63189,
+      "value": 63928.61,
+      "change": -1.49916,
       "changeType": "pct",
       "live": true,
       "unit": "$"
@@ -72,8 +72,8 @@
     {
       "id": "gold",
       "name": "Gold",
-      "value": 4352.8361,
-      "change": 0.24525731,
+      "value": 4361.31743,
+      "change": 0.44058125,
       "changeType": "pct",
       "live": true,
       "unit": "$"
@@ -81,8 +81,8 @@
     {
       "id": "silver",
       "name": "Silver",
-      "value": 58.9,
-      "change": 2.43478,
+      "value": 58.93,
+      "change": 2.48696,
       "changeType": "pct",
       "live": true,
       "unit": "$",
@@ -93,8 +93,8 @@
       "name": "Crude Oil",
       "ticker": "/CL",
       "live": true,
-      "value": 81.43,
-      "change": 8.255783036426493,
+      "value": 81.8,
+      "change": 8.747673491092792,
       "changeType": "pct",
       "unit": "$"
     }
