@@ -1,5 +1,5 @@
 {
-  "updated": "2026-08-12T15:01:44.996Z",
+  "updated": "2026-08-13T15:01:41.836Z",
   "source": "live",
   "indicators": [
     {
@@ -19,7 +19,7 @@
         3.46353
       ],
       "live": false,
-      "nextRelease": "2026-08-12"
+      "nextRelease": "2026-09-11"
     },
     {
       "id": "pmi",
@@ -44,17 +44,17 @@
       "id": "ppi",
       "name": "PPI, Year-over-Year",
       "desc": "Bureau of Labor Statistics",
-      "value": 10.11014,
-      "prior": 12.29753,
-      "asof": "2026-06-01",
+      "value": 8.27076,
+      "prior": 9.89977,
+      "asof": "2026-07-01",
       "unit": "%",
       "trend": [
-        2.42773,
         3.86785,
-        6.77729,
-        9.43799,
-        12.29753,
-        10.11014
+        6.80166,
+        9.4287,
+        12.30758,
+        9.89977,
+        8.27076
       ],
       "live": true,
       "nextRelease": "2026-08-13"
