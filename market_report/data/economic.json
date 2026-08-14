@@ -1,24 +1,24 @@
 {
-  "updated": "2026-08-13T15:01:41.836Z",
+  "updated": "2026-08-14T14:54:47.800Z",
   "source": "live",
   "indicators": [
     {
       "id": "cpi",
       "name": "CPI, Year-over-Year",
       "desc": "Bureau of Labor Statistics",
-      "value": 3.46353,
-      "prior": 4.16661,
-      "asof": "2026-06-01",
+      "value": 3.30386,
+      "prior": 3.46353,
+      "asof": "2026-07-01",
       "unit": "%",
       "trend": [
-        2.3912,
         2.434,
         3.28596,
         3.77925,
         4.16661,
-        3.46353
+        3.46353,
+        3.30386
       ],
-      "live": false,
+      "live": true,
       "nextRelease": "2026-09-11"
     },
     {
@@ -57,7 +57,7 @@
         8.27076
       ],
       "live": true,
-      "nextRelease": "2026-08-13"
+      "nextRelease": "2026-09-10"
     },
     {
       "id": "unemployment",
