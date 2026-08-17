@@ -1,12 +1,12 @@
 {
-  "updated": "2026-08-17T19:29:57.816Z",
+  "updated": "2026-08-17T19:54:10.395Z",
   "source": "live",
   "indices": [
     {
       "id": "sp500",
       "name": "S&P 500",
-      "value": 773.14,
-      "change": -0.4070591266263002,
+      "value": 772.93,
+      "change": -0.43411052428185043,
       "changeType": "pct",
       "unit": "$",
       "ticker": "SPY",
@@ -15,8 +15,8 @@
     {
       "id": "dow",
       "name": "Dow Jones",
-      "value": 534.325,
-      "change": -0.4629198412846073,
+      "value": 534.16,
+      "change": -0.49365697360331917,
       "changeType": "pct",
       "unit": "$",
       "ticker": "DIA",
@@ -25,8 +25,8 @@
     {
       "id": "nasdaq",
       "name": "Nasdaq-100",
-      "value": 729.95,
-      "change": -0.14978558091497976,
+      "value": 730.195,
+      "change": -0.11627191212578009,
       "changeType": "pct",
       "unit": "$",
       "ticker": "QQQ",
@@ -45,8 +45,8 @@
       "id": "vix",
       "name": "VIX",
       "live": true,
-      "value": 15.22,
-      "change": -0.05999999999999872,
+      "value": 15.25,
+      "change": -0.02999999999999936,
       "changeType": "abs"
     }
   ],
@@ -56,15 +56,15 @@
       "name": "US Dollar Index",
       "ticker": "$DXY",
       "live": true,
-      "value": 99.593,
-      "change": -0.41695830416958457,
+      "value": 99.571,
+      "change": -0.43895610438956817,
       "changeType": "pct"
     },
     {
       "id": "btc",
       "name": "Bitcoin",
-      "value": 64417.66,
-      "change": 2.41281,
+      "value": 64330.01,
+      "change": 2.27347,
       "changeType": "pct",
       "live": true,
       "unit": "$"
@@ -72,8 +72,8 @@
     {
       "id": "gold",
       "name": "Gold",
-      "value": 4415.97549,
-      "change": 0.92396748,
+      "value": 4417.03085,
+      "change": 0.94808698,
       "changeType": "pct",
       "live": true,
       "unit": "$"
@@ -81,8 +81,8 @@
     {
       "id": "silver",
       "name": "Silver",
-      "value": 59.585,
-      "change": 1.88954,
+      "value": 59.515,
+      "change": 1.76984,
       "changeType": "pct",
       "live": true,
       "unit": "$",
