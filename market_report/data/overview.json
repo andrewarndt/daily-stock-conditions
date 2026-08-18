@@ -1,5 +1,5 @@
 {
-  "updated": "2026-08-18T21:26:38.788Z",
+  "updated": "2026-08-18T21:50:03.994Z",
   "source": "live",
   "indices": [
     {
@@ -56,15 +56,15 @@
       "name": "US Dollar Index",
       "ticker": "$DXY",
       "live": true,
-      "value": 99.642,
-      "change": -0.318127250900358,
+      "value": 99.636,
+      "change": -0.3241296518607424,
       "changeType": "pct"
     },
     {
       "id": "btc",
       "name": "Bitcoin",
-      "value": 64624.38,
-      "change": 0.1429986,
+      "value": 64606.61,
+      "change": 0.11546192,
       "changeType": "pct",
       "live": true,
       "unit": "$"
@@ -72,8 +72,8 @@
     {
       "id": "gold",
       "name": "Gold",
-      "value": 4334.46918,
-      "change": -0.027912581,
+      "value": 4334.60673,
+      "change": -0.024740067,
       "changeType": "pct",
       "live": true,
       "unit": "$"
