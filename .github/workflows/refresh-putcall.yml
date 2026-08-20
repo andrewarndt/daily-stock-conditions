@@ -1,0 +1,42 @@
+name: Refresh put/call ratio
+
+on:
+  schedule:
+    # Twice daily, weekdays only: morning (13:20 UTC = ~9:20am ET) and
+    # evening after close (21:20 UTC = ~5:20pm ET), both bounds covering
+    # EDT/EST. Cboe's stats are end-of-day, so the morning run mostly just
+    # re-confirms the prior close -- the evening run is what actually picks
+    # up that day's number. Staggered 10 min after refresh-fear-greed.yml
+    # so the two workflows don't hit external endpoints at the same instant.
+    - cron: "20 13,21 * * 1-5"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-putcall
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Fetch latest put/call ratio
+        run: node market_report/scripts/fetch-putcall.mjs
+
+      - name: Commit data if changed
+        run: |
+          git config user.name "market-desk-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add market_report/data/putcall.json
+          git diff --cached --quiet || git commit -m "Refresh put/call ratio"
+          git push

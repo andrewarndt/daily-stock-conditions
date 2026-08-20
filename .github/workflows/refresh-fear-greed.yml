@@ -2,11 +2,11 @@ name: Refresh fear & greed index
 
 on:
   schedule:
-    # Hourly during market hours ET (UTC 13:00-21:00 covers both EDT/EST
-    # with a small buffer), Monday-Friday only. CNN's index moves gradually
-    # through the day, so hourly is plenty and keeps us light on their
-    # unofficial/undocumented endpoint.
-    - cron: "5 13-21 * * 1-5"
+    # Twice daily, weekdays only: morning (13:10 UTC = ~9:10am ET) and
+    # evening after close (21:10 UTC = ~5:10pm ET), both bounds covering
+    # EDT/EST. Dropped from the original hourly cadence to cut down on
+    # pulls against CNN's unofficial/undocumented endpoint.
+    - cron: "10 13,21 * * 1-5"
   workflow_dispatch: {}
 
 permissions:

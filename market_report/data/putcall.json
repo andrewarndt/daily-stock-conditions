@@ -1,0 +1,11 @@
+{
+  "updated": "2026-08-20T13:03:18.000Z",
+  "source": "live",
+  "live": true,
+  "asof": "2026-08-19",
+  "ratio": 0.80,
+  "prior": null,
+  "history": [
+    { "date": "2026-08-19", "ratio": 0.80 }
+  ]
+}
