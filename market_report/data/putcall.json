@@ -1,14 +1,18 @@
 {
-  "updated": "2026-08-20T21:47:23.290Z",
+  "updated": "2026-08-21T14:01:13.492Z",
   "source": "live",
   "live": true,
-  "asof": "2026-08-19",
-  "ratio": 0.8,
-  "prior": null,
+  "asof": "2026-08-20",
+  "ratio": 0.78,
+  "prior": 0.8,
   "history": [
     {
       "date": "2026-08-19",
       "ratio": 0.8
+    },
+    {
+      "date": "2026-08-20",
+      "ratio": 0.78
     }
   ]
 }
