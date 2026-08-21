@@ -1,5 +1,5 @@
 {
-  "updated": "2026-08-20T21:52:58.753Z",
+  "updated": "2026-08-21T21:48:08.135Z",
   "source": "live",
   "series": [
     {
@@ -7,15 +7,15 @@
       "name": "2-Year",
       "value": 4.19,
       "prior": 4.19,
-      "asof": "2026-08-19",
+      "asof": "2026-08-20",
       "live": true
     },
     {
       "id": "10y",
       "name": "10-Year",
-      "value": 4.65,
-      "prior": 4.71,
-      "asof": "2026-08-19",
+      "value": 4.69,
+      "prior": 4.65,
+      "asof": "2026-08-20",
       "live": true
     }
   ]
