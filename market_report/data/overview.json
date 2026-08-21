@@ -1,5 +1,5 @@
 {
-  "updated": "2026-08-21T21:26:51.990Z",
+  "updated": "2026-08-21T21:51:29.362Z",
   "source": "live",
   "indices": [
     {
@@ -63,8 +63,8 @@
     {
       "id": "btc",
       "name": "Bitcoin",
-      "value": 77952.01,
-      "change": 6.7468,
+      "value": 78339.98,
+      "change": 7.27808,
       "changeType": "pct",
       "live": true,
       "unit": "$"
@@ -72,8 +72,8 @@
     {
       "id": "gold",
       "name": "Gold",
-      "value": 4608.24029,
-      "change": 0.093811334,
+      "value": 4607.38031,
+      "change": 0.07513204,
       "changeType": "pct",
       "live": true,
       "unit": "$"
