@@ -38,10 +38,16 @@
 <script src="assets/parks.js"></script>
 <script>
   loadParks().then((parks) => {
-    const hero = document.getElementById("hero");
-    const cover = randomCoverPhoto(parks);
-    if (cover) {
-      hero.style.backgroundImage = `url("${cover}")`;
+    // Isolated: a hero-photo failure shouldn't be able to take the park
+    // grid down with it.
+    try {
+      const hero = document.getElementById("hero");
+      const cover = randomCoverPhoto(parks);
+      if (cover) {
+        hero.style.backgroundImage = `url("${cover}")`;
+      }
+    } catch (err) {
+      console.error("Hero photo failed to load:", err);
     }
 
     const grid = document.getElementById("park-grid");
@@ -71,6 +77,10 @@
     }).join("");
 
     document.getElementById("footer-slot").outerHTML = contactFooterHtml();
+  }).catch((err) => {
+    console.error("Failed to load parks:", err);
+    document.getElementById("park-grid").outerHTML =
+      '<div class="empty-state">Couldn\'t load the galleries right now &mdash; try refreshing.</div>';
   });
 </script>
 
