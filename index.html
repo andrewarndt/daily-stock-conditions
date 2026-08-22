@@ -35,7 +35,7 @@
     padding: 2rem;
   }
   main {
-    max-width: 32rem;
+    max-width: 44rem;
     text-align: center;
   }
   h1 {
@@ -46,23 +46,41 @@
     color: var(--muted);
     line-height: 1.5;
   }
-  .links {
-    margin-top: 2rem;
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    flex-wrap: wrap;
+  .sections {
+    margin-top: 2.5rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 1.25rem;
+    text-align: left;
   }
-  a.button {
-    display: inline-block;
-    padding: 0.65rem 1.25rem;
+  a.card {
+    display: block;
+    padding: 1.5rem;
     border: 1px solid var(--border);
-    border-radius: 0.5rem;
+    border-radius: 0.75rem;
     color: var(--fg);
     text-decoration: none;
   }
-  a.button:hover {
+  a.card:hover {
     border-color: var(--accent);
+  }
+  a.card .eyebrow {
+    display: block;
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.4rem;
+  }
+  a.card h2 {
+    margin: 0 0 0.4rem;
+    font-size: 1.15rem;
+  }
+  a.card p {
+    margin: 0;
+    font-size: 0.9rem;
+  }
+  a.card:hover h2 {
     color: var(--accent);
   }
 </style>
@@ -70,9 +88,18 @@
 <body>
 <main>
   <h1>4A Holdings Company</h1>
-  <p>Site under construction. Check back soon.</p>
-  <div class="links">
-    <a class="button" href="market_report/index.html">Market Report →</a>
+  <p>Two things live here for now.</p>
+  <div class="sections">
+    <a class="card" href="market_report/index.html">
+      <span class="eyebrow">Finance</span>
+      <h2>Market Report →</h2>
+      <p>Daily market overview, sentiment, and economic data.</p>
+    </a>
+    <a class="card" href="wildlife/index.html">
+      <span class="eyebrow">Photography</span>
+      <h2>Wildlife Photography →</h2>
+      <p>Galleries from national parks, organized by location.</p>
+    </a>
   </div>
 </main>
 </body>

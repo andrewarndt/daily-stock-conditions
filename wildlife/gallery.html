@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gallery — Wildlife Photography</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">Wildlife <span>Photography</span></a>
+    <a class="home-link" href="../index.html">&larr; 4A Holdings Company</a>
+  </div>
+</div>
+
+<div class="page">
+  <a class="back-link" href="index.html">&larr; All parks</a>
+  <div class="page-head">
+    <h1 id="park-title">Loading&hellip;</h1>
+    <p id="park-subtitle"></p>
+  </div>
+
+  <div id="photo-grid" class="photo-grid"></div>
+</div>
+
+<script src="assets/parks.js"></script>
+<script>
+  const slug = new URLSearchParams(location.search).get("park");
+
+  loadParks().then((parks) => {
+    const park = parkBySlug(parks, slug);
+    const titleEl = document.getElementById("park-title");
+    const subtitleEl = document.getElementById("park-subtitle");
+    const gridEl = document.getElementById("photo-grid");
+
+    if (!park) {
+      titleEl.textContent = "Park not found";
+      subtitleEl.textContent = "";
+      gridEl.outerHTML = '<div class="empty-state">That park doesn\'t exist. <a href="index.html">Back to all parks &rarr;</a></div>';
+      return;
+    }
+
+    titleEl.textContent = park.name;
+    subtitleEl.textContent = park.location;
+    document.title = park.name + " — Wildlife Photography";
+
+    if (park.photos.length === 0) {
+      gridEl.outerHTML = '<div class="empty-state">No photos posted yet for this park &mdash; check back soon.</div>';
+      return;
+    }
+
+    gridEl.innerHTML = park.photos.map((filename) => {
+      const url = photoUrl(park, filename);
+      return `<a href="${url}" target="_blank" rel="noopener"><img src="${url}" alt="${escapeHtml(park.name)} wildlife photo" loading="lazy"></a>`;
+    }).join("");
+  });
+</script>
+
+</body>
+</html>

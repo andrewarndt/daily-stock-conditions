@@ -1,0 +1,45 @@
+{
+  "parks": [
+    {
+      "slug": "everglades-national-park-florida",
+      "name": "Everglades National Park",
+      "location": "Florida",
+      "folder": "Everglades National Park, Florida",
+      "photos": [
+        "IMG_7093.jpg",
+        "IMG_7206.jpg",
+        "IMG_7308.jpg",
+        "IMG_7358.jpg",
+        "IMG_7383.jpg"
+      ]
+    },
+    {
+      "slug": "kumuna-national-park-sri-lanka",
+      "name": "Kumuna National Park",
+      "location": "Sri Lanka",
+      "folder": "Kumuna National Park, Sri Lanka",
+      "photos": [
+        "577DCBD7-418E-48E7-8A0B-60B8A4D47CF5.JPG",
+        "604051B0-AF38-4774-803A-4C737BE6BC4F.JPG",
+        "8669864A-EF90-46FB-B26C-B8B17D781018.JPG",
+        "DA5719D9-00A5-4F80-8CAC-FD751785F15A.JPG",
+        "IMG_0466.JPG",
+        "IMG_0467.JPG",
+        "IMG_0468.JPG",
+        "IMG_0484.JPG",
+        "IMG_0485.JPG",
+        "IMG_0486.JPG",
+        "IMG_0487.JPG",
+        "IMG_6003.JPG",
+        "IMG_6554.JPG"
+      ]
+    },
+    {
+      "slug": "smokey-mountains-tenesse",
+      "name": "Smokey Mountains",
+      "location": "Tenesse",
+      "folder": "Smokey Mountains, Tenesse",
+      "photos": []
+    }
+  ]
+}

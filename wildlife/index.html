@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wildlife Photography — 4A Holdings Company</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">Wildlife <span>Photography</span></a>
+    <a class="home-link" href="../index.html">&larr; 4A Holdings Company</a>
+  </div>
+</div>
+
+<div class="page">
+  <div class="page-head">
+    <h1>Parks</h1>
+    <p>Photographs from national parks and wildlife areas, organized by location. Browse a park below to see the gallery.</p>
+  </div>
+
+  <div class="notice-banner">Prints and licensing coming soon &mdash; galleries below are a preview.</div>
+
+  <div class="park-grid" id="park-grid">
+    <!-- populated from data/parks.json -->
+  </div>
+</div>
+
+<script src="assets/parks.js"></script>
+<script>
+  loadParks().then((parks) => {
+    const grid = document.getElementById("park-grid");
+    grid.innerHTML = parks.map((park) => {
+      const count = park.photos.length;
+      if (count === 0) {
+        return `
+          <div class="park-card empty">
+            <div class="park-cover placeholder">Photos coming soon</div>
+            <div class="park-body">
+              <h2>${escapeHtml(park.name)}</h2>
+              ${locationHtml(park)}
+              <span class="park-count muted">No photos yet</span>
+            </div>
+          </div>`;
+      }
+      const cover = photoUrl(park, park.photos[0]);
+      return `
+        <a class="park-card has-photos" href="gallery.html?park=${encodeURIComponent(park.slug)}">
+          <div class="park-cover"><img src="${cover}" alt="${escapeHtml(park.name)}" loading="lazy"></div>
+          <div class="park-body">
+            <h2>${escapeHtml(park.name)}</h2>
+            ${locationHtml(park)}
+            <span class="park-count">${count} photo${count === 1 ? "" : "s"}</span>
+          </div>
+        </a>`;
+    }).join("");
+  });
+</script>
+
+</body>
+</html>
