@@ -27,3 +27,27 @@ function escapeHtml(str) {
 function locationHtml(park) {
   return park.location ? `<p class="park-location">${escapeHtml(park.location)}</p>` : "";
 }
+
+// Contact address shown on every page in this section — edit here, not per-page.
+const CONTACT_EMAIL = "vasudeshanjala@gmail.com";
+
+function contactFooterHtml() {
+  return `
+    <footer class="site-footer">
+      <div class="contact-card">
+        <div>
+          <h2>Interested in a print?</h2>
+          <p>Every photo here is from a real trip. If one catches your eye or you'd like to license or order a print, get in touch.</p>
+        </div>
+        <a class="contact-button" href="mailto:${CONTACT_EMAIL}">✉ ${CONTACT_EMAIL}</a>
+      </div>
+    </footer>`;
+}
+
+// Picks one photo at random across all parks that have any, for use as a
+// hero background. Returns null if no park has photos yet.
+function randomCoverPhoto(parks) {
+  const candidates = parks.flatMap((park) => park.photos.map((filename) => photoUrl(park, filename)));
+  if (candidates.length === 0) return null;
+  return candidates[Math.floor(Math.random() * candidates.length)];
+}

@@ -15,6 +15,10 @@
   </div>
 </div>
 
+<div class="giveback-banner">
+  🌿 <strong>10% of the profit</strong> from every print sold goes back to the park where it was taken — helping keep these places wild for generations to come.
+</div>
+
 <div class="page">
   <a class="back-link" href="index.html">&larr; All parks</a>
   <div class="page-head">
@@ -23,6 +27,8 @@
   </div>
 
   <div id="photo-grid" class="photo-grid"></div>
+
+  <div id="footer-slot"></div>
 </div>
 
 <script src="assets/parks.js"></script>
@@ -34,6 +40,7 @@
     const titleEl = document.getElementById("park-title");
     const subtitleEl = document.getElementById("park-subtitle");
     const gridEl = document.getElementById("photo-grid");
+    document.getElementById("footer-slot").outerHTML = contactFooterHtml();
 
     if (!park) {
       titleEl.textContent = "Park not found";
