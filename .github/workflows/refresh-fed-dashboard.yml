@@ -1,0 +1,43 @@
+name: Refresh Fed dashboard data
+
+on:
+  schedule:
+    # Once per weekday, mid-morning ET (14:30 UTC = 10:30am EDT / 9:30am
+    # EST), after the prior day's EFFR/SOFR/RRP prints post and clear of
+    # FRED's own update window. Most of this checklist is daily-or-slower
+    # (several series are weekly), so committing is a no-op most days --
+    # the git diff --quiet guard below handles that.
+    - cron: "30 14 * * 1-5"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-fed-dashboard
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Fetch latest Fed dashboard data
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+        run: node market_report/scripts/fetch-fed-dashboard.mjs
+
+      - name: Commit data if changed
+        run: |
+          git config user.name "market-desk-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add market_report/data/fed-dashboard.json
+          git diff --cached --quiet || git commit -m "Refresh Fed dashboard data"
+          git push

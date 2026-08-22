@@ -1,0 +1,114 @@
+{
+  "updated": "2026-08-22T17:14:05.248Z",
+  "source": "live",
+  "labels": [
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug"
+  ],
+  "series": {
+    "vix": {
+      "name": "Index (SPX) IV",
+      "values": [
+        25.25,
+        16.89,
+        15.32,
+        16.45,
+        15.99,
+        15.13
+      ],
+      "live": true,
+      "asof": "2026-08-21"
+    },
+    "vix3m": {
+      "name": "3M ATM IV",
+      "values": [
+        25.55,
+        20.08,
+        18.66,
+        19.0,
+        19.02,
+        18.5
+      ],
+      "live": true,
+      "asof": "2026-08-21"
+    },
+    "vixeq": {
+      "name": "Avg constituent IV",
+      "values": [
+        42.2,
+        40.74,
+        44.72,
+        47.39,
+        44.42,
+        37.97
+      ],
+      "live": true,
+      "asof": "2026-08-21"
+    },
+    "dspx": {
+      "name": "Dispersion Index",
+      "values": [
+        33.68,
+        37.05,
+        42.01,
+        44.44,
+        41.42,
+        34.81
+      ],
+      "live": true,
+      "asof": "2026-08-21",
+      "avg12mo": 35.92
+    }
+  },
+  "termStructure": [
+    {
+      "id": "vix9d",
+      "tenorLabel": "9D",
+      "name": "9-Day",
+      "value": 12.58,
+      "monthAgo": 14.88,
+      "asof": "2026-08-21",
+      "live": true
+    },
+    {
+      "id": "vix",
+      "tenorLabel": "30D",
+      "name": "30-Day",
+      "value": 15.13,
+      "monthAgo": 16.64,
+      "asof": "2026-08-21",
+      "live": true
+    },
+    {
+      "id": "vix3m",
+      "tenorLabel": "3M",
+      "name": "3-Month",
+      "value": 18.5,
+      "monthAgo": 19.54,
+      "asof": "2026-08-21",
+      "live": true
+    },
+    {
+      "id": "vix6m",
+      "tenorLabel": "6M",
+      "name": "6-Month",
+      "value": 20.9,
+      "monthAgo": 21.68,
+      "asof": "2026-08-21",
+      "live": true
+    },
+    {
+      "id": "vix1y",
+      "tenorLabel": "1Y",
+      "name": "1-Year",
+      "value": 22.64,
+      "monthAgo": 23.4,
+      "asof": "2026-08-21",
+      "live": true
+    }
+  ]
+}

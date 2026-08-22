@@ -1,0 +1,41 @@
+name: Refresh volatility data
+
+on:
+  schedule:
+    # Once per weekday, after market close (~21:25 UTC = 5:25pm EDT / 4:25pm
+    # EST -- comfortable buffer in summer, tight but sufficient in winter).
+    # Staggered 10 min after refresh-sector-ratios.yml so the two workflows
+    # don't hit Cboe/Yahoo at the same instant. Cboe's historical CSVs are
+    # end-of-day data, updated after their own close.
+    - cron: "25 21 * * 1-5"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-volatility
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Fetch latest volatility data
+        run: node market_report/scripts/fetch-volatility.mjs
+
+      - name: Commit data if changed
+        run: |
+          git config user.name "market-desk-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add market_report/data/volatility.json
+          git diff --cached --quiet || git commit -m "Refresh volatility data"
+          git push

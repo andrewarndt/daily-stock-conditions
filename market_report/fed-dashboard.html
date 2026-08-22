@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fed Dashboard — Market Desk</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand-row">
+      <a class="brand" href="index.html">Market <span>Desk</span></a>
+      <div class="top-meta">
+        <span class="notice" id="live-notice">Illustrative sample data — not live market feeds</span>
+        <span class="refresh-stamp"><span class="dot"></span>Last refresh: <span id="refresh-time">Aug 7, 2026, 4:15&nbsp;PM ET</span></span>
+      </div>
+    </div>
+    <nav class="tabs">
+      <a href="index.html" class="tab">Overview</a>
+      <a href="fed-economic.html" class="tab">Fed &amp; Economic</a>
+      <a href="fed-dashboard.html" class="tab active">Fed Dashboard</a>
+      <a href="sentiment.html" class="tab">Sentiment</a>
+      <a href="sector-ratios.html" class="tab">Sector Ratios</a>
+    </nav>
+  </div>
+</div>
+
+<div class="page">
+  <div class="page-head">
+    <h1>Fed Dashboard</h1>
+    <p>Pre-market review checklist: policy &amp; rate path, liquidity plumbing, and financial conditions &amp; credit. Context only — not wired into the Regime Classifier or Exposure Model.</p>
+  </div>
+
+  <div id="stress-banner" class="stress-banner" hidden>
+    <span class="stress-banner-label">⚠ Stress flag</span>
+    <div class="stress-banner-body" id="stress-banner-body"></div>
+  </div>
+
+  <section>
+    <div class="section-head">
+      <h2>Tier 1 — Policy &amp; Rate Path</h2>
+      <span class="section-note">Being built out line by line — check back soon</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Indicator</th><th>Value</th><th>Trend</th><th>As of</th></tr>
+        </thead>
+        <tbody id="tier1-rows">
+          <tr><td colspan="4" class="muted">Not yet added.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Tier 2 — Liquidity Plumbing</h2>
+      <span class="section-note">Being built out line by line — check back soon</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Indicator</th><th>Value</th><th>Trend</th><th>As of</th></tr>
+        </thead>
+        <tbody id="tier2-rows">
+          <tr><td colspan="4" class="muted">Not yet added.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Tier 3 — Financial Conditions &amp; Credit</h2>
+      <span class="section-note">Being built out line by line — check back soon</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Indicator</th><th>Value</th><th>Trend</th><th>As of</th></tr>
+        </thead>
+        <tbody id="tier3-rows">
+          <tr><td colspan="4" class="muted">Not yet added.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    <p>Sourced from FRED (St. Louis Fed) unless noted otherwise. Derived metrics (Net Liquidity, SOFR&ndash;IORB spread, 10Y&ndash;3M spread) are computed client-side from the live series above rather than fetched separately.</p>
+    <p>Context only. Not wired into Regime Classifier or Exposure Model. Gate 1 of the Macro Permission Hierarchy still runs on Regime Classifier v2.</p>
+  </footer>
+</div>
+
+<script src="assets/charts.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  // Empty for now -- filled in as each checklist line is confirmed and
+  // added to SERIES_DEFS in scripts/fetch-fed-dashboard.mjs. No HTML/JS
+  // change needed per item; this renderer just groups whatever comes back
+  // by `tier` and fills in the matching table.
+  var FALLBACK = { updated: "2026-08-22T00:00:00.000Z", source: "seed", series: [] };
+
+  function fmtValue(v, unit) {
+    if (unit === "%") return v.toFixed(2) + "%";
+    // Fed balance-sheet-scale series (WALCL, TGA, RRP, reserves, ...) come
+    // back from FRED in raw millions of dollars -- auto-scale to $B/$T
+    // rather than hardcoding a unit per series, since they span both ranges.
+    if (unit === "$M") {
+      var abs = Math.abs(v);
+      if (abs >= 1e6) return "$" + (v / 1e6).toFixed(2) + "T";
+      return "$" + (v / 1e3).toFixed(1) + "B";
+    }
+    // Some series (RRP) already come back from FRED in raw billions, unlike
+    // the Fed-balance-sheet-scale ones above -- two decimals here since RRP
+    // currently trades under $1B and one decimal would wash out the moves.
+    if (unit === "$B") return "$" + v.toFixed(2) + "B";
+    if (unit === "bps") return (v >= 0 ? "+" : "") + Math.round(v) + " bps";
+    return v.toLocaleString(undefined, { maximumFractionDigits: 2 });
+  }
+
+  function fmtAsOf(dateStr) {
+    var d = new Date(dateStr + "T00:00:00Z");
+    if (isNaN(d)) return dateStr;
+    return d.toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
+  }
+
+  // Direction badge for series carrying a `trend` field (set server-side by
+  // a SERIES_DEFS `trendRule`, see fetch-fed-dashboard.mjs, or computed
+  // client-side for derived rows like Net Liquidity / SOFR-IORB below). A
+  // bare level isn't useful on its own for these; this is the whole point
+  // of the column, not decoration. `trend` is the semantic direction
+  // ("expanding"/"contracting" for a balance-sheet-scale series, "up"/
+  // "down" for a spread); CSS color always keys off up/down/flat, since
+  // that's what .metric-change actually defines.
+  var TREND_CSS_CLASS = { expanding: "up", contracting: "down", up: "up", down: "down", flat: "flat" };
+  var TREND_LABEL = { expanding: "▲ Expanding", contracting: "▼ Contracting", up: "▲ Widening", down: "▼ Narrowing", flat: "▬ Flat" };
+
+  function fmtTrendCell(r) {
+    if (!r.trend) return '<span class="muted">—</span>';
+    var cls = TREND_CSS_CLASS[r.trend] || r.trend;
+    var label = TREND_LABEL[r.trend] || r.trend;
+    return '<span class="metric-change ' + cls + '">' + label + '</span>' +
+      (r.trendLabel ? ' <span class="muted" style="font-size:0.78rem">(' + r.trendLabel + ')</span>' : "");
+  }
+
+  // Series with a `bandRule` in fetch-fed-dashboard.mjs (NFCI, HY OAS, ...)
+  // carry a `condition` label + `conditionClass` -- the raw number means
+  // nothing on its own ("-0.56" vs. what?), so the badge sits above the
+  // value rather than beside it. conditionClass is set explicitly per band
+  // server-side rather than inferred from the label here, since the same
+  // word can mean opposite things across series (NFCI's "Tight" = red,
+  // HY OAS's "Tight" = green) -- see that file for why.
+  function fmtValueCell(r) {
+    var value = fmtValue(r.value, r.unit);
+    if (!r.condition) return value;
+    var cls = r.conditionClass || "flat";
+    return '<div class="metric-change ' + cls + '" style="margin-bottom:0.3rem">' + r.condition + '</div><div>' + value + '</div>';
+  }
+
+  function renderTier(tbodyId, items) {
+    var tbody = document.getElementById(tbodyId);
+    if (!items.length) {
+      tbody.innerHTML = '<tr><td colspan="4" class="muted">Not yet added.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = "";
+    items.forEach(function (r) {
+      var staticFlag = r.live === false ? '<span class="placeholder-flag">static</span>' : "";
+      var stressFlag = r.stressed ? '<span class="stress-flag">stressed</span>' : "";
+      var tr = document.createElement("tr");
+      tr.innerHTML =
+        '<td><span class="indicator-name">' + r.name + staticFlag + stressFlag + '</span></td>' +
+        '<td class="num">' + fmtValueCell(r) + '</td>' +
+        '<td class="num">' + fmtTrendCell(r) + '</td>' +
+        '<td class="muted">' + fmtAsOf(r.asof) + '</td>';
+      tbody.appendChild(tr);
+    });
+  }
+
+  // Generic across every line item, not just RRP -- any SERIES_DEFS entry
+  // in fetch-fed-dashboard.mjs that carries a `stressRule` gets evaluated
+  // there, and shows up here automatically the moment it flags `stressed`.
+  function renderStressBanner(series) {
+    var banner = document.getElementById("stress-banner");
+    var body = document.getElementById("stress-banner-body");
+    var stressed = (series || []).filter(function (r) { return r.stressed; });
+    if (!stressed.length) {
+      banner.hidden = true;
+      return;
+    }
+    body.innerHTML = stressed.map(function (r) {
+      return "<div><strong>" + r.name + "</strong> — " + (r.stressReason || "flagged") + "</div>";
+    }).join("");
+    banner.hidden = false;
+  }
+
+  // Net Liquidity = WALCL - TGA - RRP, computed here rather than in the
+  // fetch script per the file header's derived-metrics note -- it's plain
+  // arithmetic on values already present. WALCL/WTREGEN are in raw $M, RRP
+  // in raw $B, so RRP is scaled up to $M before subtracting. Direction is
+  // the change since each component's own last refresh, not a fixed
+  // calendar window, since WALCL/TGA update weekly and RRP daily.
+  function computeNetLiquidity(byId) {
+    var walcl = byId.walcl, tga = byId.wtregen, rrp = byId.rrp;
+    if (!walcl || !tga || !rrp) return null;
+    if (![walcl, tga, rrp].every(function (r) { return Number.isFinite(r.value); })) return null;
+
+    var netNow = walcl.value - tga.value - (rrp.value * 1000);
+    var havePriors = [walcl, tga, rrp].every(function (r) { return Number.isFinite(r.prior); });
+    var trend = null, trendChange = null;
+    if (havePriors) {
+      var netPrior = walcl.prior - tga.prior - (rrp.prior * 1000);
+      trendChange = netNow - netPrior;
+      trend = trendChange > 0 ? "expanding" : trendChange < 0 ? "contracting" : "flat";
+    }
+
+    return {
+      name: "Net Liquidity (derived)",
+      unit: "$M",
+      value: netNow,
+      trend: trend,
+      trendChange: trendChange,
+      trendLabel: "since last refresh",
+      asof: [walcl.asof, tga.asof, rrp.asof].sort()[0], // oldest of the three -- the binding constraint on freshness
+      live: !!(walcl.live && tga.live && rrp.live)
+    };
+  }
+
+  // SOFR-IORB spread, in bps. SOFR trading a little under IORB (negative
+  // spread) is the normal/healthy configuration; a spread pushing
+  // meaningfully positive is the classic repo-stress tell (e.g. Sep 2019).
+  function computeSofrIorbSpread(byId) {
+    var sofr = byId.sofr, iorb = byId.iorb;
+    if (!sofr || !iorb || !Number.isFinite(sofr.value) || !Number.isFinite(iorb.value)) return null;
+
+    var spreadNow = (sofr.value - iorb.value) * 100; // percentage points -> bps
+    var havePriors = Number.isFinite(sofr.prior) && Number.isFinite(iorb.prior);
+    var trend = null, trendChange = null;
+    if (havePriors) {
+      var spreadPrior = (sofr.prior - iorb.prior) * 100;
+      trendChange = spreadNow - spreadPrior;
+      trend = trendChange > 0 ? "up" : trendChange < 0 ? "down" : "flat";
+    }
+
+    return {
+      name: "SOFR − IORB Spread (derived)",
+      unit: "bps",
+      value: spreadNow,
+      trend: trend,
+      trendChange: trendChange,
+      trendLabel: "since last refresh",
+      asof: [sofr.asof, iorb.asof].sort()[0],
+      live: !!(sofr.live && iorb.live)
+    };
+  }
+
+  function render(data) {
+    var series = data.series || [];
+    var byId = {};
+    series.forEach(function (r) { byId[r.id] = r; });
+
+    var tier1Items = series.filter(function (r) { return r.tier === 1; });
+    var sofrIorbSpread = computeSofrIorbSpread(byId);
+
+    var tier2Items = series.filter(function (r) { return r.tier === 2; });
+    var netLiquidity = computeNetLiquidity(byId);
+    if (netLiquidity) tier2Items = tier2Items.concat([netLiquidity]);
+    if (sofrIorbSpread) tier2Items = tier2Items.concat([sofrIorbSpread]);
+
+    renderTier("tier1-rows", tier1Items);
+    renderTier("tier2-rows", tier2Items);
+    renderTier("tier3-rows", series.filter(function (r) { return r.tier === 3; }));
+    renderStressBanner(series);
+
+    var d = new Date(data.updated);
+    var stamp = isNaN(d) ? "unknown" : d.toLocaleString("en-US", {
+      month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", timeZone: "America/New_York"
+    }) + " ET";
+    document.getElementById("refresh-time").textContent = stamp;
+
+    var notice = document.getElementById("live-notice");
+    notice.textContent = data.source === "live"
+      ? "Live data — FRED, refreshed once per weekday morning"
+      : "Illustrative sample data — not live market feeds";
+  }
+
+  fetch("data/fed-dashboard.json?t=" + Date.now(), { cache: "no-store" })
+    .then(function (res) { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); })
+    .then(render)
+    .catch(function (err) {
+      console.warn("Could not load data/fed-dashboard.json, showing fallback values:", err);
+      render(FALLBACK);
+    });
+})();
+</script>
+</body>
+</html>

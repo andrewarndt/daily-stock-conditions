@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * Refreshes data/economic.json (CPI / PPI / Unemployment / PMI / ISM) for
- * the Economic Snapshot table (index.html) and Economic Indicators table
+ * Refreshes data/economic.json (CPI / PPI / Unemployment) for the Economic
+ * Snapshot table (index.html) and Economic Indicators table
  * (fed-economic.html). Stores raw values -- formatting into display strings
  * happens client-side, same split as fetch-overview.mjs/data/overview.json.
  *
@@ -16,22 +16,18 @@
  *     from "PPI Final Demand" headlines. Flagged here the same way other
  *     proxy substitutions are flagged elsewhere in this repo.
  *
- * PMI (S&P Global Composite) and ISM Manufacturing are intentionally NOT
- * fetched: both are proprietary/subscription-gated with no free live-data
- * source (S&P Global's PMI isn't published anywhere free; FRED discontinued
- * mirroring ISM's PMI in 2016 over licensing). Same treatment as VIX in
- * fetch-overview.mjs -- stays a static/illustrative entry, carried forward
- * untouched, per team decision.
+ * PMI (S&P Global Composite) and ISM Manufacturing are deliberately not part
+ * of this dashboard: both are proprietary/subscription-gated with no free
+ * live-data source (S&P Global's PMI isn't published anywhere free; FRED
+ * discontinued mirroring ISM's PMI in 2016 over licensing), and this project
+ * doesn't ship static/illustrative stand-ins for indicators it can't source
+ * live -- per team decision.
  *
  * Each indicator also carries a `nextRelease` date (YYYY-MM-DD), used by the
  * "Next up" strip on fed-economic.html so that line never needs hand-editing:
- *   - cpi/ppi/unemployment: the actual next scheduled date from FRED's own
- *     release calendar (fred/release/dates), looked up via fred/series/release
- *     to map the series to its release_id. Genuinely live, same as the values.
- *   - pmi/ism: no free calendar API exists for either, but both publishers'
- *     release-day conventions are fixed and public, so the date is computed
- *     from a rule (see nextIsmReleaseDate/nextPmiReleaseDate below) instead
- *     of being hand-maintained. It advances on its own every run.
+ * the actual next scheduled date from FRED's own release calendar
+ * (fred/release/dates), looked up via fred/series/release to map the series
+ * to its release_id. Genuinely live, same as the values.
  * FOMC dates are deliberately NOT included here -- fed-economic.html reads
  * those straight off the Fed Watch section already on the page, so there's
  * one source of truth instead of two hardcoded copies.
@@ -50,20 +46,7 @@ const OUT_PATH = path.join(__dirname, "..", "data", "economic.json");
 
 const FRED_API_KEY = process.env.FRED_API_KEY;
 
-const INDICATOR_ORDER = ["cpi", "pmi", "ppi", "unemployment", "ism"];
-
-const STATIC_SEED = {
-  pmi: {
-    id: "pmi", name: "PMI, Composite", desc: "S&P Global, flash",
-    value: 51.8, prior: 52.4, asof: "2026-07-01", unit: "",
-    trend: [53.1, 52.9, 52.6, 52.7, 52.4, 51.8], live: false
-  },
-  ism: {
-    id: "ism", name: "ISM Manufacturing", desc: "Institute for Supply Management",
-    value: 48.6, prior: 47.9, asof: "2026-07-01", unit: "",
-    trend: [46.8, 47.1, 47.5, 47.6, 47.9, 48.6], live: false
-  }
-};
+const INDICATOR_ORDER = ["cpi", "ppi", "unemployment"];
 
 async function loadPrevious() {
   try {
@@ -138,50 +121,12 @@ async function fetchNextReleaseDate(seriesId, previous) {
   }
 }
 
-function isWeekend(d) {
-  const day = d.getUTCDay();
-  return day === 0 || day === 6;
-}
-
-function nextBusinessDayOnOrAfter(d) {
-  const c = new Date(d);
-  while (isWeekend(c)) c.setUTCDate(c.getUTCDate() + 1);
-  return c;
-}
-
-// ISM publishes Manufacturing PMI on the first business day of each month
-// (for the prior month). Doesn't account for federal holidays, so it can be
-// off by a day around e.g. New Year's/Labor Day -- close enough for a
-// "coming up" indicator.
-function nextIsmReleaseDate(today) {
-  let d = nextBusinessDayOnOrAfter(new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1)));
-  if (d <= today) d = nextBusinessDayOnOrAfter(new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth() + 1, 1)));
-  return d.toISOString().slice(0, 10);
-}
-
-// S&P Global's flash Composite PMI comes out around the 22nd-24th of each
-// month; unlike BLS/ISM, S&P doesn't publish a precise schedule far ahead
-// and offers no free calendar API. Approximated as the 22nd, nudged off a
-// weekend -- treat as "roughly this week", not exact to the day.
-function nextPmiReleaseDate(today) {
-  let d = nextBusinessDayOnOrAfter(new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 22)));
-  if (d <= today) d = nextBusinessDayOnOrAfter(new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth() + 1, 22)));
-  return d.toISOString().slice(0, 10);
-}
-
-function carryForwardStatic(id, previous) {
-  const prev = previous[id];
-  if (prev) return { ...prev, live: false };
-  return { ...STATIC_SEED[id] };
-}
-
 function sortByOrder(items, order) {
   return items.filter(Boolean).sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
 }
 
 async function main() {
   const previous = await loadPrevious();
-  const today = new Date();
 
   const [cpi, ppi, unemployment, cpiNextRelease, ppiNextRelease, unemploymentNextRelease] = await Promise.all([
     fetchFredSeries("cpi", { seriesId: "CPIAUCSL", units: "pc1", unit: "%", name: "CPI, Year-over-Year", desc: "Bureau of Labor Statistics" }, previous),
@@ -195,12 +140,7 @@ async function main() {
   if (ppi) ppi.nextRelease = ppiNextRelease;
   if (unemployment) unemployment.nextRelease = unemploymentNextRelease;
 
-  const pmi = carryForwardStatic("pmi", previous);
-  pmi.nextRelease = nextPmiReleaseDate(today);
-  const ism = carryForwardStatic("ism", previous);
-  ism.nextRelease = nextIsmReleaseDate(today);
-
-  const indicators = sortByOrder([cpi, pmi, ppi, unemployment, ism], INDICATOR_ORDER);
+  const indicators = sortByOrder([cpi, ppi, unemployment], INDICATOR_ORDER);
 
   const anyLive = indicators.some((i) => i.live);
   const out = {

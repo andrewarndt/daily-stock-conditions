@@ -20,6 +20,7 @@
     <nav class="tabs">
       <a href="index.html" class="tab">Overview</a>
       <a href="fed-economic.html" class="tab">Fed &amp; Economic</a>
+      <a href="fed-dashboard.html" class="tab">Fed Dashboard</a>
       <a href="sentiment.html" class="tab">Sentiment</a>
       <a href="sector-ratios.html" class="tab active">Sector Ratios</a>
     </nav>
@@ -47,8 +48,8 @@
 
   <section>
     <div class="section-head">
-      <h2>Constituent Volatility<span class="placeholder-flag">static</span></h2>
-      <span class="section-note">Avg. single-name IV vs. index IV</span>
+      <h2>Constituent Volatility<span id="constituent-vol-flag"></span></h2>
+      <span class="section-note" id="constituent-vol-asof">Avg. single-name IV vs. index IV</span>
     </div>
     <div class="chart-card">
       <h3>Constituent vs. index implied volatility</h3>
@@ -61,14 +62,30 @@
     </div>
   </section>
 
+  <section>
+    <div class="section-head">
+      <h2>SPX Volatility Term Structure<span id="termstructure-flag"></span></h2>
+      <span class="section-note">3M&ndash;30D spread: <strong id="vol-spread-value" style="color:var(--up)">+3.37 pts</strong> <span id="vol-spread-trend">(contango)</span></span>
+    </div>
+    <div class="chart-card">
+      <h3>Front month vs. back month implied vol &mdash; today vs. 1 month ago</h3>
+      <p class="chart-sub">Implied vol (%) by tenor, 9-day through 1-year</p>
+      <div class="legend">
+        <span class="legend-item"><span class="legend-swatch" style="background:var(--accent)"></span>Today</span>
+        <span class="legend-item"><span class="legend-swatch dashed" style="background:var(--ink-soft)"></span>1 month ago</span>
+      </div>
+      <svg id="chart-term-structure" width="900" height="240"></svg>
+    </div>
+  </section>
+
   <div class="chart-row" style="margin-bottom:2.75rem">
     <div class="chart-card">
-      <h3>Core 3M<span class="placeholder-flag">static</span></h3>
+      <h3>Core 3M<span id="core3m-flag"></span></h3>
       <p class="chart-sub">3-month at-the-money implied volatility, SPX</p>
       <svg id="chart-core3m" width="420" height="200"></svg>
     </div>
     <div class="chart-card">
-      <h3>Dispersion Index<span class="placeholder-flag">static</span></h3>
+      <h3>Dispersion Index<span id="dispersion-flag"></span></h3>
       <p class="chart-sub">Constituent vs. index vol spread, index units</p>
       <svg id="chart-dispersion" width="420" height="200"></svg>
     </div>
@@ -91,7 +108,7 @@
   </section>
 
   <footer>
-    <p>Sector/SPY ratios are live daily closes from Yahoo Finance, refreshed once per weekday after market close. Constituent Volatility, Core 3M, Dispersion Index, and Skew Structure below are still illustrative placeholders.</p>
+    <p>Sector/SPY ratios are live daily closes from Yahoo Finance, refreshed once per weekday after market close. Constituent Volatility, Volatility Term Structure, Core 3M, and Dispersion Index are live Cboe index data (VIX9D, VIX, VIX3M, VIX6M, VIX1Y, VIXEQ, DSPX), refreshed on the same schedule. Skew Structure below is still an illustrative placeholder.</p>
     <p>Badges mark each sector's ratio move over the trailing month: green outperforming SPY, red underperforming. The line color is a separate, shorter-term signal: green when the ratio is currently above its own 10-day moving average (dashed line), red when below.</p>
   </footer>
 </div>
@@ -186,30 +203,115 @@
       renderSectors(FALLBACK);
     });
 
-  MC.lineChart(document.getElementById("chart-constituent-vol"), {
-    xLabels: ["Mar", "Apr", "May", "Jun", "Jul", "Aug"],
-    series: [
-      { name: "Avg constituent IV", color: MC.css("--accent"), data: [27.5, 26.8, 29.1, 28.4, 25.9, 24.6] },
-      { name: "Index (SPX) IV", color: MC.css("--blue"), data: [14.2, 13.8, 15.6, 14.9, 13.5, 12.9] }
-    ],
-    yFmt: function (v) { return v.toFixed(0) + "%"; },
-    maxXLabels: 6
-  });
+  var VOLATILITY_FALLBACK = {
+    updated: "2026-08-07T20:15:00Z",
+    source: "seed",
+    labels: ["Mar", "Apr", "May", "Jun", "Jul", "Aug"],
+    series: {
+      vix: { name: "Index (SPX) IV", values: [14.2, 13.8, 15.6, 14.9, 13.5, 12.9], live: false },
+      vix3m: { name: "3M ATM IV", values: [15.8, 14.9, 16.4, 15.2, 14.1, 13.6], live: false },
+      vixeq: { name: "Avg constituent IV", values: [27.5, 26.8, 29.1, 28.4, 25.9, 24.6], live: false },
+      dspx: { name: "Dispersion Index", values: [21.4, 22.8, 24.1, 23.0, 20.6, 19.8], live: false, avg12mo: 21.5 }
+    },
+    termStructure: [
+      { id: "vix9d", tenorLabel: "9D", name: "9-Day", value: 12.9, monthAgo: 13.6, live: false },
+      { id: "vix", tenorLabel: "30D", name: "30-Day", value: 14.2, monthAgo: 14.9, live: false },
+      { id: "vix3m", tenorLabel: "3M", name: "3-Month", value: 15.8, monthAgo: 16.4, live: false },
+      { id: "vix6m", tenorLabel: "6M", name: "6-Month", value: 17.1, monthAgo: 17.6, live: false },
+      { id: "vix1y", tenorLabel: "1Y", name: "1-Year", value: 18.4, monthAgo: 18.9, live: false }
+    ]
+  };
 
-  MC.lineChart(document.getElementById("chart-core3m"), {
-    xLabels: ["Mar", "Apr", "May", "Jun", "Jul", "Aug"],
-    series: [{ name: "3M ATM IV", color: MC.css("--accent"), area: true, data: [15.8, 14.9, 16.4, 15.2, 14.1, 13.6] }],
-    yFmt: function (v) { return v.toFixed(0) + "%"; },
-    maxXLabels: 6
-  });
+  function pctFmt(v) { return v.toFixed(0) + "%"; }
 
-  MC.lineChart(document.getElementById("chart-dispersion"), {
-    xLabels: ["Mar", "Apr", "May", "Jun", "Jul", "Aug"],
-    series: [{ name: "Dispersion Index", color: MC.css("--blue"), area: true, data: [21.4, 22.8, 24.1, 23.0, 20.6, 19.8] }],
-    yFmt: function (v) { return v.toFixed(0); },
-    referenceLine: { value: 21.5, label: "12-mo avg" },
-    maxXLabels: 6
-  });
+  function renderVolatility(data) {
+    var labels = data.labels || [];
+    var s = data.series || {};
+    var vix = s.vix, vix3m = s.vix3m, vixeq = s.vixeq, dspx = s.dspx;
+
+    var cvFlag = document.getElementById("constituent-vol-flag");
+    var cvAsof = document.getElementById("constituent-vol-asof");
+    var cvLive = vix && vixeq && vix.live && vixeq.live;
+    cvFlag.innerHTML = cvLive ? "" : '<span class="placeholder-flag">static</span>';
+    cvAsof.textContent = cvLive ? "Avg. single-name IV vs. index IV, as of " + vixeq.asof : "Avg. single-name IV vs. index IV";
+    if (vix && vixeq) {
+      MC.lineChart(document.getElementById("chart-constituent-vol"), {
+        xLabels: labels,
+        series: [
+          { name: "Avg constituent IV", color: MC.css("--accent"), data: vixeq.values },
+          { name: "Index (SPX) IV", color: MC.css("--blue"), data: vix.values }
+        ],
+        yFmt: pctFmt,
+        maxXLabels: 6
+      });
+    }
+
+    var c3Flag = document.getElementById("core3m-flag");
+    c3Flag.innerHTML = vix3m && vix3m.live ? "" : '<span class="placeholder-flag">static</span>';
+    if (vix3m) {
+      MC.lineChart(document.getElementById("chart-core3m"), {
+        xLabels: labels,
+        series: [{ name: "3M ATM IV", color: MC.css("--accent"), area: true, data: vix3m.values }],
+        yFmt: pctFmt,
+        maxXLabels: 6
+      });
+    }
+
+    var dispFlag = document.getElementById("dispersion-flag");
+    dispFlag.innerHTML = dspx && dspx.live ? "" : '<span class="placeholder-flag">static</span>';
+    if (dspx) {
+      MC.lineChart(document.getElementById("chart-dispersion"), {
+        xLabels: labels,
+        series: [{ name: "Dispersion Index", color: MC.css("--blue"), area: true, data: dspx.values }],
+        yFmt: function (v) { return v.toFixed(0); },
+        referenceLine: Number.isFinite(dspx.avg12mo) ? { value: dspx.avg12mo, label: "12-mo avg" } : undefined,
+        maxXLabels: 6
+      });
+    }
+
+    renderTermStructure(data.termStructure);
+  }
+
+  function renderTermStructure(list) {
+    var flagEl = document.getElementById("termstructure-flag");
+    var spreadValueEl = document.getElementById("vol-spread-value");
+    var spreadTrendEl = document.getElementById("vol-spread-trend");
+    var plottable = (list || []).filter(function (t) { return Number.isFinite(t.value); });
+    if (!plottable.length) return;
+
+    var allLive = plottable.every(function (t) { return t.live; });
+    flagEl.innerHTML = allLive ? "" : '<span class="placeholder-flag">static</span>';
+
+    var byId = {};
+    plottable.forEach(function (t) { byId[t.id] = t; });
+    var front = byId.vix, back = byId.vix3m; // front month (30D) vs back month (3M)
+    if (front && back) {
+      var spread = back.value - front.value;
+      var sign = spread >= 0 ? "+" : "";
+      spreadValueEl.textContent = sign + spread.toFixed(2) + " pts";
+      spreadValueEl.style.color = spread >= 0 ? "var(--up)" : "var(--down)";
+      spreadTrendEl.textContent = "(" + (spread >= 0 ? "contango" : "backwardation") + ")";
+    }
+
+    var withMonthAgo = plottable.filter(function (t) { return Number.isFinite(t.monthAgo); });
+    MC.lineChart(document.getElementById("chart-term-structure"), {
+      xLabels: plottable.map(function (t) { return t.tenorLabel; }),
+      series: [
+        { name: "Today", color: MC.css("--accent"), data: plottable.map(function (t) { return t.value; }) },
+        { name: "1 month ago", color: MC.css("--ink-soft"), dashed: true, data: withMonthAgo.length === plottable.length ? plottable.map(function (t) { return t.monthAgo; }) : null }
+      ].filter(function (s) { return s.data; }),
+      yFmt: function (v) { return v.toFixed(1) + "%"; },
+      maxXLabels: 5
+    });
+  }
+
+  fetch("data/volatility.json?t=" + Date.now(), { cache: "no-store" })
+    .then(function (res) { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); })
+    .then(renderVolatility)
+    .catch(function (err) {
+      console.warn("Could not load data/volatility.json, showing fallback values:", err);
+      renderVolatility(VOLATILITY_FALLBACK);
+    });
 
   MC.lineChart(document.getElementById("chart-skew"), {
     xLabels: ["80%", "85%", "90%", "95%", "100%", "105%", "110%", "115%", "120%"],

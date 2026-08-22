@@ -20,6 +20,7 @@
     <nav class="tabs">
       <a href="index.html" class="tab">Overview</a>
       <a href="fed-economic.html" class="tab active">Fed &amp; Economic</a>
+      <a href="fed-dashboard.html" class="tab">Fed Dashboard</a>
       <a href="sentiment.html" class="tab">Sentiment</a>
       <a href="sector-ratios.html" class="tab">Sector Ratios</a>
     </nav>
@@ -118,7 +119,7 @@
 
   <footer>
     <p>Fed Watch odds are illustrative and do not reflect actual fed funds futures pricing.</p>
-    <p>"Next up" dates: CPI/PPI/Jobs Report come from FRED's own release calendar. PMI and ISM Manufacturing have no free release-calendar API, so their dates are computed from each publisher's standard release-day pattern rather than fetched. FOMC date is read from the Fed Watch section above.</p>
+    <p>"Next up" dates: CPI/PPI/Jobs Report come from FRED's own release calendar. FOMC date is read from the Fed Watch section above.</p>
     <p>All Treasury yields above (1-Month through 30-Year, the 2s10s spread, and the full Yield Curve chart) come from FRED's daily Treasury constant-maturity series, refreshed once per weekday evening.</p>
     <p>For sector-level and options-market detail, see <a href="sector-ratios.html">Sector Ratios</a>.</p>
   </footer>
@@ -134,10 +135,8 @@
     source: "seed",
     indicators: [
       { id: "cpi", name: "CPI, Year-over-Year", desc: "Bureau of Labor Statistics", value: 2.9, prior: 3.1, asof: "2026-06-01", unit: "%", trend: [3.6, 3.4, 3.3, 3.2, 3.1, 2.9], live: false, nextRelease: "2026-08-13" },
-      { id: "pmi", name: "PMI, Composite", desc: "S&P Global, flash", value: 51.8, prior: 52.4, asof: "2026-07-01", unit: "", trend: [53.1, 52.9, 52.6, 52.7, 52.4, 51.8], live: false, nextRelease: "2026-08-24" },
       { id: "ppi", name: "PPI, Year-over-Year", desc: "Bureau of Labor Statistics", value: 2.2, prior: 2.4, asof: "2026-06-01", unit: "%", trend: [2.8, 2.7, 2.6, 2.5, 2.4, 2.2], live: false, nextRelease: "2026-08-14" },
-      { id: "unemployment", name: "Unemployment Rate", desc: "Bureau of Labor Statistics", value: 4.1, prior: 4.0, asof: "2026-07-01", unit: "%", trend: [3.8, 3.9, 3.9, 4.0, 4.0, 4.1], live: false, nextRelease: "2026-09-04" },
-      { id: "ism", name: "ISM Manufacturing", desc: "Institute for Supply Management", value: 48.6, prior: 47.9, asof: "2026-07-01", unit: "", trend: [46.8, 47.1, 47.5, 47.6, 47.9, 48.6], live: false, nextRelease: "2026-09-01" }
+      { id: "unemployment", name: "Unemployment Rate", desc: "Bureau of Labor Statistics", value: 4.1, prior: 4.0, asof: "2026-07-01", unit: "%", trend: [3.8, 3.9, 3.9, 4.0, 4.0, 4.1], live: false, nextRelease: "2026-09-04" }
     ]
   };
 
@@ -146,9 +145,7 @@
   var RELEASE_LABEL = {
     cpi: "CPI",
     ppi: "PPI",
-    unemployment: "Jobs Report / Unemployment Rate",
-    pmi: "PMI, Composite (flash)",
-    ism: "ISM Manufacturing"
+    unemployment: "Jobs Report / Unemployment Rate"
   };
 
   function fmtCountdown(days) {

@@ -294,6 +294,49 @@ h2 {
 .metric-change.down { color: var(--down); background: var(--down-bg); }
 .metric-change.flat { color: var(--ink-soft); background: var(--line); }
 
+.stress-banner {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.3rem 0.7rem;
+  background: var(--down-bg);
+  border: 1px solid var(--down);
+  border-radius: 3px;
+  padding: 0.65rem 0.9rem;
+  margin-bottom: 2rem;
+  font-size: 0.88rem;
+}
+
+.stress-banner[hidden] { display: none; }
+
+.stress-banner-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--down);
+  font-weight: 700;
+  flex: none;
+}
+
+.stress-banner-body { color: var(--ink); width: 100%; }
+.stress-banner-body div + div { margin-top: 0.25rem; }
+
+.stress-flag {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--down);
+  border: 1px solid var(--down);
+  background: var(--down-bg);
+  padding: 0.05rem 0.35rem;
+  border-radius: 2px;
+  margin-left: 0.4rem;
+  font-weight: 600;
+}
+
 .placeholder-flag {
   display: inline-block;
   font-family: var(--font-mono);

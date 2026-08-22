@@ -20,6 +20,7 @@
     <nav class="tabs">
       <a href="index.html" class="tab active">Overview</a>
       <a href="fed-economic.html" class="tab">Fed &amp; Economic</a>
+      <a href="fed-dashboard.html" class="tab">Fed Dashboard</a>
       <a href="sentiment.html" class="tab">Sentiment</a>
       <a href="sector-ratios.html" class="tab">Sector Ratios</a>
     </nav>
@@ -55,7 +56,7 @@
   <section>
     <div class="section-head">
       <h2>Economic Snapshot</h2>
-      <span class="section-note" id="econ-asof">CPI · PMI · PPI · Unemployment · ISM</span>
+      <span class="section-note" id="econ-asof">CPI · PPI · Unemployment</span>
     </div>
     <div class="table-wrap">
       <table>
@@ -121,10 +122,8 @@
     source: "seed",
     indicators: [
       { id: "cpi", name: "CPI, Year-over-Year", desc: "Bureau of Labor Statistics", value: 2.9, prior: 3.1, asof: "2026-06-01", unit: "%", live: false },
-      { id: "pmi", name: "PMI, Composite", desc: "S&P Global, flash", value: 51.8, prior: 52.4, asof: "2026-07-01", unit: "", live: false },
       { id: "ppi", name: "PPI, Year-over-Year", desc: "Bureau of Labor Statistics", value: 2.2, prior: 2.4, asof: "2026-06-01", unit: "%", live: false },
-      { id: "unemployment", name: "Unemployment Rate", desc: "Bureau of Labor Statistics", value: 4.1, prior: 4.0, asof: "2026-07-01", unit: "%", live: false },
-      { id: "ism", name: "ISM Manufacturing", desc: "Institute for Supply Management", value: 48.6, prior: 47.9, asof: "2026-07-01", unit: "", live: false }
+      { id: "unemployment", name: "Unemployment Rate", desc: "Bureau of Labor Statistics", value: 4.1, prior: 4.0, asof: "2026-07-01", unit: "%", live: false }
     ]
   };
 

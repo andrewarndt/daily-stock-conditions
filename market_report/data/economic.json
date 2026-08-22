@@ -22,25 +22,6 @@
       "nextRelease": "2026-09-11"
     },
     {
-      "id": "pmi",
-      "name": "PMI, Composite",
-      "desc": "S&P Global, flash",
-      "value": 51.8,
-      "prior": 52.4,
-      "asof": "2026-07-01",
-      "unit": "",
-      "trend": [
-        53.1,
-        52.9,
-        52.6,
-        52.7,
-        52.4,
-        51.8
-      ],
-      "live": false,
-      "nextRelease": "2026-08-24"
-    },
-    {
       "id": "ppi",
       "name": "PPI, Year-over-Year",
       "desc": "Bureau of Labor Statistics",
@@ -77,25 +58,6 @@
       ],
       "live": true,
       "nextRelease": "2026-09-04"
-    },
-    {
-      "id": "ism",
-      "name": "ISM Manufacturing",
-      "desc": "Institute for Supply Management",
-      "value": 48.6,
-      "prior": 47.9,
-      "asof": "2026-07-01",
-      "unit": "",
-      "trend": [
-        46.8,
-        47.1,
-        47.5,
-        47.6,
-        47.9,
-        48.6
-      ],
-      "live": false,
-      "nextRelease": "2026-09-01"
     }
   ]
 }
