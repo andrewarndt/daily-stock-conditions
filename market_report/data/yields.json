@@ -1,20 +1,84 @@
 {
-  "updated": "2026-08-21T21:48:08.135Z",
+  "updated": "2026-08-22T09:29:55.906Z",
   "source": "live",
   "series": [
     {
+      "id": "1mo",
+      "name": "1-Month",
+      "label": "1M",
+      "value": 3.8,
+      "prior": 3.77,
+      "monthAgo": 3.75,
+      "asof": "2026-08-20",
+      "live": true
+    },
+    {
+      "id": "3mo",
+      "name": "3-Month",
+      "label": "3M",
+      "value": 3.87,
+      "prior": 3.86,
+      "monthAgo": 3.87,
+      "asof": "2026-08-20",
+      "live": true
+    },
+    {
+      "id": "6mo",
+      "name": "6-Month",
+      "label": "6M",
+      "value": 3.94,
+      "prior": 3.94,
+      "monthAgo": 4.02,
+      "asof": "2026-08-20",
+      "live": true
+    },
+    {
+      "id": "1y",
+      "name": "1-Year",
+      "label": "1Y",
+      "value": 3.99,
+      "prior": 4,
+      "monthAgo": 4.08,
+      "asof": "2026-08-20",
+      "live": true
+    },
+    {
       "id": "2y",
       "name": "2-Year",
+      "label": "2Y",
       "value": 4.19,
       "prior": 4.19,
+      "monthAgo": 4.26,
+      "asof": "2026-08-20",
+      "live": true
+    },
+    {
+      "id": "5y",
+      "name": "5-Year",
+      "label": "5Y",
+      "value": 4.39,
+      "prior": 4.35,
+      "monthAgo": 4.37,
       "asof": "2026-08-20",
       "live": true
     },
     {
       "id": "10y",
       "name": "10-Year",
+      "label": "10Y",
       "value": 4.69,
       "prior": 4.65,
+      "monthAgo": 4.63,
+      "asof": "2026-08-20",
+      "live": true
+    },
+    {
+      "id": "30y",
+      "name": "30-Year",
+      "label": "30Y",
+      "value": 5.23,
+      "prior": 5.19,
+      "monthAgo": 5.13,
       "asof": "2026-08-20",
       "live": true
     }
