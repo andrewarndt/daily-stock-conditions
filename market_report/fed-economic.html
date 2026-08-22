@@ -93,17 +93,17 @@
         <div class="metric-change down" id="yield-10y-change">▼ 0.03 pt</div>
       </div>
       <div class="metric-card">
-        <div class="metric-name">30-Year<span class="placeholder-flag">static</span></div>
-        <div class="metric-value">4.48%</div>
-        <div class="metric-change down">▼ 0.01 pt</div>
+        <div class="metric-name">30-Year<span id="yield-30y-flag"></span></div>
+        <div class="metric-value" id="yield-30y-value">4.48%</div>
+        <div class="metric-change down" id="yield-30y-change">▼ 0.01 pt</div>
       </div>
     </div>
   </section>
 
   <section>
     <div class="section-head">
-      <h2>Yield Curve<span class="placeholder-flag">static</span></h2>
-      <span class="section-note">Constant-maturity Treasury</span>
+      <h2>Yield Curve<span id="yieldcurve-flag"></span></h2>
+      <span class="section-note" id="yieldcurve-asof">Constant-maturity Treasury</span>
     </div>
     <div class="chart-card">
       <h3>UST Curve — today vs. 1 month ago</h3>
@@ -119,7 +119,7 @@
   <footer>
     <p>Fed Watch odds are illustrative and do not reflect actual fed funds futures pricing.</p>
     <p>"Next up" dates: CPI/PPI/Jobs Report come from FRED's own release calendar. PMI and ISM Manufacturing have no free release-calendar API, so their dates are computed from each publisher's standard release-day pattern rather than fetched. FOMC date is read from the Fed Watch section above.</p>
-    <p>2-Year and 10-Year yields (and the 2s10s spread) come from FRED's daily Treasury series. 30-Year and the full yield curve chart above remain illustrative for now.</p>
+    <p>All Treasury yields above (1-Month through 30-Year, the 2s10s spread, and the full Yield Curve chart) come from FRED's daily Treasury constant-maturity series, refreshed once per weekday evening.</p>
     <p>For sector-level and options-market detail, see <a href="sector-ratios.html">Sector Ratios</a>.</p>
   </footer>
 </div>
@@ -271,8 +271,14 @@
     updated: "2026-08-07T20:15:00Z",
     source: "seed",
     series: [
-      { id: "2y", name: "2-Year", value: 3.92, prior: 3.94, asof: "2026-08-07", live: false },
-      { id: "10y", name: "10-Year", value: 4.21, prior: 4.24, asof: "2026-08-07", live: false }
+      { id: "1mo", name: "1-Month", label: "1M", value: 4.98, prior: 4.99, monthAgo: 5.05, asof: "2026-08-07", live: false },
+      { id: "3mo", name: "3-Month", label: "3M", value: 4.85, prior: 4.86, monthAgo: 4.95, asof: "2026-08-07", live: false },
+      { id: "6mo", name: "6-Month", label: "6M", value: 4.62, prior: 4.63, monthAgo: 4.78, asof: "2026-08-07", live: false },
+      { id: "1y", name: "1-Year", label: "1Y", value: 4.20, prior: 4.22, monthAgo: 4.40, asof: "2026-08-07", live: false },
+      { id: "2y", name: "2-Year", label: "2Y", value: 3.92, prior: 3.94, monthAgo: 4.05, asof: "2026-08-07", live: false },
+      { id: "5y", name: "5-Year", label: "5Y", value: 3.95, prior: 3.96, monthAgo: 4.02, asof: "2026-08-07", live: false },
+      { id: "10y", name: "10-Year", label: "10Y", value: 4.21, prior: 4.24, monthAgo: 4.24, asof: "2026-08-07", live: false },
+      { id: "30y", name: "30-Year", label: "30Y", value: 4.48, prior: 4.49, monthAgo: 4.46, asof: "2026-08-07", live: false }
     ]
   };
 
@@ -294,28 +300,53 @@
     flagEl.innerHTML = entry.live === false ? '<span class="placeholder-flag">static</span>' : "";
   }
 
+  function renderYieldCurve(series) {
+    var withCurve = series.filter(function (s) { return s && Number.isFinite(s.monthAgo); });
+    if (!series.length) return;
+
+    var flagEl = document.getElementById("yieldcurve-flag");
+    var asofEl = document.getElementById("yieldcurve-asof");
+    var allLive = series.every(function (s) { return s.live; });
+    flagEl.innerHTML = allLive ? "" : '<span class="placeholder-flag">static</span>';
+    var mostRecentAsof = series.reduce(function (max, s) { return s.asof > max ? s.asof : max; }, series[0].asof);
+    asofEl.textContent = allLive ? "Constant-maturity Treasury, as of " + mostRecentAsof : "Constant-maturity Treasury";
+
+    MC.lineChart(document.getElementById("chart-yield-curve"), {
+      xLabels: series.map(function (s) { return s.label || s.name; }),
+      series: [
+        { name: "Today", color: MC.css("--accent"), data: series.map(function (s) { return s.value; }) },
+        { name: "1M ago", color: MC.css("--ink-soft"), dashed: true, data: withCurve.length === series.length ? series.map(function (s) { return s.monthAgo; }) : null }
+      ].filter(function (s) { return s.data; }),
+      yFmt: function (v) { return v.toFixed(1) + "%"; },
+      maxXLabels: 8
+    });
+  }
+
   function renderYields(data) {
     var byId = {};
     (data.series || []).forEach(function (s) { byId[s.id] = s; });
     renderYieldCard("2y", byId["2y"]);
     renderYieldCard("10y", byId["10y"]);
+    renderYieldCard("30y", byId["30y"]);
 
     var two = byId["2y"], ten = byId["10y"];
     var spreadEl = document.getElementById("spread-value");
     var trendEl = document.getElementById("spread-trend");
-    if (!two || !ten || !spreadEl) return;
+    if (two && ten && spreadEl) {
+      var spreadBps = (ten.value - two.value) * 100;
+      var priorSpreadBps = (ten.prior - two.prior) * 100;
+      var sign = spreadBps >= 0 ? "+" : "";
+      spreadEl.textContent = sign + Math.round(spreadBps) + " bps";
+      spreadEl.style.color = spreadBps < 0 ? "var(--down)" : "var(--up)";
 
-    var spreadBps = (ten.value - two.value) * 100;
-    var priorSpreadBps = (ten.prior - two.prior) * 100;
-    var sign = spreadBps >= 0 ? "+" : "";
-    spreadEl.textContent = sign + Math.round(spreadBps) + " bps";
-    spreadEl.style.color = spreadBps < 0 ? "var(--down)" : "var(--up)";
+      var trend = spreadBps < 0 ? "inverted"
+        : spreadBps > priorSpreadBps + 0.05 ? "steepening"
+        : spreadBps < priorSpreadBps - 0.05 ? "flattening"
+        : "unchanged";
+      trendEl.textContent = "(" + trend + ")";
+    }
 
-    var trend = spreadBps < 0 ? "inverted"
-      : spreadBps > priorSpreadBps + 0.05 ? "steepening"
-      : spreadBps < priorSpreadBps - 0.05 ? "flattening"
-      : "unchanged";
-    trendEl.textContent = "(" + trend + ")";
+    renderYieldCurve((data.series || []).filter(Boolean));
   }
 
   fetch("data/yields.json?t=" + Date.now(), { cache: "no-store" })
@@ -325,16 +356,6 @@
       console.warn("Could not load data/yields.json, showing fallback values:", err);
       renderYields(YIELDS_FALLBACK);
     });
-
-  MC.lineChart(document.getElementById("chart-yield-curve"), {
-    xLabels: ["1M", "3M", "6M", "1Y", "2Y", "5Y", "10Y", "30Y"],
-    series: [
-      { name: "Today", color: MC.css("--accent"), data: [4.98, 4.85, 4.62, 4.20, 3.92, 3.95, 4.21, 4.48] },
-      { name: "1M ago", color: MC.css("--ink-soft"), dashed: true, data: [5.05, 4.95, 4.78, 4.40, 4.05, 4.02, 4.24, 4.46] }
-    ],
-    yFmt: function (v) { return v.toFixed(1) + "%"; },
-    maxXLabels: 8
-  });
 })();
 </script>
 </body>
