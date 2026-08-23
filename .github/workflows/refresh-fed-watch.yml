@@ -1,0 +1,39 @@
+name: Refresh Fed Watch odds
+
+on:
+  schedule:
+    # Once per weekday morning (12:15 UTC = ~8:15am ET, covers EDT/EST) --
+    # FOMC-implied odds move on economic data, not by the minute, so this
+    # doesn't need the twice-daily cadence used for the sentiment feeds.
+    - cron: "15 12 * * 1-5"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-fed-watch
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Fetch latest Fed Watch odds
+        run: node market_report/scripts/fetch-fed-watch.mjs
+
+      - name: Commit data if changed
+        run: |
+          git config user.name "market-desk-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add market_report/data/fed-watch.json
+          git diff --cached --quiet || git commit -m "Refresh Fed Watch odds"
+          git push

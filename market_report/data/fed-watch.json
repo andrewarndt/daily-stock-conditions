@@ -1,0 +1,70 @@
+{
+  "updated": "2026-08-23T07:46:38.302890Z",
+  "source": "live",
+  "live": true,
+  "provider": "Kalshi (KXFEDDECISION)",
+  "meetings": [
+    {
+      "date": "2026-09-16T18:00:00Z",
+      "label": "FOMC \u2014 Sep 16, 2026",
+      "buckets": [
+        {
+          "key": "cut50",
+          "label": "Cut 50+ bp",
+          "pct": 0.5
+        },
+        {
+          "key": "cut25",
+          "label": "Cut 25 bp",
+          "pct": 0.5
+        },
+        {
+          "key": "hold",
+          "label": "Hold",
+          "pct": 67.2
+        },
+        {
+          "key": "hike25",
+          "label": "Hike 25 bp",
+          "pct": 31.3
+        },
+        {
+          "key": "hike50",
+          "label": "Hike 50+ bp",
+          "pct": 0.5
+        }
+      ]
+    },
+    {
+      "date": "2026-10-28T18:00:00Z",
+      "label": "FOMC \u2014 Oct 28, 2026",
+      "buckets": [
+        {
+          "key": "cut50",
+          "label": "Cut 50+ bp",
+          "pct": 1.5
+        },
+        {
+          "key": "cut25",
+          "label": "Cut 25 bp",
+          "pct": 3.0
+        },
+        {
+          "key": "hold",
+          "label": "Hold",
+          "pct": 71.3
+        },
+        {
+          "key": "hike25",
+          "label": "Hike 25 bp",
+          "pct": 23.3
+        },
+        {
+          "key": "hike50",
+          "label": "Hike 50+ bp",
+          "pct": 1.0
+        }
+      ]
+    }
+  ]
+}
