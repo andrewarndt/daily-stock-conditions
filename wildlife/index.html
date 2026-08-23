@@ -28,6 +28,8 @@
 </div>
 
 <div class="page">
+  <div id="quality-note-slot"></div>
+
   <div class="park-grid" id="park-grid">
     <!-- populated from data/parks.json -->
   </div>
@@ -64,7 +66,7 @@
             </div>
           </div>`;
       }
-      const thumb = photoUrl(park, park.photos[0]);
+      const thumb = webPhotoUrl(park, park.photos[0]);
       return `
         <a class="park-card has-photos" href="gallery.html?park=${encodeURIComponent(park.slug)}">
           <div class="park-cover"><img src="${thumb}" alt="${escapeHtml(park.name)}" loading="lazy"></div>
@@ -77,6 +79,7 @@
     }).join("");
 
     document.getElementById("footer-slot").outerHTML = contactFooterHtml();
+    document.getElementById("quality-note-slot").outerHTML = photoQualityNoteHtml();
   }).catch((err) => {
     console.error("Failed to load parks:", err);
     document.getElementById("park-grid").outerHTML =
