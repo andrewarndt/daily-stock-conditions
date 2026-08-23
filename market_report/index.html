@@ -30,7 +30,7 @@
 <div class="page">
   <div class="page-head">
     <h1>Overview</h1>
-    <p>Where the market stands right now — index levels, the dollar and key commodities, and the latest economic prints, all in one glance.</p>
+    <p>Where the market stands right now — index levels, the dollar, bonds and key commodities, and the latest economic prints, all in one glance.</p>
   </div>
 
   <section>
@@ -45,8 +45,8 @@
 
   <section>
     <div class="section-head">
-      <h2>Dollar &amp; Commodities</h2>
-      <span class="section-note">Spot, as of last print</span>
+      <h2>Dollar, Bonds &amp; Commodities</h2>
+      <span class="section-note">Intermarket snapshot, spot as of last print</span>
     </div>
     <div class="metric-grid" id="commodities-grid">
       <!-- populated from data/overview.json; see script at bottom of page -->
@@ -99,7 +99,9 @@
       { id: "btc", name: "Bitcoin", value: 65081.24, change: 0.24, changeType: "pct", unit: "$", live: false },
       { id: "gold", name: "Gold", value: 4342.35, change: -0.01, changeType: "pct", unit: "$", live: false },
       { id: "silver", name: "Silver", ticker: "SLV", value: 57.50, change: 2.95, changeType: "pct", unit: "$", live: false },
-      { id: "oil", name: "Crude Oil", ticker: "/CL", value: 78.18, change: -2.69, changeType: "pct", unit: "$", live: false }
+      { id: "oil", name: "Crude Oil", ticker: "/CL", value: 78.18, change: -2.69, changeType: "pct", unit: "$", live: false },
+      { id: "bonds", name: "20+ Yr Treasury", ticker: "TLT", value: 82.05, change: 0.01, changeType: "pct", unit: "$", live: false },
+      { id: "commodity_basket", name: "Broad Commodities", ticker: "DBC", value: 24.10, change: 0.42, changeType: "pct", unit: "$", live: false }
     ]
   };
 

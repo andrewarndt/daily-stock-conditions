@@ -17,6 +17,14 @@
  *     endpoint 403s on the free tier -- real-time index data needs the
  *     paid Algo Trader Plus plan. Yahoo was already in use for DXY/Oil, so
  *     reusing it for VIX avoids adding a 5th data provider.)
+ *   - Yahoo Finance (same endpoint) -> TLT (iShares 20+ Year Treasury Bond
+ *     ETF, the bond proxy) and DBC (Invesco DB Commodity Index Tracking
+ *     Fund, a broad multi-commodity basket) for the Dollar & Commodities
+ *     section's intermarket framing (Dark_Pool_Access_and_Full_Gap_
+ *     Checklist.txt item 7 -- stocks/bonds/commodities/currencies
+ *     together, not equities in isolation). Both are ETF prices, not a
+ *     "real index level" the way DXY/oil futures are -- flagged with a
+ *     ticker the same way SPY/DIA/QQQ already are elsewhere in this file.
  *   - Twelve Data (free tier) -> Bitcoin/Gold (real spot quotes) and Silver
  *     (ETF proxy -- XAG/USD is paid-plan-gated on the free tier).
  *   - FRED (St. Louis Fed) -> 10-Yr Treasury constant maturity yield (DGS10).
@@ -67,11 +75,13 @@ const COMMODITY_SYMBOLS = {
 const YAHOO_SYMBOLS = {
   vix: { name: "VIX", symbol: "^VIX", changeType: "abs" }, // real CBOE Volatility Index level
   dxy: { name: "US Dollar Index", symbol: "DX-Y.NYB", ticker: "$DXY" }, // real index level, unitless
-  oil: { name: "Crude Oil", symbol: "CL=F", ticker: "/CL", unit: "$" } // real front-month futures price
+  oil: { name: "Crude Oil", symbol: "CL=F", ticker: "/CL", unit: "$" }, // real front-month futures price
+  bonds: { name: "20+ Yr Treasury", symbol: "TLT", ticker: "TLT", unit: "$" },
+  commodity_basket: { name: "Broad Commodities", symbol: "DBC", ticker: "DBC", unit: "$" }
 };
 
 const INDEX_ORDER = ["sp500", "dow", "nasdaq", "ust10y", "vix"];
-const COMMODITY_ORDER = ["dxy", "btc", "gold", "silver", "oil"];
+const COMMODITY_ORDER = ["dxy", "btc", "gold", "silver", "oil", "bonds", "commodity_basket"];
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -227,12 +237,14 @@ function sortByOrder(items, order) {
 async function main() {
   const previous = await loadPrevious();
 
-  const [stockResults, vix, treasury, dxy, oil] = await Promise.all([
+  const [stockResults, vix, treasury, dxy, oil, bonds, commodityBasket] = await Promise.all([
     fetchAlpacaStocks(ALPACA_STOCK_SYMBOLS, previous),
     fetchYahooCommodity("vix", YAHOO_SYMBOLS.vix, previous),
     fetchTreasuryYield(previous),
     fetchYahooCommodity("dxy", YAHOO_SYMBOLS.dxy, previous),
-    fetchYahooCommodity("oil", YAHOO_SYMBOLS.oil, previous)
+    fetchYahooCommodity("oil", YAHOO_SYMBOLS.oil, previous),
+    fetchYahooCommodity("bonds", YAHOO_SYMBOLS.bonds, previous),
+    fetchYahooCommodity("commodity_basket", YAHOO_SYMBOLS.commodity_basket, previous)
   ]);
   const commodityResults = await fetchTwelveDataSequential(COMMODITY_SYMBOLS, previous);
 
@@ -241,7 +253,7 @@ async function main() {
     INDEX_ORDER
   );
   const commodities = sortByOrder(
-    [dxy, commodityResults.btc, commodityResults.gold, commodityResults.silver, oil],
+    [dxy, commodityResults.btc, commodityResults.gold, commodityResults.silver, oil, bonds, commodityBasket],
     COMMODITY_ORDER
   );
 
