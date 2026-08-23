@@ -13,7 +13,7 @@
     <div class="brand-row">
       <a class="brand" href="index.html">Market <span>Desk</span></a>
       <div class="top-meta">
-        <span class="notice">Illustrative sample data — not live market feeds</span>
+        <span class="notice" id="live-notice">Illustrative sample data — not live market feeds</span>
         <span class="refresh-stamp"><span class="dot"></span>Last refresh: Aug 7, 2026, 4:15&nbsp;PM ET</span>
       </div>
     </div>
@@ -129,6 +129,21 @@
 <script>
 (function () {
   "use strict";
+
+  // Economic Indicators and Treasury Yields are two independent fetches
+  // (both FRED), so the top banner is a single combined message driven by
+  // both -- same pattern as the Sentiment tab's dual-feed notice. Fed Watch
+  // is never counted here: it's a fixed illustrative section, called out on
+  // its own in the footer.
+  var liveStatus = { economic: false, yields: false };
+
+  function updateLiveNotice() {
+    var noticeEl = document.getElementById("live-notice");
+    if (!noticeEl) return;
+    noticeEl.textContent = (liveStatus.economic && liveStatus.yields)
+      ? "Live data — FRED, refreshed once per weekday evening"
+      : "Illustrative sample data — not live market feeds";
+  }
 
   var ECON_FALLBACK = {
     updated: "2026-08-07T20:15:00Z",
@@ -254,6 +269,8 @@
   function renderAll(data) {
     renderEconRows(data);
     renderNextRelease(data);
+    liveStatus.economic = data.source === "live";
+    updateLiveNotice();
   }
 
   fetch("data/economic.json?t=" + Date.now(), { cache: "no-store" })
@@ -344,6 +361,9 @@
     }
 
     renderYieldCurve((data.series || []).filter(Boolean));
+
+    liveStatus.yields = data.source === "live";
+    updateLiveNotice();
   }
 
   fetch("data/yields.json?t=" + Date.now(), { cache: "no-store" })

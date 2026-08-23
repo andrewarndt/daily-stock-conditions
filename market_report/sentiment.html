@@ -106,7 +106,7 @@
 
   <footer>
     <p>Sentiment gauge zones: 0–20 Extreme Fear, 20–40 Fear, 40–60 Neutral, 60–80 Greed, 80–100 Extreme Greed.</p>
-    <p>The Market Sentiment gauge and Put/Call Ratio above are real live feeds (CNN's Fear &amp; Greed Index; Cboe's Total Put/Call Ratio), refreshed morning and evening on weekdays. Consumer Sentiment on this page is still an illustrative placeholder. The Claude Report below is a genuine daily AI-generated read, independently researched each morning — not derived from the figures above, and not investment advice.</p>
+    <p id="feeds-status-note">Checking feed status&hellip;</p>
   </footer>
 </div>
 
@@ -135,6 +135,28 @@
     noticeEl.textContent = sources.length
       ? "Live data — " + sources.join(" & ") + ", refreshed morning & evening on weekdays"
       : "Illustrative sample data — not live market feeds";
+  }
+
+  // Drives the footer sentence off the same liveStatus flags as the top
+  // banner, rather than a hardcoded claim -- so it can't say "real live
+  // feeds" on a day either fetch actually falls back to a placeholder.
+  function updateFeedsStatusNote() {
+    var el = document.getElementById("feeds-status-note");
+    if (!el) return;
+    var live = [], stale = [];
+    (liveStatus.gauge ? live : stale).push("the Market Sentiment gauge (CNN's Fear & Greed Index)");
+    (liveStatus.putcall ? live : stale).push("the Put/Call Ratio (Cboe's Total Put/Call Ratio)");
+
+    var text;
+    if (live.length === 2) {
+      text = "The Market Sentiment gauge and Put/Call Ratio above are real live feeds (CNN's Fear & Greed Index; Cboe's Total Put/Call Ratio), refreshed morning and evening on weekdays.";
+    } else if (live.length === 1) {
+      text = "Of the two, only " + live[0] + " is a live feed right now, refreshed morning and evening on weekdays; " +
+        stale[0] + " is showing an illustrative placeholder value because its feed hasn't reported yet or couldn't be loaded.";
+    } else {
+      text = "The Market Sentiment gauge and Put/Call Ratio above are both showing illustrative placeholder values right now -- neither feed has reported yet, or couldn't be loaded.";
+    }
+    el.textContent = text + " Consumer Sentiment on this page is still an illustrative placeholder. The Claude Report below is a genuine daily AI-generated read, independently researched each morning — not derived from the figures above, and not investment advice.";
   }
 
   var GAUGE_FALLBACK = {
@@ -183,6 +205,7 @@
 
     liveStatus.gauge = isLive;
     updateLiveNotice();
+    updateFeedsStatusNote();
   }
 
   var PUTCALL_FALLBACK = {
@@ -247,6 +270,7 @@
 
     liveStatus.putcall = isLive;
     updateLiveNotice();
+    updateFeedsStatusNote();
   }
 
   var REPORT_FALLBACK = {
