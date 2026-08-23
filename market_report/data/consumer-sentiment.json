@@ -1,10 +1,36 @@
 {
-  "updated": "2026-08-07T20:15:00Z",
-  "source": "seed",
-  "live": false,
-  "value": 68.4,
-  "prior": 66.9,
-  "asof": null,
-  "trend": [64.2, 65.0, 63.8, 62.1, 60.9, 63.4, 65.7, 67.2, 66.5, 66.0, 66.9, 68.4],
-  "trendLabels": ["Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"]
+  "updated": "2026-08-23T14:37:01.708Z",
+  "source": "live",
+  "live": true,
+  "value": 49.5,
+  "prior": 44.8,
+  "asof": "2026-06-01",
+  "trend": [
+    61.7,
+    58.2,
+    55.1,
+    53.6,
+    51,
+    52.9,
+    56.4,
+    56.6,
+    53.3,
+    49.8,
+    44.8,
+    49.5
+  ],
+  "trendLabels": [
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun"
+  ]
 }
