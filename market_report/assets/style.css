@@ -486,9 +486,11 @@ svg .end-label { font-family: var(--font-mono); font-size: 11px; font-weight: 60
 .fw-track { height: 10px; background: var(--line); border-radius: 2px; overflow: hidden; }
 
 .fw-fill { height: 100%; border-radius: 2px; }
+.fw-fill.cut50 { background: var(--up); }
+.fw-fill.cut25 { background: var(--blue); }
 .fw-fill.hold { background: var(--ink-soft); }
-.fw-fill.cut25 { background: var(--up); }
-.fw-fill.cut50 { background: var(--accent); }
+.fw-fill.hike25 { background: var(--accent); }
+.fw-fill.hike50 { background: var(--down); }
 
 .fw-pct { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 0.82rem; text-align: right; }
 
