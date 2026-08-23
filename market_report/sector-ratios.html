@@ -103,8 +103,8 @@
 
   <section>
     <div class="section-head">
-      <h2>Skew Structure<span class="placeholder-flag">static</span></h2>
-      <span class="section-note">SPX options, by strike</span>
+      <h2>Skew Structure<span id="skew-flag"></span></h2>
+      <span class="section-note" id="skew-note">SPX options, by strike</span>
     </div>
     <div class="chart-card">
       <h3>Implied volatility by strike</h3>
@@ -118,7 +118,7 @@
   </section>
 
   <footer>
-    <p>Sector/SPY ratios are live daily closes from Yahoo Finance, refreshed once per weekday after market close -- both weightings: cap-weight from the SPDR sector ETFs against SPY, equal-weight from Invesco's RSP-family sector ETFs against RSP. Constituent Volatility, Volatility Term Structure, Core 3M, and Dispersion Index are live Cboe index data (VIX9D, VIX, VIX3M, VIX6M, VIX1Y, VIXEQ, DSPX), refreshed on the same schedule. Skew Structure below is still an illustrative placeholder.</p>
+    <p>Sector/SPY ratios are live daily closes from Yahoo Finance, refreshed once per weekday after market close -- both weightings: cap-weight from the SPDR sector ETFs against SPY, equal-weight from Invesco's RSP-family sector ETFs against RSP. Constituent Volatility, Volatility Term Structure, Core 3M, and Dispersion Index are live Cboe index data (VIX9D, VIX, VIX3M, VIX6M, VIX1Y, VIXEQ, DSPX), refreshed on the same schedule. <span id="skew-status-note">Skew Structure below is still an illustrative placeholder.</span></p>
     <p>Badges mark each sector's ratio move over the trailing month: green outperforming SPY, red underperforming. The line color is a separate, shorter-term signal: green when the ratio is currently above its own 10-day moving average (dashed line), red when below.</p>
     <p>Credit (HYG) has moved to the <a href="fed-dashboard.html">Fed Dashboard</a> tab, Tier 3 — Financial Conditions &amp; Credit.</p>
   </footer>
@@ -132,6 +132,22 @@
   var SECTOR_ORDER = ["xlk", "xlf", "xlv", "xly", "xlp", "xle", "xli", "xlb", "xlu", "xlre", "xlc"];
   var MA_WINDOW = 10;
   var CHANGE_LOOKBACK_DAYS = 21; // ~1 trading month, drives the % badge only
+
+  // Tracks the newest `updated` timestamp seen across this page's three
+  // independent fetches (Sector Ratios, Volatility, Skew) and reflects it
+  // in the header stamp -- same pattern as sentiment.html / fed-economic.html.
+  var latestStamp = null;
+  function noteUpdated(iso) {
+    var d = new Date(iso);
+    if (isNaN(d) || (latestStamp && d <= latestStamp)) return;
+    latestStamp = d;
+    var el = document.getElementById("refresh-time");
+    if (el) {
+      el.textContent = d.toLocaleString("en-US", {
+        month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", timeZone: "America/New_York"
+      }) + " ET";
+    }
+  }
 
   var FALLBACK = {
     updated: "2026-08-07T20:15:00Z",
@@ -223,17 +239,13 @@
       MC.sparkline(document.getElementById("sector-spark-" + id), ratio, color, { ma: ma });
     });
 
-    var d = new Date(data.updated);
-    var stamp = isNaN(d) ? "unknown" : d.toLocaleString("en-US", {
-      month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", timeZone: "America/New_York"
-    }) + " ET";
-    document.getElementById("refresh-time").textContent = stamp;
     document.getElementById("sector-asof").textContent = "All 11 GICS sectors, " + n + "-day trend, updated after close";
 
     var notice = document.getElementById("live-notice");
     notice.textContent = data.source === "live"
       ? "Live data — Yahoo Finance daily closes, refreshed once per weekday after close"
       : "Illustrative sample data — not live market feeds";
+    if (data.updated) noteUpdated(data.updated);
   }
 
   document.querySelectorAll(".weight-toggle-btn").forEach(function (btn) {
@@ -322,6 +334,7 @@
 
     renderVolRatio(vix, vix3m, labels);
     renderTermStructure(data.termStructure);
+    if (data.updated) noteUpdated(data.updated);
   }
 
   // VIX3M/VIX ratio -- the headline stat for this section (per explicit
@@ -396,15 +409,59 @@
       renderVolatility(VOLATILITY_FALLBACK);
     });
 
-  MC.lineChart(document.getElementById("chart-skew"), {
-    xLabels: ["80%", "85%", "90%", "95%", "100%", "105%", "110%", "115%", "120%"],
-    series: [
-      { name: "Today", color: MC.css("--accent"), data: [29.8, 25.6, 21.9, 18.2, 15.1, 13.2, 12.1, 11.6, 11.3] },
-      { name: "1M ago", color: MC.css("--ink-soft"), dashed: true, data: [28.2, 24.5, 21.0, 17.6, 14.8, 13.0, 12.0, 11.5, 11.2] }
-    ],
-    yFmt: function (v) { return v.toFixed(0) + "%"; },
-    maxXLabels: 9
-  });
+  // Skew Structure -- SPX implied volatility by strike. See
+  // scripts/fetch-skew.mjs (Cboe's public delayed-quotes options chain);
+  // "1 month ago" fills in once the script's own rolling history reaches
+  // back that far, same pattern as the AAII / Put-Call charts on
+  // sentiment.html.
+  var SKEW_FALLBACK = {
+    source: "seed",
+    live: false,
+    asof: null,
+    expiry: null,
+    buckets: [
+      { pct: 80, iv: 29.8 }, { pct: 85, iv: 25.6 }, { pct: 90, iv: 21.9 }, { pct: 95, iv: 18.2 },
+      { pct: 100, iv: 15.1 }, { pct: 105, iv: 13.2 }, { pct: 110, iv: 12.1 }, { pct: 115, iv: 11.6 }, { pct: 120, iv: 11.3 }
+    ]
+  };
+
+  function renderSkew(data) {
+    var flagEl = document.getElementById("skew-flag");
+    var noteEl = document.getElementById("skew-note");
+    var statusEl = document.getElementById("skew-status-note");
+    var buckets = data.buckets || [];
+    if (!buckets.length) return;
+
+    var isLive = data.live === true;
+    flagEl.innerHTML = isLive ? "" : '<span class="placeholder-flag">static</span>';
+    noteEl.textContent = isLive
+      ? "SPX options, by strike, " + data.expiry + " expiry, as of " + data.asof
+      : "SPX options, by strike";
+    statusEl.textContent = isLive
+      ? "Skew Structure below is live SPX options data (Cboe's delayed-quotes chain), refreshed once per weekday after close."
+      : "Skew Structure below is still an illustrative placeholder -- the live feed hasn't reported yet, or couldn't be loaded.";
+
+    var withMonthAgo = buckets.filter(function (b) { return Number.isFinite(b.monthAgo); });
+    MC.lineChart(document.getElementById("chart-skew"), {
+      xLabels: buckets.map(function (b) { return b.pct + "%"; }),
+      series: [
+        { name: "Today", color: MC.css("--accent"), data: buckets.map(function (b) { return b.iv; }) },
+        { name: "1M ago", color: MC.css("--ink-soft"), dashed: true, data: withMonthAgo.length === buckets.length ? buckets.map(function (b) { return b.monthAgo; }) : null }
+      ].filter(function (s) { return s.data; }),
+      yFmt: function (v) { return v.toFixed(0) + "%"; },
+      maxXLabels: 9
+    });
+
+    if (data.updated) noteUpdated(data.updated);
+  }
+
+  fetch("data/skew.json?t=" + Date.now(), { cache: "no-store" })
+    .then(function (res) { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); })
+    .then(renderSkew)
+    .catch(function (err) {
+      console.warn("Could not load data/skew.json, showing fallback values:", err);
+      renderSkew(SKEW_FALLBACK);
+    });
 })();
 </script>
 </body>

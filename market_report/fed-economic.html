@@ -14,7 +14,7 @@
       <a class="brand" href="index.html">Market <span>Desk</span></a>
       <div class="top-meta">
         <span class="notice" id="live-notice">Illustrative sample data — not live market feeds</span>
-        <span class="refresh-stamp"><span class="dot"></span>Last refresh: Aug 7, 2026, 4:15&nbsp;PM ET</span>
+        <span class="refresh-stamp"><span class="dot"></span>Last refresh: <span id="refresh-time">Aug 7, 2026, 4:15&nbsp;PM ET</span></span>
       </div>
     </div>
     <nav class="tabs">
@@ -134,6 +134,22 @@
     noticeEl.textContent = (liveStatus.economic && liveStatus.yields)
       ? "Live data — FRED, refreshed once per weekday evening"
       : "Illustrative sample data — not live market feeds";
+  }
+
+  // Tracks the newest `updated` timestamp seen across this page's several
+  // independent fetches (Economic Indicators, Yields, Fed Watch) and
+  // reflects it in the header stamp -- same pattern as sentiment.html.
+  var latestStamp = null;
+  function noteUpdated(iso) {
+    var d = new Date(iso);
+    if (isNaN(d) || (latestStamp && d <= latestStamp)) return;
+    latestStamp = d;
+    var el = document.getElementById("refresh-time");
+    if (el) {
+      el.textContent = d.toLocaleString("en-US", {
+        month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", timeZone: "America/New_York"
+      }) + " ET";
+    }
   }
 
   var ECON_FALLBACK = {
@@ -269,6 +285,7 @@
     renderNextRelease(data);
     liveStatus.economic = data.source === "live";
     updateLiveNotice();
+    if (data.updated) noteUpdated(data.updated);
   }
 
   fetch("data/economic.json?t=" + Date.now(), { cache: "no-store" })
@@ -362,6 +379,7 @@
 
     liveStatus.yields = data.source === "live";
     updateLiveNotice();
+    if (data.updated) noteUpdated(data.updated);
   }
 
   fetch("data/yields.json?t=" + Date.now(), { cache: "no-store" })
@@ -432,6 +450,7 @@
 
     latestFomcMeetings = meetings;
     if (latestEconData) renderNextRelease(latestEconData);
+    if (data.updated) noteUpdated(data.updated);
   }
 
   fetch("data/fed-watch.json?t=" + Date.now(), { cache: "no-store" })

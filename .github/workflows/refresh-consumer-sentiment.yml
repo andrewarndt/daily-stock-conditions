@@ -1,0 +1,43 @@
+name: Refresh consumer sentiment
+
+on:
+  schedule:
+    # Once per weekday, mid-morning ET (14:10 UTC = 10:10am EDT / 9:10am
+    # EST). UMCSENT is monthly (preliminary mid-month, final month-end), so
+    # most runs are no-ops -- the git diff --quiet guard below handles that,
+    # same as every other FRED-backed refresh here. Staggered 10 min after
+    # refresh-economic.yml so the two don't hit FRED at the same instant.
+    - cron: "10 14 * * 1-5"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-consumer-sentiment
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Fetch latest consumer sentiment
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+        run: node market_report/scripts/fetch-consumer-sentiment.mjs
+
+      - name: Commit data if changed
+        run: |
+          git config user.name "market-desk-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add market_report/data/consumer-sentiment.json
+          git diff --cached --quiet || git commit -m "Refresh consumer sentiment"
+          git push

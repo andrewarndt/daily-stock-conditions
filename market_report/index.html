@@ -71,7 +71,7 @@
   </section>
 
   <footer>
-    <p>Figures on this page are placeholder values for layout purposes and do not reflect real market activity.</p>
+    <p id="overview-status-note">Checking feed status&hellip;</p>
     <p>For the full detail behind each economic print and the Fed's rate path, see <a href="fed-economic.html">Fed &amp; Economic</a>.</p>
   </footer>
 </div>
@@ -137,6 +137,18 @@
   var lastRenderedUpdate = null;
   var lastRenderedEconUpdate = null;
 
+  // Drives the footer sentence off which feeds are actually live, rather
+  // than a hardcoded "placeholder" claim -- same pattern as the footer
+  // status notes on sentiment.html / fed-economic.html.
+  var liveStatus = { overview: false, econ: false };
+  function updateStatusNote() {
+    var el = document.getElementById("overview-status-note");
+    if (!el) return;
+    el.textContent = (liveStatus.overview && liveStatus.econ)
+      ? "Major Indices and Dollar, Bonds & Commodities are live Twelve Data feeds; Economic Snapshot is live FRED data -- all three refresh automatically, no manual reload needed."
+      : "Some figures on this page are showing illustrative placeholder values because a feed hasn't reported yet or couldn't be loaded -- live sections are unmarked, placeholder ones carry a \"static\" flag above.";
+  }
+
   function fmtEconValue(v, unit) {
     if (unit === "%") return v.toFixed(1) + "%";
     if (unit === "M") return v.toFixed(2) + "M";
@@ -166,6 +178,8 @@
         '<td class="muted">' + fmtEconAsOf(r.asof) + '</td>';
       tbody.appendChild(tr);
     });
+    liveStatus.econ = data.source === "live";
+    updateStatusNote();
   }
 
   function loadEconomic() {
@@ -215,6 +229,9 @@
     } else {
       notice.textContent = "Illustrative sample data — not live market feeds";
     }
+
+    liveStatus.overview = data.source === "live";
+    updateStatusNote();
   }
 
   // GitHub Pages serves every file with a fixed 10-minute Cache-Control,

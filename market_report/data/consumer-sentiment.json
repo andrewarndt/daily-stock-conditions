@@ -1,0 +1,10 @@
+{
+  "updated": "2026-08-07T20:15:00Z",
+  "source": "seed",
+  "live": false,
+  "value": 68.4,
+  "prior": 66.9,
+  "asof": null,
+  "trend": [64.2, 65.0, 63.8, 62.1, 60.9, 63.4, 65.7, 67.2, 66.5, 66.0, 66.9, 68.4],
+  "trendLabels": ["Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"]
+}

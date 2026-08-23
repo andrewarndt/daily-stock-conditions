@@ -1,0 +1,42 @@
+name: Refresh SPX skew structure
+
+on:
+  schedule:
+    # Once per weekday, shortly after close (21:30 UTC = ~5:30pm ET,
+    # covering EDT/EST) so the day's curve reflects a settled market rather
+    # than an intraday snapshot -- same after-close timing as
+    # refresh-sector-ratios.yml and refresh-credit.yml. Staggered 10 min
+    # after refresh-sector-ratios.yml so the two don't hit external
+    # endpoints at the same instant.
+    - cron: "30 21 * * 1-5"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-skew
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Fetch latest SPX skew structure
+        run: node market_report/scripts/fetch-skew.mjs
+
+      - name: Commit data if changed
+        run: |
+          git config user.name "market-desk-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add market_report/data/skew.json
+          git diff --cached --quiet || git commit -m "Refresh SPX skew structure"
+          git push
