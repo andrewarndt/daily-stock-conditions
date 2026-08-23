@@ -56,7 +56,7 @@
   <section>
     <div class="section-head">
       <h2>Economic Snapshot</h2>
-      <span class="section-note" id="econ-asof">CPI · PPI · Unemployment</span>
+      <span class="section-note" id="econ-asof">GDP · CPI · PPI · Leading Index · Unemployment · Housing · Industrial Production</span>
     </div>
     <div class="table-wrap">
       <table>
@@ -121,9 +121,14 @@
     updated: "2026-08-07T20:15:00Z",
     source: "seed",
     indicators: [
+      { id: "gdp", name: "Real GDP, QoQ Annualized", desc: "Bureau of Economic Analysis", value: 2.3, prior: 2.8, asof: "2026-04-01", unit: "%", live: false },
       { id: "cpi", name: "CPI, Year-over-Year", desc: "Bureau of Labor Statistics", value: 2.9, prior: 3.1, asof: "2026-06-01", unit: "%", live: false },
       { id: "ppi", name: "PPI, Year-over-Year", desc: "Bureau of Labor Statistics", value: 2.2, prior: 2.4, asof: "2026-06-01", unit: "%", live: false },
-      { id: "unemployment", name: "Unemployment Rate", desc: "Bureau of Labor Statistics", value: 4.1, prior: 4.0, asof: "2026-07-01", unit: "%", live: false }
+      { id: "lei", name: "OECD Leading Indicator (US)", desc: "OECD, amplitude-adjusted, 100 = trend", value: 100.8, prior: 100.7, asof: "2026-06-01", unit: "idx", live: false },
+      { id: "unemployment", name: "Unemployment Rate", desc: "Bureau of Labor Statistics", value: 4.1, prior: 4.0, asof: "2026-07-01", unit: "%", live: false },
+      { id: "housing_starts", name: "Housing Starts, Year-over-Year", desc: "US Census Bureau", value: -3.5, prior: -1.8, asof: "2026-06-01", unit: "%", live: false },
+      { id: "existing_home_sales", name: "Existing Home Sales", desc: "National Association of Realtors", value: 4.06, prior: 4.13, asof: "2026-06-01", unit: "M", live: false },
+      { id: "industrial_production", name: "Industrial Production, Year-over-Year", desc: "Federal Reserve Board", value: 1.4, prior: 1.1, asof: "2026-06-01", unit: "%", live: false }
     ]
   };
 
@@ -131,7 +136,9 @@
   var lastRenderedEconUpdate = null;
 
   function fmtEconValue(v, unit) {
-    return unit === "%" ? v.toFixed(1) + "%" : v.toFixed(1);
+    if (unit === "%") return v.toFixed(1) + "%";
+    if (unit === "M") return v.toFixed(2) + "M";
+    return v.toFixed(1);
   }
 
   function fmtEconAsOf(dateStr) {

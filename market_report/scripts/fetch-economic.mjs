@@ -1,27 +1,64 @@
 #!/usr/bin/env node
 /**
- * Refreshes data/economic.json (CPI / PPI / Unemployment) for the Economic
- * Snapshot table (index.html) and Economic Indicators table
- * (fed-economic.html). Stores raw values -- formatting into display strings
- * happens client-side, same split as fetch-overview.mjs/data/overview.json.
+ * Refreshes data/economic.json (GDP / CPI / PPI / Leading Index /
+ * Unemployment / Housing Starts / Existing Home Sales / Industrial
+ * Production) for the Economic Snapshot table (index.html) and Economic
+ * Indicators table (fed-economic.html). Stores raw values -- formatting
+ * into display strings happens client-side, same split as
+ * fetch-overview.mjs/data/overview.json.
  *
- * Sources:
- *   - FRED (St. Louis Fed) -> CPIAUCSL (CPI, all urban consumers, YoY via
- *     units=pc1) and UNRATE (unemployment rate, seasonally adjusted).
- *   - FRED -> PPIACO ("Producer Price Index by Commodity: All Commodities",
- *     YoY via units=pc1). This is FRED's long-running headline-adjacent PPI
- *     series, NOT the newer "PPI Final Demand" figure financial media often
- *     quotes -- that series isn't freely mirrored on FRED under a stable ID.
- *     Values will track directionally but may differ somewhat in magnitude
- *     from "PPI Final Demand" headlines. Flagged here the same way other
- *     proxy substitutions are flagged elsewhere in this repo.
+ * Expanded per Dark_Pool_Access_and_Full_Gap_Checklist.txt item 6 target
+ * spec (GDP, CPI, PPI, Leading Economic Index, Unemployment, Housing
+ * Starts, Existing Home Sales, [Manufacturing/Services PMI -- see below],
+ * Industrial Production, each with a 12-month rate-of-change overlay).
+ * To keep the table reading as one consistent unit rather than mixing
+ * raw levels with percentages, every series here except Unemployment,
+ * Leading Indicator, and Existing Home Sales (levels/indexes -- see each
+ * below for why) and GDP (already rate-of-change by construction) is
+ * pulled as a year-over-year % change via FRED's units=pc1 transform --
+ * that IS the "12-month rate-of-change overlay" the checklist asks for,
+ * computed server-side rather than client-side.
  *
- * PMI (S&P Global Composite) and ISM Manufacturing are deliberately not part
- * of this dashboard: both are proprietary/subscription-gated with no free
- * live-data source (S&P Global's PMI isn't published anywhere free; FRED
- * discontinued mirroring ISM's PMI in 2016 over licensing), and this project
- * doesn't ship static/illustrative stand-ins for indicators it can't source
- * live -- per team decision.
+ * Sources (all FRED, St. Louis Fed):
+ *   - CPIAUCSL (CPI, all urban consumers, YoY via units=pc1)
+ *   - PPIACO ("Producer Price Index by Commodity: All Commodities", YoY
+ *     via units=pc1). FRED's long-running headline-adjacent PPI series,
+ *     NOT the newer "PPI Final Demand" figure financial media often
+ *     quotes -- that series isn't freely mirrored on FRED under a stable
+ *     ID. Values will track directionally but may differ somewhat in
+ *     magnitude from "PPI Final Demand" headlines. Flagged here the same
+ *     way other proxy substitutions are flagged elsewhere in this repo.
+ *   - UNRATE (unemployment rate, seasonally adjusted, level %)
+ *   - A191RL1Q225SBEA (Real GDP, % change from preceding period, SAAR,
+ *     quarterly) -- already a rate of change, no pc1 transform applied.
+ *   - USALOLITOAASTSAM (OECD Composite Leading Indicator, US, amplitude-
+ *     adjusted, 100 = long-term trend), read as a raw index level, not
+ *     YoY. Substitute for the Conference Board's Leading Economic Index
+ *     the checklist names -- that series isn't freely mirrored on FRED.
+ *     Tried FRED's own USSLIND ("Leading Index for the United States",
+ *     Philadelphia Fed) first since it's an even closer conceptual
+ *     match, but confirmed it was discontinued in April 2020 (frozen at
+ *     Feb 2020 data, verified against a live pull before ruling it out)
+ *     -- the OECD CLI is the closest still-live free alternative.
+ *     Flagged as a substitute the same way the PPI proxy above is.
+ *   - HOUST (Housing Starts, thousands of units, SAAR, YoY via pc1)
+ *   - EXHOSLUSM495S (Existing Home Sales, National Association of
+ *     Realtors via FRED), read as a raw level (millions of units, SAAR),
+ *     NOT YoY. NAR discontinued their old long-running FRED series and
+ *     relaunched this one starting July 2025 -- confirmed against a live
+ *     pull, not assumed -- so there isn't yet a full trailing year to
+ *     pc1-transform (one YoY point is barely computable now, with no
+ *     prior point for a delta or any trend history at all). Revisit
+ *     switching this to YoY once enough monthly history has accumulated.
+ *   - INDPRO (Industrial Production Index, YoY via pc1)
+ *
+ * PMI (S&P Global Composite) and ISM Manufacturing/Services remain
+ * deliberately excluded: both are proprietary/subscription-gated with no
+ * free live-data source (S&P Global's PMI isn't published anywhere free;
+ * FRED discontinued mirroring ISM's PMI in 2016 over licensing), and this
+ * project doesn't ship static/illustrative stand-ins for indicators it
+ * can't source live -- per team decision (unchanged from before this
+ * expansion).
  *
  * Each indicator also carries a `nextRelease` date (YYYY-MM-DD), used by the
  * "Next up" strip on fed-economic.html so that line never needs hand-editing:
@@ -46,7 +83,22 @@ const OUT_PATH = path.join(__dirname, "..", "data", "economic.json");
 
 const FRED_API_KEY = process.env.FRED_API_KEY;
 
-const INDICATOR_ORDER = ["cpi", "ppi", "unemployment"];
+// Order doubles as display order in both tables. Roughly: growth/prices
+// headline pair first, then the forward-looking Leading Index, then
+// labor, then the housing/production detail.
+const INDICATOR_ORDER = ["gdp", "cpi", "ppi", "lei", "unemployment", "housing_starts", "existing_home_sales", "industrial_production"];
+
+const SERIES_DEFS = {
+  gdp: { seriesId: "A191RL1Q225SBEA", unit: "%", name: "Real GDP, QoQ Annualized", desc: "Bureau of Economic Analysis" },
+  cpi: { seriesId: "CPIAUCSL", units: "pc1", unit: "%", name: "CPI, Year-over-Year", desc: "Bureau of Labor Statistics" },
+  ppi: { seriesId: "PPIACO", units: "pc1", unit: "%", name: "PPI, Year-over-Year", desc: "Bureau of Labor Statistics" },
+  lei: { seriesId: "USALOLITOAASTSAM", unit: "idx", name: "OECD Leading Indicator (US)", desc: "OECD, amplitude-adjusted, 100 = trend" },
+  unemployment: { seriesId: "UNRATE", unit: "%", name: "Unemployment Rate", desc: "Bureau of Labor Statistics" },
+  housing_starts: { seriesId: "HOUST", units: "pc1", unit: "%", name: "Housing Starts, Year-over-Year", desc: "US Census Bureau" },
+  // Raw level (millions, SAAR), not YoY -- see header comment for why.
+  existing_home_sales: { seriesId: "EXHOSLUSM495S", divisor: 1e6, unit: "M", name: "Existing Home Sales", desc: "National Association of Realtors" },
+  industrial_production: { seriesId: "INDPRO", units: "pc1", unit: "%", name: "Industrial Production, Year-over-Year", desc: "Federal Reserve Board" }
+};
 
 async function loadPrevious() {
   try {
@@ -75,11 +127,12 @@ async function fetchFredSeries(id, def, previous) {
     const obs = (json.observations || []).filter((o) => o.value !== ".");
     if (obs.length < 2) throw new Error(`not enough observations for ${def.seriesId}`);
 
-    const value = Number(obs[0].value);
-    const prior = Number(obs[1].value);
+    const divisor = def.divisor || 1;
+    const value = Number(obs[0].value) / divisor;
+    const prior = Number(obs[1].value) / divisor;
     if (!Number.isFinite(value) || !Number.isFinite(prior)) throw new Error(`bad values for ${def.seriesId}`);
 
-    const trend = obs.slice(0, 6).reverse().map((o) => Number(o.value));
+    const trend = obs.slice(0, 6).reverse().map((o) => Number(o.value) / divisor);
 
     return {
       id, name: def.name, desc: def.desc,
@@ -128,19 +181,19 @@ function sortByOrder(items, order) {
 async function main() {
   const previous = await loadPrevious();
 
-  const [cpi, ppi, unemployment, cpiNextRelease, ppiNextRelease, unemploymentNextRelease] = await Promise.all([
-    fetchFredSeries("cpi", { seriesId: "CPIAUCSL", units: "pc1", unit: "%", name: "CPI, Year-over-Year", desc: "Bureau of Labor Statistics" }, previous),
-    fetchFredSeries("ppi", { seriesId: "PPIACO", units: "pc1", unit: "%", name: "PPI, Year-over-Year", desc: "Bureau of Labor Statistics" }, previous),
-    fetchFredSeries("unemployment", { seriesId: "UNRATE", unit: "%", name: "Unemployment Rate", desc: "Bureau of Labor Statistics" }, previous),
-    fetchNextReleaseDate("CPIAUCSL", previous.cpi && previous.cpi.nextRelease),
-    fetchNextReleaseDate("PPIACO", previous.ppi && previous.ppi.nextRelease),
-    fetchNextReleaseDate("UNRATE", previous.unemployment && previous.unemployment.nextRelease)
-  ]);
-  if (cpi) cpi.nextRelease = cpiNextRelease;
-  if (ppi) ppi.nextRelease = ppiNextRelease;
-  if (unemployment) unemployment.nextRelease = unemploymentNextRelease;
+  const results = await Promise.all(
+    INDICATOR_ORDER.map(async (id) => {
+      const def = SERIES_DEFS[id];
+      const [series, nextRelease] = await Promise.all([
+        fetchFredSeries(id, def, previous),
+        fetchNextReleaseDate(def.seriesId, previous[id] && previous[id].nextRelease)
+      ]);
+      if (series) series.nextRelease = nextRelease;
+      return series;
+    })
+  );
 
-  const indicators = sortByOrder([cpi, ppi, unemployment], INDICATOR_ORDER);
+  const indicators = sortByOrder(results, INDICATOR_ORDER);
 
   const anyLive = indicators.some((i) => i.live);
   const out = {
