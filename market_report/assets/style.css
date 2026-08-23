@@ -510,6 +510,31 @@ svg .end-label { font-family: var(--font-mono); font-size: 11px; font-weight: 60
 
 .fw-pct { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 0.82rem; text-align: right; }
 
+/* ---------- weight toggle ---------- */
+
+.weight-toggle {
+  display: inline-flex;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+}
+.weight-toggle-btn {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  background: transparent;
+  border: none;
+  padding: 0.45rem 1rem;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.weight-toggle-btn:hover { color: var(--ink); }
+.weight-toggle-btn.active { background: var(--accent); color: var(--paper-raised); }
+
 /* ---------- sector grid ---------- */
 
 .sector-grid {
