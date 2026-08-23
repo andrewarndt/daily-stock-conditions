@@ -394,6 +394,10 @@ tbody tr:last-child td { border-bottom: none; }
 
 td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; text-align: right; }
 
+/* th.num pairs with td.num so numeric-column headers line up over their
+   right-aligned values instead of sitting flush-left over an empty column. */
+th.num { text-align: right; }
+
 td.change.up { color: var(--up); }
 td.change.down { color: var(--down); }
 
