@@ -1,0 +1,40 @@
+name: Refresh COT Index
+
+on:
+  schedule:
+    # CFTC publishes the Traders in Financial Futures report Fridays,
+    # covering the prior Tuesday's positions -- weekly, not something to
+    # poll more than once for. 21:00 UTC = ~5pm ET, comfortably after
+    # CFTC's ~3:30pm ET release.
+    - cron: "0 21 * * 5"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-cot
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Fetch latest COT Index
+        run: node market_report/scripts/fetch-cot.mjs
+
+      - name: Commit data if changed
+        run: |
+          git config user.name "market-desk-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add market_report/data/cot.json
+          git diff --cached --quiet || git commit -m "Refresh COT Index"
+          git push

@@ -1,0 +1,41 @@
+name: Refresh AAII sentiment survey
+
+on:
+  schedule:
+    # Once per weekday morning (12:40 UTC = ~8:40am ET, covers EDT/EST).
+    # AAII only publishes a new number once a week, but the source page
+    # sits behind occasional bot-protection challenges (see
+    # fetch-aaii.mjs) -- a daily check costs little and gives more
+    # chances to get through in the week a fresh number posts.
+    - cron: "40 12 * * 1-5"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-aaii
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Fetch latest AAII sentiment survey
+        run: node market_report/scripts/fetch-aaii.mjs
+
+      - name: Commit data if changed
+        run: |
+          git config user.name "market-desk-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add market_report/data/aaii.json
+          git diff --cached --quiet || git commit -m "Refresh AAII sentiment survey"
+          git push

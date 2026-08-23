@@ -33,6 +33,8 @@
     <p>How fearful or greedy the tape is, what consumers say about the economy, and how options traders are positioned.</p>
   </div>
 
+  <div class="group-label">Volatility &amp; Options</div>
+
   <section>
     <div class="section-head">
       <h2>Market Sentiment<span id="gauge-flag"></span></h2>
@@ -44,26 +46,6 @@
       <div class="gauge-zone" id="gauge-zone">Greed</div>
       <div class="stat-delta" id="gauge-delta"></div>
       <div class="report-meta" id="gauge-meta">Illustrative sample value — not a live feed.</div>
-    </div>
-  </section>
-
-  <section>
-    <div class="section-head">
-      <h2>Consumer Sentiment<span class="placeholder-flag">static</span></h2>
-      <span class="section-note">University of Michigan, preliminary</span>
-    </div>
-    <div class="chart-row">
-      <div class="chart-card">
-        <h3>Index level</h3>
-        <p class="chart-sub">Last 12 months</p>
-        <svg id="chart-consumer-sentiment" width="420" height="200"></svg>
-      </div>
-      <div class="chart-card">
-        <div class="stat-label">Latest reading</div>
-        <div class="stat-value">68.4</div>
-        <div class="stat-delta up">▲ 1.5 pts vs. prior (66.9)</div>
-        <p class="chart-sub" style="margin-top:1rem">Index has climbed for three straight months as inflation expectations eased, though it remains below the 2019 average of ~96.</p>
-      </div>
     </div>
   </section>
 
@@ -90,6 +72,70 @@
 
   <section>
     <div class="section-head">
+      <h2>Consumer Sentiment<span class="placeholder-flag">static</span></h2>
+      <span class="section-note">University of Michigan, preliminary</span>
+    </div>
+    <div class="chart-row">
+      <div class="chart-card">
+        <h3>Index level</h3>
+        <p class="chart-sub">Last 12 months</p>
+        <svg id="chart-consumer-sentiment" width="420" height="200"></svg>
+      </div>
+      <div class="chart-card">
+        <div class="stat-label">Latest reading</div>
+        <div class="stat-value">68.4</div>
+        <div class="stat-delta up">▲ 1.5 pts vs. prior (66.9)</div>
+        <p class="chart-sub" style="margin-top:1rem">Index has climbed for three straight months as inflation expectations eased, though it remains below the 2019 average of ~96.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="group-label">Positioning</div>
+
+  <section>
+    <div class="section-head">
+      <h2>AAII Investor Sentiment<span id="aaii-flag"></span></h2>
+      <span class="section-note" id="aaii-asof">Weekly survey, dates to 1987</span>
+    </div>
+    <div class="chart-row">
+      <div class="chart-card">
+        <h3>Bulls vs. Bears</h3>
+        <p class="chart-sub">Weekly %, history builds up over time from this site's own scrapes</p>
+        <svg id="chart-aaii" width="420" height="200"></svg>
+      </div>
+      <div class="chart-card">
+        <div class="stat-label">Bull&ndash;bear spread</div>
+        <div class="stat-value" id="aaii-spread">--</div>
+        <div class="stat-delta" id="aaii-delta"></div>
+        <p class="chart-sub" style="margin-top:1rem" id="aaii-breakdown">Bullish -- / Neutral -- / Bearish --</p>
+        <div class="report-meta" id="aaii-meta"></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>COT Index &mdash; Leveraged Funds, S&amp;P 500<span id="cot-flag"></span></h2>
+      <span class="section-note" id="cot-asof">CFTC, weekly, trailing 3-yr percentile</span>
+    </div>
+    <div class="chart-row">
+      <div class="chart-card">
+        <h3>Leveraged-fund positioning percentile</h3>
+        <p class="chart-sub">0 = most bearishly positioned in the trailing 3 years, 100 = most bullish</p>
+        <svg id="chart-cot" width="420" height="200"></svg>
+      </div>
+      <div class="chart-card">
+        <div class="stat-label">Latest COT Index</div>
+        <div class="stat-value" id="cot-value">--</div>
+        <div class="stat-delta" id="cot-zone"></div>
+        <p class="chart-sub" style="margin-top:1rem">Stand-in for NAAIM, which moved behind a paid subscription in Aug 2026. Derived from CFTC E-mini S&amp;P 500 futures positioning (Leveraged Funds long minus short, percentile-ranked against its own trailing 3-year range) rather than a manager survey, but reads the same way: high = crowded long/aggressive positioning, low = crowded short/defensive.</p>
+        <div class="report-meta" id="cot-meta"></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
       <h2>Claude Report<span id="report-flag"></span></h2>
       <span class="section-note">Independent daily market read, researched each morning</span>
     </div>
@@ -107,6 +153,7 @@
   <footer>
     <p>Sentiment gauge zones: 0–20 Extreme Fear, 20–40 Fear, 40–60 Neutral, 60–80 Greed, 80–100 Extreme Greed.</p>
     <p id="feeds-status-note">Checking feed status&hellip;</p>
+    <p>AAII Investor Sentiment above is a real live feed, scraped weekly from AAII's own public results page (full 1987-forward history is members-only, so this site's chart builds up its own history week by week). The COT Index is also live, computed weekly from CFTC's public Traders in Financial Futures data -- it's a stand-in for the NAAIM Exposure Index, which moved behind a paid subscription in Aug 2026; it measures a related but different thing (CFTC futures positioning, not a manager survey), so treat it as directionally comparable to NAAIM, not a drop-in replacement.</p>
   </footer>
 </div>
 
@@ -332,6 +379,137 @@
     .catch(function (err) {
       console.warn("Could not load data/putcall.json, showing fallback value:", err);
       renderPutcall(PUTCALL_FALLBACK);
+    });
+
+  // AAII Investor Sentiment -- Positioning group. See scripts/fetch-aaii.mjs
+  // for the free public-page scrape this comes from (AAII's full
+  // historical dataset is members-only).
+  var AAII_FALLBACK = {
+    source: "seed",
+    live: false,
+    asof: null,
+    bullish: 37.5,
+    neutral: 31.0,
+    bearish: 31.5,
+    spread: 6.0,
+    history: []
+  };
+
+  function renderAaii(data) {
+    var flagEl = document.getElementById("aaii-flag");
+    var asofEl = document.getElementById("aaii-asof");
+    var spreadEl = document.getElementById("aaii-spread");
+    var deltaEl = document.getElementById("aaii-delta");
+    var breakdownEl = document.getElementById("aaii-breakdown");
+    var metaEl = document.getElementById("aaii-meta");
+    var history = Array.isArray(data.history) && data.history.length
+      ? data.history
+      : [{ date: data.asof, bullish: data.bullish, neutral: data.neutral, bearish: data.bearish }];
+
+    var isLive = data.live === true;
+    flagEl.innerHTML = isLive ? "" : '<span class="placeholder-flag">static</span>';
+    asofEl.textContent = isLive ? "Weekly survey, week ending " + (data.asof || "--") : "Weekly survey, dates to 1987";
+
+    MC.lineChart(document.getElementById("chart-aaii"), {
+      xLabels: history.map(function (h) { return h.date ? h.date.slice(5) : ""; }),
+      series: [
+        { name: "Bullish", color: MC.css("--up"), data: history.map(function (h) { return h.bullish; }) },
+        { name: "Bearish", color: MC.css("--down"), data: history.map(function (h) { return h.bearish; }) }
+      ],
+      yFmt: function (v) { return v.toFixed(0) + "%"; },
+      maxXLabels: 5
+    });
+
+    var spread = Number.isFinite(data.spread) ? data.spread : data.bullish - data.bearish;
+    spreadEl.textContent = (spread >= 0 ? "+" : "") + spread.toFixed(1) + " pts";
+
+    if (history.length > 1) {
+      var prior = history[history.length - 2];
+      var priorSpread = prior.bullish - prior.bearish;
+      var diff = spread - priorSpread;
+      var cls = diff > 0.05 ? "up" : diff < -0.05 ? "down" : "flat";
+      var arrow = diff > 0.05 ? "▲" : diff < -0.05 ? "▼" : "▬";
+      deltaEl.className = "stat-delta " + cls;
+      deltaEl.textContent = arrow + " " + Math.abs(diff).toFixed(1) + " pts vs. prior week (" + (priorSpread >= 0 ? "+" : "") + priorSpread.toFixed(1) + ")";
+    } else {
+      deltaEl.textContent = "";
+      deltaEl.className = "stat-delta";
+    }
+
+    breakdownEl.textContent = "Bullish " + data.bullish.toFixed(1) + "% / Neutral " + data.neutral.toFixed(1) + "% / Bearish " + data.bearish.toFixed(1) + "%";
+
+    metaEl.textContent = isLive
+      ? "AAII's public weekly results page, refreshed once per weekday. Full 1987-forward history is AAII-members-only; this site's own history builds up week by week from here. Updated " + fmtReportTimestamp(data.updated) + "."
+      : "Illustrative sample value -- the live feed hasn't reported yet, or couldn't be loaded.";
+  }
+
+  fetch("data/aaii.json?t=" + Date.now(), { cache: "no-store" })
+    .then(function (res) { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); })
+    .then(renderAaii)
+    .catch(function (err) {
+      console.warn("Could not load data/aaii.json, showing fallback value:", err);
+      renderAaii(AAII_FALLBACK);
+    });
+
+  // COT Index -- Positioning group, stand-in for NAAIM (see
+  // scripts/fetch-cot.mjs for why and the exact methodology).
+  var COT_FALLBACK = { source: "seed", live: false, windowWeeks: 156, history: [] };
+
+  function cotZone(index) {
+    if (index >= 70) return { label: "Crowded Long", cls: "up" };
+    if (index <= 30) return { label: "Crowded Short", cls: "down" };
+    return { label: "Neutral", cls: "flat" };
+  }
+
+  function renderCot(data) {
+    var flagEl = document.getElementById("cot-flag");
+    var asofEl = document.getElementById("cot-asof");
+    var valueEl = document.getElementById("cot-value");
+    var zoneEl = document.getElementById("cot-zone");
+    var metaEl = document.getElementById("cot-meta");
+    var history = data.history || [];
+
+    var isLive = data.live === true && history.length > 0;
+    flagEl.innerHTML = isLive ? "" : '<span class="placeholder-flag">static</span>';
+
+    if (!history.length) {
+      asofEl.textContent = "CFTC, weekly, trailing 3-yr percentile";
+      valueEl.textContent = "--";
+      zoneEl.textContent = "";
+      zoneEl.className = "stat-delta";
+      metaEl.textContent = "Illustrative sample value -- the live feed hasn't reported yet, or couldn't be loaded.";
+      return;
+    }
+
+    var latest = history[history.length - 1];
+    asofEl.textContent = "CFTC, weekly, as of " + latest.date;
+    valueEl.textContent = latest.index.toFixed(1);
+    var zone = cotZone(latest.index);
+    zoneEl.className = "stat-delta " + zone.cls;
+    zoneEl.textContent = zone.label;
+
+    MC.lineChart(document.getElementById("chart-cot"), {
+      xLabels: history.map(function (h) { return h.date.slice(5); }),
+      series: [{ name: "COT Index", color: MC.css("--blue"), area: true, data: history.map(function (h) { return h.index; }) }],
+      yMin: 0,
+      yMax: 100,
+      referenceLine: { value: 70, label: "crowded long" },
+      referenceLine2: { value: 30, label: "crowded short" },
+      yFmt: function (v) { return v.toFixed(0); },
+      maxXLabels: 6
+    });
+
+    metaEl.textContent = isLive
+      ? "CFTC Traders in Financial Futures report, E-mini S&P 500, refreshed weekly (published Fridays). Updated " + fmtReportTimestamp(data.updated) + "."
+      : "Illustrative sample value -- the live feed hasn't reported yet, or couldn't be loaded.";
+  }
+
+  fetch("data/cot.json?t=" + Date.now(), { cache: "no-store" })
+    .then(function (res) { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); })
+    .then(renderCot)
+    .catch(function (err) {
+      console.warn("Could not load data/cot.json, showing fallback value:", err);
+      renderCot(COT_FALLBACK);
     });
 })();
 </script>
