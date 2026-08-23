@@ -70,7 +70,12 @@
   <section>
     <div class="section-head">
       <h2>SPX Volatility Term Structure<span id="termstructure-flag"></span></h2>
-      <span class="section-note">3M&ndash;30D spread: <strong id="vol-spread-value" style="color:var(--up)">+3.37 pts</strong> <span id="vol-spread-trend">(contango)</span></span>
+      <span class="section-note">VIX3M/VIX: <strong id="vol-ratio-value" style="color:var(--up)">1.22</strong> <span id="vol-ratio-zone">(contango)</span> &middot; 3M&ndash;30D spread: <strong id="vol-spread-value" style="color:var(--up)">+3.37 pts</strong> <span id="vol-spread-trend">(contango)</span></span>
+    </div>
+    <div class="chart-card">
+      <h3>VIX3M / VIX Ratio</h3>
+      <p class="chart-sub">Below 1.0 is backwardation (stress); above 1.2 is steep contango</p>
+      <svg id="chart-vol-ratio" width="900" height="200"></svg>
     </div>
     <div class="chart-card">
       <h3>Front month vs. back month implied vol &mdash; today vs. 1 month ago</h3>
@@ -315,7 +320,39 @@
       });
     }
 
+    renderVolRatio(vix, vix3m, labels);
     renderTermStructure(data.termStructure);
+  }
+
+  // VIX3M/VIX ratio -- the headline stat for this section (per explicit
+  // request: bring it to the top, ahead of the pt-spread already here).
+  // Same regime signal as the 3M-30D spread below, but normalized as a
+  // ratio rather than raw vol points, which is the more standard form
+  // vol traders actually watch and stays comparable across vol regimes
+  // the way a point spread doesn't. Reference lines at 1.0 (the
+  // backwardation/contango boundary) and 1.2 (steep-contango watch
+  // level) per explicit request -- both real, commonly-cited levels.
+  function renderVolRatio(vix, vix3m, labels) {
+    var valueEl = document.getElementById("vol-ratio-value");
+    var zoneEl = document.getElementById("vol-ratio-zone");
+    if (!vix || !vix3m) return;
+
+    var ratios = vix3m.values.map(function (v3, i) { return v3 / vix.values[i]; });
+    var current = ratios[ratios.length - 1];
+    var color = current >= 1 ? MC.css("--up") : MC.css("--down");
+
+    valueEl.textContent = current.toFixed(2);
+    valueEl.style.color = color;
+    zoneEl.textContent = "(" + (current >= 1.2 ? "steep contango" : current >= 1 ? "contango" : "backwardation") + ")";
+
+    MC.lineChart(document.getElementById("chart-vol-ratio"), {
+      xLabels: labels,
+      series: [{ name: "VIX3M/VIX", color: color, area: true, data: ratios }],
+      yFmt: function (v) { return v.toFixed(2); },
+      referenceLine: { value: 1.2, label: "steep contango" },
+      referenceLine2: { value: 1.0, label: "backwardation" },
+      maxXLabels: 6
+    });
   }
 
   function renderTermStructure(list) {
