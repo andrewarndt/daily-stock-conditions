@@ -26,13 +26,24 @@ jobs:
         with:
           node-version: 20
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install Pillow
+        run: pip install Pillow
+
       - name: Regenerate park manifest from folders
         run: node wildlife/scripts/generate-manifest.mjs
 
-      - name: Commit manifest if changed
+      - name: Regenerate fast-loading web copies of photos
+        run: python wildlife/scripts/generate-web-images.py
+
+      - name: Commit manifest and web images if changed
         run: |
           git config user.name "wildlife-desk-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add wildlife/data/parks.json
-          git diff --cached --quiet || git commit -m "Refresh wildlife photo manifest"
+          git add wildlife/data/parks.json wildlife/assets/web
+          git diff --cached --quiet || git commit -m "Refresh wildlife photo manifest and web images"
           git push

@@ -26,6 +26,8 @@
     <p id="park-subtitle"></p>
   </div>
 
+  <div id="quality-note-slot"></div>
+
   <div id="photo-grid" class="photo-grid"></div>
 
   <div id="footer-slot"></div>
@@ -41,6 +43,7 @@
     const subtitleEl = document.getElementById("park-subtitle");
     const gridEl = document.getElementById("photo-grid");
     document.getElementById("footer-slot").outerHTML = contactFooterHtml();
+    document.getElementById("quality-note-slot").outerHTML = photoQualityNoteHtml();
 
     if (!park) {
       titleEl.textContent = "Park not found";
@@ -59,8 +62,9 @@
     }
 
     gridEl.innerHTML = park.photos.map((filename) => {
-      const url = photoUrl(park, filename);
-      return `<a href="${url}" target="_blank" rel="noopener"><img src="${url}" alt="${escapeHtml(park.name)} wildlife photo" loading="lazy"></a>`;
+      const fullUrl = photoUrl(park, filename);
+      const webUrl = webPhotoUrl(park, filename);
+      return `<a href="${fullUrl}" target="_blank" rel="noopener"><img src="${webUrl}" alt="${escapeHtml(park.name)} wildlife photo" loading="lazy"></a>`;
     }).join("");
   });
 </script>
