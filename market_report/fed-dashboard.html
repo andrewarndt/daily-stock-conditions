@@ -19,10 +19,10 @@
     </div>
     <nav class="tabs">
       <a href="index.html" class="tab">Overview</a>
-      <a href="fed-economic.html" class="tab">Fed &amp; Economic</a>
-      <a href="fed-dashboard.html" class="tab active">Fed Dashboard</a>
       <a href="sentiment.html" class="tab">Sentiment</a>
       <a href="sector-ratios.html" class="tab">Sector Ratios</a>
+      <a href="fed-economic.html" class="tab">Fed &amp; Economic</a>
+      <a href="fed-dashboard.html" class="tab active">Fed Dashboard</a>
     </nav>
   </div>
 </div>
@@ -87,10 +87,24 @@
         </tbody>
       </table>
     </div>
+    <div class="chart-row" style="margin-top:1.5rem">
+      <div class="chart-card">
+        <h3>HYG (High Yield Corporate Bond ETF)<span id="credit-flag"></span></h3>
+        <p class="chart-sub" id="credit-asof">Daily close, dashed line is the 10-day moving average</p>
+        <svg id="chart-credit" width="420" height="200"></svg>
+      </div>
+      <div class="chart-card">
+        <div class="stat-label">Latest close</div>
+        <div class="stat-value" id="credit-value">--</div>
+        <div class="stat-delta" id="credit-delta"></div>
+        <p class="chart-sub" style="margin-top:1rem" id="credit-read">Pre-market checklist item: HYG trending confirms or contradicts the regime read -- a rising HYG alongside equities is risk-on agreement; HYG falling while equities hold up is a credit-market warning worth noting.</p>
+        <div class="report-meta" id="credit-meta"></div>
+      </div>
+    </div>
   </section>
 
   <footer>
-    <p>Sourced from FRED (St. Louis Fed) unless noted otherwise. Derived metrics (Net Liquidity, SOFR&ndash;IORB spread, 10Y&ndash;3M spread) are computed client-side from the live series above rather than fetched separately.</p>
+    <p>Sourced from FRED (St. Louis Fed) unless noted otherwise. Derived metrics (Net Liquidity, SOFR&ndash;IORB spread, 10Y&ndash;3M spread) are computed client-side from the live series above rather than fetched separately. HYG in Tier 3 is the exception -- a live daily close from Yahoo Finance, refreshed once per weekday after market close.</p>
     <p>Context only. Not wired into Regime Classifier or Exposure Model. Gate 1 of the Macro Permission Hierarchy still runs on Regime Classifier v2.</p>
   </footer>
 </div>
@@ -296,6 +310,85 @@
     .catch(function (err) {
       console.warn("Could not load data/fed-dashboard.json, showing fallback values:", err);
       render(FALLBACK);
+    });
+
+  // Credit (HYG) -- lives here in Tier 3 rather than as a data-driven row
+  // in the table above, since it's a full price trend rather than a
+  // point-in-time level (see scripts/fetch-credit.mjs). Closes Daily
+  // Pre-Market Checklist item 4 ("Check Credit: HYG trending"); the
+  // Financial Conditions & Credit label above is also where HY OAS will
+  // land once built, as a proper tier-3 SERIES_DEFS row.
+  var CREDIT_MA_WINDOW = 10;
+  var CREDIT_CHANGE_LOOKBACK_DAYS = 21; // ~1 trading month, drives the % delta only
+
+  var CREDIT_FALLBACK = {
+    updated: "2026-08-07T20:15:00Z",
+    source: "seed",
+    live: false,
+    symbol: "HYG",
+    name: "iShares iBoxx High Yield Corp Bond",
+    dates: ["2026-08-03", "2026-08-04", "2026-08-05", "2026-08-06", "2026-08-07"],
+    close: [78.90, 79.05, 78.85, 79.10, 79.20]
+  };
+
+  function renderCredit(data) {
+    var flagEl = document.getElementById("credit-flag");
+    var asofEl = document.getElementById("credit-asof");
+    var valueEl = document.getElementById("credit-value");
+    var deltaEl = document.getElementById("credit-delta");
+    var metaEl = document.getElementById("credit-meta");
+    var close = data.close || [];
+    var dates = data.dates || [];
+    var n = close.length;
+    if (!n) return;
+
+    var isLive = data.live === true;
+    flagEl.innerHTML = isLive ? "" : '<span class="placeholder-flag">static</span>';
+    asofEl.textContent = isLive
+      ? (data.symbol || "HYG") + " daily close, as of " + dates[n - 1] + " -- dashed line is the 10-day moving average"
+      : "Daily close, dashed line is the 10-day moving average";
+
+    var current = close[n - 1];
+    var lookbackIdx = Math.max(0, n - 1 - CREDIT_CHANGE_LOOKBACK_DAYS);
+    var chg = (current / close[lookbackIdx] - 1) * 100;
+    var up = chg >= 0;
+
+    var ma = MC.movingAverage(close, CREDIT_MA_WINDOW);
+    var maLast = ma[n - 1];
+    var aboveMa = maLast == null || current >= maLast;
+    var color = aboveMa ? MC.css("--up") : MC.css("--down");
+
+    valueEl.textContent = "$" + current.toFixed(2);
+    deltaEl.className = "stat-delta " + (up ? "up" : "down");
+    deltaEl.textContent = (up ? "▲ " : "▼ ") + Math.abs(chg).toFixed(1) + "% over trailing month";
+
+    metaEl.textContent = isLive
+      ? "Yahoo Finance daily closes, refreshed once per weekday after market close. Updated " + new Date(data.updated).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", timeZoneName: "short" }) + "."
+      : "Illustrative sample value -- the live feed hasn't reported yet, or couldn't be loaded.";
+
+    // lineChart (unlike sparkline's MA overlay) doesn't tolerate nulls in
+    // series data -- backfill the moving average's warm-up-window nulls
+    // with its first real value so the dashed line still spans the chart.
+    var firstMa = ma.find(function (v) { return v != null; });
+    var maFilled = firstMa == null ? null : ma.map(function (v) { return v == null ? firstMa : v; });
+
+    MC.lineChart(document.getElementById("chart-credit"), {
+      xLabels: dates.map(function (d) { return d.slice(5); }),
+      series: [
+        { name: data.symbol || "HYG", color: color, area: true, data: close },
+        maFilled ? { name: "10-day MA", color: MC.css("--ink-soft"), dashed: true, endLabel: false, data: maFilled } : null
+      ].filter(Boolean),
+      yFmt: function (v) { return "$" + v.toFixed(0); },
+      maxXLabels: 6
+    });
+  }
+
+  fetch("data/credit.json?t=" + Date.now(), { cache: "no-store" })
+    .then(function (res) { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); })
+    .then(renderCredit)
+    .catch(function (err) {
+      console.warn("Could not load data/credit.json, showing fallback values:", err);
+      renderCredit(CREDIT_FALLBACK);
     });
 })();
 </script>

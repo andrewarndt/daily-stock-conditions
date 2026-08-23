@@ -1,15 +1,19 @@
 #!/usr/bin/env node
 /**
  * Refreshes data/credit.json: ~6 months of daily closes for HYG (iShares
- * High Yield Corporate Bond ETF), for the Credit section on
- * sector-ratios.html.
+ * High Yield Corporate Bond ETF), for the Tier 3 -- Financial Conditions
+ * & Credit section on fed-dashboard.html.
  *
  * Closes the P1 gap flagged in Market_Desk_Sprint_Checklist.txt item 5:
  * the existing Daily Pre-Market Checklist's "Check Credit: HYG trending"
  * line had no equivalent on this site. Deliberately the plain HYG price
  * trend the checklist actually asks for -- not a HYG/IEF or HYG/TLT
  * spread proxy -- since that's the cheapest build that closes the real
- * gap, matching every other line item already covered here.
+ * gap, matching every other line item already covered here. Originally
+ * placed on sector-ratios.html; moved to Fed Dashboard's Tier 3 per
+ * Dark_Pool_Access_and_Full_Gap_Checklist.txt Part 3 -- that's the
+ * built-for-purpose home for credit-market indicators (also where HY
+ * OAS will land once built), not a new section elsewhere.
  *
  * Source: same Yahoo Finance unofficial chart endpoint already used by
  * fetch-sector-ratios.mjs (query1.finance.yahoo.com/v8/finance/chart) --
