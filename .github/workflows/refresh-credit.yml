@@ -1,0 +1,40 @@
+name: Refresh credit (HYG) data
+
+on:
+  schedule:
+    # Once per weekday, after market close (~21:15 UTC = 5:15pm EDT / 4:15pm
+    # EST -- comfortable buffer in summer, tight but sufficient in winter).
+    # Same timing as refresh-sector-ratios.yml since it's the same kind of
+    # end-of-day Yahoo Finance close.
+    - cron: "18 21 * * 1-5"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-credit
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Fetch latest HYG credit data
+        run: node market_report/scripts/fetch-credit.mjs
+
+      - name: Commit data if changed
+        run: |
+          git config user.name "market-desk-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add market_report/data/credit.json
+          git diff --cached --quiet || git commit -m "Refresh credit (HYG) data"
+          git push
