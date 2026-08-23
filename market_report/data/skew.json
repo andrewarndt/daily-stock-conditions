@@ -1,0 +1,20 @@
+{
+  "updated": "2026-08-07T20:15:00Z",
+  "source": "seed",
+  "live": false,
+  "asof": null,
+  "expiry": null,
+  "spot": null,
+  "buckets": [
+    { "pct": 80, "iv": 29.8 },
+    { "pct": 85, "iv": 25.6 },
+    { "pct": 90, "iv": 21.9 },
+    { "pct": 95, "iv": 18.2 },
+    { "pct": 100, "iv": 15.1 },
+    { "pct": 105, "iv": 13.2 },
+    { "pct": 110, "iv": 12.1 },
+    { "pct": 115, "iv": 11.6 },
+    { "pct": 120, "iv": 11.3 }
+  ],
+  "history": []
+}

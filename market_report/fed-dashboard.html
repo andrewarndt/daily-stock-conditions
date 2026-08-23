@@ -41,7 +41,7 @@
   <section>
     <div class="section-head">
       <h2>Tier 1 — Policy &amp; Rate Path</h2>
-      <span class="section-note">Being built out line by line — check back soon</span>
+      <span class="section-note" id="tier1-note">Being built out line by line — check back soon</span>
     </div>
     <div class="table-wrap">
       <table>
@@ -58,7 +58,7 @@
   <section>
     <div class="section-head">
       <h2>Tier 2 — Liquidity Plumbing</h2>
-      <span class="section-note">Being built out line by line — check back soon</span>
+      <span class="section-note" id="tier2-note">Being built out line by line — check back soon</span>
     </div>
     <div class="table-wrap">
       <table>
@@ -75,7 +75,7 @@
   <section>
     <div class="section-head">
       <h2>Tier 3 — Financial Conditions &amp; Credit</h2>
-      <span class="section-note">Being built out line by line — check back soon</span>
+      <span class="section-note" id="tier3-note">Being built out line by line — check back soon</span>
     </div>
     <div class="table-wrap">
       <table>
@@ -177,8 +177,17 @@
     return '<div class="metric-change ' + cls + '" style="margin-bottom:0.3rem">' + r.condition + '</div><div>' + value + '</div>';
   }
 
-  function renderTier(tbodyId, items) {
+  // Once a tier actually has rows, the "Being built out line by line"
+  // caption (Task 4's exact-change #4) no longer applies -- swap in a
+  // real source line, same tone as every other populated section-note on
+  // this site (see fed-economic.html's Treasury Yields section-note).
+  var TIER_NOTE_LIVE = "Sourced from FRED, refreshed once per weekday morning";
+  var TIER_NOTE_EMPTY = "Being built out line by line — check back soon";
+
+  function renderTier(tbodyId, noteId, items) {
     var tbody = document.getElementById(tbodyId);
+    var noteEl = document.getElementById(noteId);
+    if (noteEl) noteEl.textContent = items.length ? TIER_NOTE_LIVE : TIER_NOTE_EMPTY;
     if (!items.length) {
       tbody.innerHTML = '<tr><td colspan="4" class="muted">Not yet added.</td></tr>';
       return;
@@ -274,8 +283,65 @@
     };
   }
 
-  function render(data) {
-    var series = data.series || [];
+  // 10Y-3M spread, in bps -- the classic recession-watch yield-curve
+  // measure (distinct from the 2s10s spread already shown on
+  // fed-economic.html). Sourced from data/yields.json rather than
+  // duplicated here, per the file-header note above: it's arithmetic on
+  // values already live elsewhere on the site, not a second fetch of the
+  // same FRED series.
+  function computeYieldCurveSpread(yieldsSeries) {
+    if (!yieldsSeries) return null;
+    var byId = {};
+    yieldsSeries.forEach(function (s) { byId[s.id] = s; });
+    var three = byId["3mo"], ten = byId["10y"];
+    if (!three || !ten || !Number.isFinite(three.value) || !Number.isFinite(ten.value)) return null;
+
+    var spreadNow = (ten.value - three.value) * 100;
+    var havePriors = Number.isFinite(three.prior) && Number.isFinite(ten.prior);
+    var trend = null, trendChange = null;
+    if (havePriors) {
+      var spreadPrior = (ten.prior - three.prior) * 100;
+      trendChange = spreadNow - spreadPrior;
+      trend = trendChange > 0 ? "up" : trendChange < 0 ? "down" : "flat";
+    }
+
+    return {
+      name: "10Y − 3M Spread (derived)",
+      unit: "bps",
+      value: spreadNow,
+      trend: trend,
+      trendChange: trendChange,
+      trendLabel: "since last refresh",
+      condition: spreadNow < 0 ? "Inverted" : undefined,
+      conditionClass: spreadNow < 0 ? "down" : undefined,
+      asof: [three.asof, ten.asof].sort()[0],
+      live: !!(three.live && ten.live)
+    };
+  }
+
+  // Tracks the newest `updated` timestamp seen across this page's two
+  // independent fetches (Fed Dashboard series, Treasury Yields) and
+  // reflects it in the header stamp -- same pattern as sentiment.html /
+  // fed-economic.html.
+  var latestStamp = null;
+  function noteUpdated(iso) {
+    var d = new Date(iso);
+    if (isNaN(d) || (latestStamp && d <= latestStamp)) return;
+    latestStamp = d;
+    var el = document.getElementById("refresh-time");
+    if (el) {
+      el.textContent = d.toLocaleString("en-US", {
+        month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", timeZone: "America/New_York"
+      }) + " ET";
+    }
+  }
+
+  var latestDashboard = null;
+  var latestYields = null;
+
+  function renderAll() {
+    if (!latestDashboard) return;
+    var series = latestDashboard.series || [];
     var byId = {};
     series.forEach(function (r) { byId[r.id] = r; });
 
@@ -287,29 +353,35 @@
     if (netLiquidity) tier2Items = tier2Items.concat([netLiquidity]);
     if (sofrIorbSpread) tier2Items = tier2Items.concat([sofrIorbSpread]);
 
-    renderTier("tier1-rows", tier1Items);
-    renderTier("tier2-rows", tier2Items);
-    renderTier("tier3-rows", series.filter(function (r) { return r.tier === 3; }));
+    var tier3Items = series.filter(function (r) { return r.tier === 3; });
+    var yieldCurveSpread = computeYieldCurveSpread(latestYields && latestYields.series);
+    if (yieldCurveSpread) tier3Items = tier3Items.concat([yieldCurveSpread]);
+
+    renderTier("tier1-rows", "tier1-note", tier1Items);
+    renderTier("tier2-rows", "tier2-note", tier2Items);
+    renderTier("tier3-rows", "tier3-note", tier3Items);
     renderStressBanner(series);
 
-    var d = new Date(data.updated);
-    var stamp = isNaN(d) ? "unknown" : d.toLocaleString("en-US", {
-      month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", timeZone: "America/New_York"
-    }) + " ET";
-    document.getElementById("refresh-time").textContent = stamp;
-
     var notice = document.getElementById("live-notice");
-    notice.textContent = data.source === "live"
+    notice.textContent = latestDashboard.source === "live"
       ? "Live data — FRED, refreshed once per weekday morning"
       : "Illustrative sample data — not live market feeds";
   }
 
   fetch("data/fed-dashboard.json?t=" + Date.now(), { cache: "no-store" })
     .then(function (res) { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); })
-    .then(render)
+    .then(function (data) { latestDashboard = data; renderAll(); if (data.updated) noteUpdated(data.updated); })
     .catch(function (err) {
       console.warn("Could not load data/fed-dashboard.json, showing fallback values:", err);
-      render(FALLBACK);
+      latestDashboard = FALLBACK;
+      renderAll();
+    });
+
+  fetch("data/yields.json?t=" + Date.now(), { cache: "no-store" })
+    .then(function (res) { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); })
+    .then(function (data) { latestYields = data; renderAll(); if (data.updated) noteUpdated(data.updated); })
+    .catch(function (err) {
+      console.warn("Could not load data/yields.json, 10Y-3M spread will be omitted:", err);
     });
 
   // Credit (HYG) -- lives here in Tier 3 rather than as a data-driven row
@@ -365,6 +437,7 @@
     metaEl.textContent = isLive
       ? "Yahoo Finance daily closes, refreshed once per weekday after market close. Updated " + new Date(data.updated).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", timeZoneName: "short" }) + "."
       : "Illustrative sample value -- the live feed hasn't reported yet, or couldn't be loaded.";
+    if (data.updated) noteUpdated(data.updated);
 
     // lineChart (unlike sparkline's MA overlay) doesn't tolerate nulls in
     // series data -- backfill the moving average's warm-up-window nulls
