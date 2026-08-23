@@ -28,7 +28,11 @@
    * General-purpose line/area chart with gridlines, axis labels, an
    * optional threshold reference line, per-point hover tooltips (native
    * <title>), and direct end-of-line labels. One y-axis only — pass
-   * multiple `series` to compare values on the same scale.
+   * multiple `series` to compare values on the same scale. Set a series'
+   * own `endLabel: false` to suppress just that one's label (e.g. a
+   * moving-average overlay that converges with its source line near the
+   * end and would otherwise collide with it) without losing labels on
+   * the rest via the chart-wide `opts.endLabels`.
    */
   function lineChart(svg, opts) {
     svg.innerHTML = "";
@@ -94,7 +98,7 @@
       var lastI = s.data.length - 1;
       var cx = x(lastI), cy = y(s.data[lastI]);
       el("circle", { cx: cx, cy: cy, r: 4, fill: s.color, stroke: css("--paper-raised"), "stroke-width": 2 }, svg);
-      if (opts.endLabels !== false) {
+      if (opts.endLabels !== false && s.endLabel !== false) {
         var anchor = (cx > padL + innerW - 60) ? "end" : "start";
         var lx = anchor === "end" ? cx - 8 : cx + 8;
         el("text", { x: lx, y: cy - 8, class: "end-label", "text-anchor": anchor }, svg).textContent = s.name + " " + yFmt(s.data[lastI]);

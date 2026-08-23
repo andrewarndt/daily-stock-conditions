@@ -1,8 +1,20 @@
 #!/usr/bin/env node
 /**
- * Refreshes data/sector-ratios.json: ~6 months of daily closes for SPY and
- * all 11 sector SPDR ETFs, stored as a rolling array rather than
- * re-fetched from scratch every run.
+ * Refreshes data/sector-ratios.json: ~6 months of daily closes for SPY,
+ * RSP (its equal-weight counterpart), and all 11 GICS sectors in both
+ * cap-weight (SPDR "XL*" ETFs) and equal-weight (Invesco "RSP*" ETFs)
+ * form, stored as a rolling array rather than re-fetched from scratch
+ * every run.
+ *
+ * Equal-weight side added per Dark_Pool_Access_and_Full_Gap_Checklist.txt
+ * item 5: the existing Sector/SPY Ratio panel is effectively cap-weighted
+ * (a sector ETF's own price is cap-weighted by construction), which can't
+ * tell you whether a sector's strength is broad or concentrated in one or
+ * two mega-caps. Equal-weight tickers confirmed against the live endpoint
+ * before wiring in, not assumed -- Invesco renamed this whole ETF family
+ * in 2023 (e.g. RYT -> RSPT), so an older ticker list would be stale.
+ * The page renders a toggle between the two rather than a second row of
+ * cards -- see sector-ratios.html.
  *
  * Source: Yahoo Finance's unofficial chart endpoint
  * (query1.finance.yahoo.com/v8/finance/chart/{symbol}) -- free, no API
@@ -18,12 +30,13 @@
  * existing stored series by date (new values overwrite, e.g. if today's
  * bar was still settling last time). The merged series is then trimmed to
  * the trailing MAX_DAYS trading days -- at ~21 trading days/month, 130
- * covers 6 months with a small buffer, and the whole file stays a few
- * hundred KB at most for 12 symbols.
+ * covers 6 months with a small buffer, and the whole file stays under a
+ * couple hundred KB even at 24 symbols.
  *
- * The ratio itself (sector close / SPY close) is NOT computed here -- the
- * page computes it client-side from the two aligned close arrays, so nothing
- * needs recomputing if the ratio definition ever changes.
+ * The ratio itself (sector close / SPY close, either weighting) is NOT
+ * computed here -- the page computes it client-side from the aligned
+ * close arrays, so nothing needs recomputing if the ratio definition
+ * ever changes.
  */
 
 import { readFile, writeFile } from "node:fs/promises";
@@ -38,17 +51,17 @@ const RANGE_BACKFILL = "1y";
 const RANGE_INCREMENTAL = "1mo";
 
 const SECTORS = {
-  xlk: { name: "Technology", ticker: "XLK" },
-  xlf: { name: "Financials", ticker: "XLF" },
-  xlv: { name: "Health Care", ticker: "XLV" },
-  xly: { name: "Consumer Disc.", ticker: "XLY" },
-  xlp: { name: "Consumer Staples", ticker: "XLP" },
-  xle: { name: "Energy", ticker: "XLE" },
-  xli: { name: "Industrials", ticker: "XLI" },
-  xlb: { name: "Materials", ticker: "XLB" },
-  xlu: { name: "Utilities", ticker: "XLU" },
-  xlre: { name: "Real Estate", ticker: "XLRE" },
-  xlc: { name: "Communication Svcs.", ticker: "XLC" }
+  xlk: { name: "Technology", ticker: "XLK", equalTicker: "RSPT" },
+  xlf: { name: "Financials", ticker: "XLF", equalTicker: "RSPF" },
+  xlv: { name: "Health Care", ticker: "XLV", equalTicker: "RSPH" },
+  xly: { name: "Consumer Disc.", ticker: "XLY", equalTicker: "RSPD" },
+  xlp: { name: "Consumer Staples", ticker: "XLP", equalTicker: "RSPS" },
+  xle: { name: "Energy", ticker: "XLE", equalTicker: "RSPG" },
+  xli: { name: "Industrials", ticker: "XLI", equalTicker: "RSPN" },
+  xlb: { name: "Materials", ticker: "XLB", equalTicker: "RSPM" },
+  xlu: { name: "Utilities", ticker: "XLU", equalTicker: "RSPU" },
+  xlre: { name: "Real Estate", ticker: "XLRE", equalTicker: "RSPR" },
+  xlc: { name: "Communication Svcs.", ticker: "XLC", equalTicker: "RSPC" }
 };
 
 async function loadPrevious() {
@@ -62,13 +75,20 @@ async function loadPrevious() {
       return map;
     };
     const spyMap = toMap(json.spy);
+    const spyEqualMap = toMap(json.spyEqualWeight);
     const sectorMaps = {};
+    const sectorEqualMaps = {};
     for (const id of Object.keys(SECTORS)) {
       sectorMaps[id] = toMap(json.sectors?.[id]?.close);
+      sectorEqualMaps[id] = toMap(json.sectors?.[id]?.closeEqualWeight);
     }
-    return { hasPrevious: dates.length > 0, spyMap, sectorMaps };
+    return { hasPrevious: dates.length > 0, spyMap, spyEqualMap, sectorMaps, sectorEqualMaps };
   } catch {
-    return { hasPrevious: false, spyMap: {}, sectorMaps: Object.fromEntries(Object.keys(SECTORS).map((id) => [id, {}])) };
+    return {
+      hasPrevious: false, spyMap: {}, spyEqualMap: {},
+      sectorMaps: Object.fromEntries(Object.keys(SECTORS).map((id) => [id, {}])),
+      sectorEqualMaps: Object.fromEntries(Object.keys(SECTORS).map((id) => [id, {}]))
+    };
   }
 }
 
@@ -123,15 +143,18 @@ async function fetchAndMerge(symbol, prevMap, range) {
 }
 
 async function main() {
-  const { hasPrevious, spyMap, sectorMaps } = await loadPrevious();
+  const { hasPrevious, spyMap, spyEqualMap, sectorMaps, sectorEqualMaps } = await loadPrevious();
   const range = hasPrevious ? RANGE_INCREMENTAL : RANGE_BACKFILL;
 
   const spyResult = await fetchAndMerge("SPY", spyMap, range);
+  const spyEqualResult = await fetchAndMerge("RSP", spyEqualMap, range);
   const mergedSpyMap = spyResult.map;
 
   const sectorResults = {};
+  const sectorEqualResults = {};
   for (const [id, def] of Object.entries(SECTORS)) {
     sectorResults[id] = await fetchAndMerge(def.ticker, sectorMaps[id], range);
+    sectorEqualResults[id] = await fetchAndMerge(def.equalTicker, sectorEqualMaps[id], range);
   }
 
   if (Object.keys(mergedSpyMap).length === 0) {
@@ -140,6 +163,7 @@ async function main() {
 
   const dates = Object.keys(mergedSpyMap).sort().slice(-MAX_DAYS);
   const spy = alignToDates(mergedSpyMap, dates);
+  const spyEqualWeight = alignToDates(spyEqualResult.map, dates);
 
   const sectors = {};
   for (const [id, def] of Object.entries(SECTORS)) {
@@ -147,22 +171,28 @@ async function main() {
       name: def.name,
       ticker: def.ticker,
       close: alignToDates(sectorResults[id].map, dates),
-      live: sectorResults[id].live
+      live: sectorResults[id].live,
+      equalTicker: def.equalTicker,
+      closeEqualWeight: alignToDates(sectorEqualResults[id].map, dates),
+      equalWeightLive: sectorEqualResults[id].live
     };
   }
 
   const out = {
     updated: new Date().toISOString(),
     source: spyResult.live ? "live" : "seed",
-    spyLive: spyResult.live, // every ratio depends on SPY as the denominator; the page ANDs this with each sector's own live flag
+    spyLive: spyResult.live, // every cap-weight ratio depends on SPY as the denominator; the page ANDs this with each sector's own live flag
+    spyEqualWeightLive: spyEqualResult.live, // same, for RSP and the equal-weight ratios
     dates,
     spy,
+    spyEqualWeight,
     sectors
   };
 
   await writeFile(OUT_PATH, JSON.stringify(out) + "\n", "utf8");
-  const liveCount = [spyResult, ...Object.values(sectorResults)].filter((r) => r.live).length;
-  console.log(`Wrote ${OUT_PATH}: ${dates.length} trading days, ${liveCount}/12 symbols live this run.`);
+  const allResults = [spyResult, spyEqualResult, ...Object.values(sectorResults), ...Object.values(sectorEqualResults)];
+  const liveCount = allResults.filter((r) => r.live).length;
+  console.log(`Wrote ${OUT_PATH}: ${dates.length} trading days, ${liveCount}/${allResults.length} symbols live this run.`);
 }
 
 main().catch((err) => {

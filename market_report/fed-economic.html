@@ -13,16 +13,16 @@
     <div class="brand-row">
       <a class="brand" href="index.html">Market <span>Desk</span></a>
       <div class="top-meta">
-        <span class="notice">Illustrative sample data — not live market feeds</span>
+        <span class="notice" id="live-notice">Illustrative sample data — not live market feeds</span>
         <span class="refresh-stamp"><span class="dot"></span>Last refresh: Aug 7, 2026, 4:15&nbsp;PM ET</span>
       </div>
     </div>
     <nav class="tabs">
       <a href="index.html" class="tab">Overview</a>
-      <a href="fed-economic.html" class="tab active">Fed &amp; Economic</a>
-      <a href="fed-dashboard.html" class="tab">Fed Dashboard</a>
       <a href="sentiment.html" class="tab">Sentiment</a>
       <a href="sector-ratios.html" class="tab">Sector Ratios</a>
+      <a href="fed-economic.html" class="tab active">Fed &amp; Economic</a>
+      <a href="fed-dashboard.html" class="tab">Fed Dashboard</a>
     </nav>
   </div>
 </div>
@@ -46,7 +46,7 @@
     <div class="table-wrap">
       <table>
         <thead>
-          <tr><th>Indicator</th><th>Latest</th><th>Prior</th><th>As of</th><th>Trend</th></tr>
+          <tr><th>Indicator</th><th class="num">Latest</th><th class="num">Prior</th><th>As of</th><th>Trend</th></tr>
         </thead>
         <tbody id="fed-indicator-rows"></tbody>
       </table>
@@ -55,26 +55,17 @@
 
   <section>
     <div class="section-head">
-      <h2>Fed Watch<span class="placeholder-flag">static</span></h2>
-      <span class="section-note">Implied rate-path odds, fed funds futures</span>
+      <h2>Fed Watch<span id="fedwatch-flag"></span></h2>
+      <span class="section-note" id="fedwatch-note">Implied rate-path odds, fed funds futures</span>
     </div>
     <div class="legend">
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--up)"></span>Cut 50+ bp</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--blue)"></span>Cut 25 bp</span>
       <span class="legend-item"><span class="legend-swatch" style="background:var(--ink-soft)"></span>Hold</span>
-      <span class="legend-item"><span class="legend-swatch" style="background:var(--up)"></span>Cut 25 bp</span>
-      <span class="legend-item"><span class="legend-swatch" style="background:var(--accent)"></span>Cut 50 bp</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--accent)"></span>Hike 25 bp</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:var(--down)"></span>Hike 50+ bp</span>
     </div>
-    <div class="fedwatch-meeting">
-      <h3>FOMC — Sep 16–17, 2026</h3>
-      <div class="fw-row"><span class="fw-label">Hold</span><div class="fw-track"><div class="fw-fill hold" style="width:58%"></div></div><span class="fw-pct">58%</span></div>
-      <div class="fw-row"><span class="fw-label">Cut 25 bp</span><div class="fw-track"><div class="fw-fill cut25" style="width:37%"></div></div><span class="fw-pct">37%</span></div>
-      <div class="fw-row"><span class="fw-label">Cut 50 bp</span><div class="fw-track"><div class="fw-fill cut50" style="width:5%"></div></div><span class="fw-pct">5%</span></div>
-    </div>
-    <div class="fedwatch-meeting">
-      <h3>FOMC — Oct 28–29, 2026</h3>
-      <div class="fw-row"><span class="fw-label">Hold</span><div class="fw-track"><div class="fw-fill hold" style="width:31%"></div></div><span class="fw-pct">31%</span></div>
-      <div class="fw-row"><span class="fw-label">Cut 25 bp</span><div class="fw-track"><div class="fw-fill cut25" style="width:52%"></div></div><span class="fw-pct">52%</span></div>
-      <div class="fw-row"><span class="fw-label">Cut 50 bp</span><div class="fw-track"><div class="fw-fill cut50" style="width:17%"></div></div><span class="fw-pct">17%</span></div>
-    </div>
+    <div id="fedwatch-meetings"></div>
   </section>
 
   <section>
@@ -118,8 +109,8 @@
   </section>
 
   <footer>
-    <p>Fed Watch odds are illustrative and do not reflect actual fed funds futures pricing.</p>
-    <p>"Next up" dates: CPI/PPI/Jobs Report come from FRED's own release calendar. FOMC date is read from the Fed Watch section above.</p>
+    <p id="fedwatch-status-note">Fed Watch odds are illustrative and do not reflect actual fed funds futures pricing.</p>
+    <p>"Next up" dates: CPI/PPI/Jobs Report come from FRED's own release calendar. FOMC dates come from the Fed Watch section above.</p>
     <p>All Treasury yields above (1-Month through 30-Year, the 2s10s spread, and the full Yield Curve chart) come from FRED's daily Treasury constant-maturity series, refreshed once per weekday evening.</p>
     <p>For sector-level and options-market detail, see <a href="sector-ratios.html">Sector Ratios</a>.</p>
   </footer>
@@ -130,13 +121,33 @@
 (function () {
   "use strict";
 
+  // Economic Indicators and Treasury Yields are two independent fetches
+  // (both FRED), so the top banner is a single combined message driven by
+  // both -- same pattern as the Sentiment tab's dual-feed notice. Fed Watch
+  // is never counted here: it's a fixed illustrative section, called out on
+  // its own in the footer.
+  var liveStatus = { economic: false, yields: false };
+
+  function updateLiveNotice() {
+    var noticeEl = document.getElementById("live-notice");
+    if (!noticeEl) return;
+    noticeEl.textContent = (liveStatus.economic && liveStatus.yields)
+      ? "Live data — FRED, refreshed once per weekday evening"
+      : "Illustrative sample data — not live market feeds";
+  }
+
   var ECON_FALLBACK = {
     updated: "2026-08-07T20:15:00Z",
     source: "seed",
     indicators: [
+      { id: "gdp", name: "Real GDP, QoQ Annualized", desc: "Bureau of Economic Analysis", value: 2.3, prior: 2.8, asof: "2026-04-01", unit: "%", trend: [3.1, 2.6, 2.9, 3.4, 2.8, 2.3], live: false, nextRelease: "2026-09-25" },
       { id: "cpi", name: "CPI, Year-over-Year", desc: "Bureau of Labor Statistics", value: 2.9, prior: 3.1, asof: "2026-06-01", unit: "%", trend: [3.6, 3.4, 3.3, 3.2, 3.1, 2.9], live: false, nextRelease: "2026-08-13" },
       { id: "ppi", name: "PPI, Year-over-Year", desc: "Bureau of Labor Statistics", value: 2.2, prior: 2.4, asof: "2026-06-01", unit: "%", trend: [2.8, 2.7, 2.6, 2.5, 2.4, 2.2], live: false, nextRelease: "2026-08-14" },
-      { id: "unemployment", name: "Unemployment Rate", desc: "Bureau of Labor Statistics", value: 4.1, prior: 4.0, asof: "2026-07-01", unit: "%", trend: [3.8, 3.9, 3.9, 4.0, 4.0, 4.1], live: false, nextRelease: "2026-09-04" }
+      { id: "lei", name: "OECD Leading Indicator (US)", desc: "OECD, amplitude-adjusted, 100 = trend", value: 100.8, prior: 100.7, asof: "2026-06-01", unit: "idx", trend: [100.1, 100.2, 100.4, 100.5, 100.7, 100.8], live: false, nextRelease: "2026-09-19" },
+      { id: "unemployment", name: "Unemployment Rate", desc: "Bureau of Labor Statistics", value: 4.1, prior: 4.0, asof: "2026-07-01", unit: "%", trend: [3.8, 3.9, 3.9, 4.0, 4.0, 4.1], live: false, nextRelease: "2026-09-04" },
+      { id: "housing_starts", name: "Housing Starts, Year-over-Year", desc: "US Census Bureau", value: -3.5, prior: -1.8, asof: "2026-06-01", unit: "%", trend: [-1.0, -2.2, -1.5, -2.6, -1.8, -3.5], live: false, nextRelease: "2026-09-17" },
+      { id: "existing_home_sales", name: "Existing Home Sales", desc: "National Association of Realtors", value: 4.06, prior: 4.13, asof: "2026-06-01", unit: "M", trend: [4.03, 4.03, 4.08, 4.11, 4.09, 4.06], live: false, nextRelease: "2026-09-21" },
+      { id: "industrial_production", name: "Industrial Production, Year-over-Year", desc: "Federal Reserve Board", value: 1.4, prior: 1.1, asof: "2026-06-01", unit: "%", trend: [0.6, 0.8, 0.9, 1.0, 1.1, 1.4], live: false, nextRelease: "2026-09-16" }
     ]
   };
 
@@ -168,20 +179,17 @@
     return d.toLocaleString("en-US", { month: "short", year: "numeric", timeZone: "UTC" });
   }
 
-  // Reads FOMC meeting dates straight off the Fed Watch section below,
-  // rather than keeping a second hardcoded copy in sync with it.
+  // FOMC meeting dates come from the Fed Watch fetch (data/fed-watch.json,
+  // set by renderFedWatch below) rather than a second hardcoded copy here.
+  // Economic Indicators and Fed Watch are independent fetches that can
+  // resolve in either order, so this starts empty and renderNextRelease()
+  // is re-run once each one lands (see calls at the bottom of both).
+  var latestFomcMeetings = [];
+
   function fomcReleases() {
-    var out = [];
-    document.querySelectorAll(".fedwatch-meeting h3").forEach(function (h3) {
-      // "FOMC — Sep 16–17, 2026" -> first day of the range.
-      var m = h3.textContent.match(/([A-Za-z]{3,9})\s+(\d{1,2})(?:[–-]\d{1,2})?,\s*(\d{4})/);
-      if (!m) return;
-      var d = new Date(m[1] + " " + m[2] + ", " + m[3]);
-      if (isNaN(d)) return;
-      var iso = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
-      out.push({ name: "FOMC Rate Decision", period: "—", date: iso, desc: "Federal Reserve" });
+    return latestFomcMeetings.map(function (m) {
+      return { name: "FOMC Rate Decision", period: "—", date: m.date.slice(0, 10), desc: "Federal Reserve" };
     });
-    return out;
   }
 
   function buildReleaseCalendar(data) {
@@ -192,6 +200,8 @@
       });
     return fromIndicators.concat(fomcReleases());
   }
+
+  var latestEconData = null;
 
   function renderNextRelease(data) {
     var el = document.getElementById("next-release-text");
@@ -223,7 +233,9 @@
   }
 
   function fmtEconValue(v, unit) {
-    return unit === "%" ? v.toFixed(1) + "%" : v.toFixed(1);
+    if (unit === "%") return v.toFixed(1) + "%";
+    if (unit === "M") return v.toFixed(2) + "M";
+    return v.toFixed(1);
   }
 
   function fmtEconAsOf(dateStr) {
@@ -252,8 +264,11 @@
   }
 
   function renderAll(data) {
+    latestEconData = data;
     renderEconRows(data);
     renderNextRelease(data);
+    liveStatus.economic = data.source === "live";
+    updateLiveNotice();
   }
 
   fetch("data/economic.json?t=" + Date.now(), { cache: "no-store" })
@@ -344,6 +359,9 @@
     }
 
     renderYieldCurve((data.series || []).filter(Boolean));
+
+    liveStatus.yields = data.source === "live";
+    updateLiveNotice();
   }
 
   fetch("data/yields.json?t=" + Date.now(), { cache: "no-store" })
@@ -352,6 +370,76 @@
     .catch(function (err) {
       console.warn("Could not load data/yields.json, showing fallback values:", err);
       renderYields(YIELDS_FALLBACK);
+    });
+
+  // Fed Watch: real implied FOMC odds from Kalshi's public market data
+  // (see scripts/fetch-fed-watch.mjs for how data/fed-watch.json is built
+  // and why -- CME FedWatch itself requires a paid API). Each meeting's
+  // bucket percentages are pre-normalized server-side to sum to 100.
+  var FEDWATCH_FALLBACK = {
+    source: "seed",
+    live: false,
+    meetings: [
+      {
+        date: "2026-09-16", label: "FOMC — Sep 16, 2026",
+        buckets: [
+          { key: "cut50", label: "Cut 50+ bp", pct: 5 },
+          { key: "cut25", label: "Cut 25 bp", pct: 37 },
+          { key: "hold", label: "Hold", pct: 58 },
+          { key: "hike25", label: "Hike 25 bp", pct: 0 },
+          { key: "hike50", label: "Hike 50+ bp", pct: 0 }
+        ]
+      },
+      {
+        date: "2026-10-28", label: "FOMC — Oct 28, 2026",
+        buckets: [
+          { key: "cut50", label: "Cut 50+ bp", pct: 17 },
+          { key: "cut25", label: "Cut 25 bp", pct: 52 },
+          { key: "hold", label: "Hold", pct: 31 },
+          { key: "hike25", label: "Hike 25 bp", pct: 0 },
+          { key: "hike50", label: "Hike 50+ bp", pct: 0 }
+        ]
+      }
+    ]
+  };
+
+  function renderFedWatch(data) {
+    var flagEl = document.getElementById("fedwatch-flag");
+    var noteEl = document.getElementById("fedwatch-note");
+    var statusEl = document.getElementById("fedwatch-status-note");
+    var container = document.getElementById("fedwatch-meetings");
+    var meetings = data.meetings || [];
+    var isLive = data.live === true && meetings.length > 0;
+
+    flagEl.innerHTML = isLive ? "" : '<span class="placeholder-flag">static</span>';
+    noteEl.textContent = isLive ? "Implied odds, Kalshi (KXFEDDECISION)" : "Implied rate-path odds, fed funds futures";
+    statusEl.textContent = isLive
+      ? "Fed Watch odds above are a real market: Kalshi's KXFEDDECISION contracts, which settle directly on the Fed's official decision. Not CME FedWatch (that requires a paid API) -- an independent market pricing the same outcome."
+      : "Fed Watch odds are illustrative and do not reflect actual market pricing -- the live feed hasn't reported yet, or couldn't be loaded.";
+
+    if (!meetings.length) {
+      container.innerHTML = '<p style="color:var(--ink-soft)">No upcoming FOMC meeting odds available right now.</p>';
+    } else {
+      container.innerHTML = meetings.map(function (m) {
+        var rows = (m.buckets || []).map(function (b) {
+          return '<div class="fw-row"><span class="fw-label">' + b.label + '</span>' +
+            '<div class="fw-track"><div class="fw-fill ' + b.key + '" style="width:' + b.pct + '%"></div></div>' +
+            '<span class="fw-pct">' + b.pct + '%</span></div>';
+        }).join("");
+        return '<div class="fedwatch-meeting"><h3>' + m.label + '</h3>' + rows + '</div>';
+      }).join("");
+    }
+
+    latestFomcMeetings = meetings;
+    if (latestEconData) renderNextRelease(latestEconData);
+  }
+
+  fetch("data/fed-watch.json?t=" + Date.now(), { cache: "no-store" })
+    .then(function (res) { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); })
+    .then(renderFedWatch)
+    .catch(function (err) {
+      console.warn("Could not load data/fed-watch.json, showing fallback values:", err);
+      renderFedWatch(FEDWATCH_FALLBACK);
     });
 })();
 </script>

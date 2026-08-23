@@ -252,6 +252,22 @@ h2 {
   color: var(--ink-soft);
 }
 
+/* Groups a cluster of sections under one label, for tabs with enough
+   sections that a flat list stops reading as a fast scan (e.g.
+   Sentiment's Volatility & Options / Positioning split). */
+.group-label {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 1.25rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--accent);
+}
+.group-label:not(:first-child) { margin-top: 0.5rem; }
+
 /* ---------- metric cards (indices / fx / commodities / yields) ---------- */
 
 .metric-grid {
@@ -378,6 +394,10 @@ tbody tr:last-child td { border-bottom: none; }
 
 td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; text-align: right; }
 
+/* th.num pairs with td.num so numeric-column headers line up over their
+   right-aligned values instead of sitting flush-left over an empty column. */
+th.num { text-align: right; }
+
 td.change.up { color: var(--up); }
 td.change.down { color: var(--down); }
 
@@ -486,11 +506,38 @@ svg .end-label { font-family: var(--font-mono); font-size: 11px; font-weight: 60
 .fw-track { height: 10px; background: var(--line); border-radius: 2px; overflow: hidden; }
 
 .fw-fill { height: 100%; border-radius: 2px; }
+.fw-fill.cut50 { background: var(--up); }
+.fw-fill.cut25 { background: var(--blue); }
 .fw-fill.hold { background: var(--ink-soft); }
-.fw-fill.cut25 { background: var(--up); }
-.fw-fill.cut50 { background: var(--accent); }
+.fw-fill.hike25 { background: var(--accent); }
+.fw-fill.hike50 { background: var(--down); }
 
 .fw-pct { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 0.82rem; text-align: right; }
+
+/* ---------- weight toggle ---------- */
+
+.weight-toggle {
+  display: inline-flex;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+}
+.weight-toggle-btn {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  background: transparent;
+  border: none;
+  padding: 0.45rem 1rem;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.weight-toggle-btn:hover { color: var(--ink); }
+.weight-toggle-btn.active { background: var(--accent); color: var(--paper-raised); }
 
 /* ---------- sector grid ---------- */
 

@@ -1,0 +1,118 @@
+MARKET DESK DASHBOARD — NEXT SPRINT CHECKLIST
+Prepared for: Dev
+Source: Full review of Overview, Fed & Economic, Fed Dashboard, Sentiment, Sector Ratios tabs
+Date: 2026-08-23
+
+Priority key: P0 = fix before anything else (trust/accuracy issue) | P1 = closes a real
+workflow gap | P2 = high-value new build | P3 = phase-two, larger lift
+
+================================================================
+P0 — DATA INTEGRITY FIXES
+================================================================
+
+[ ] 1. Put/Call Ratio — resolve self-contradiction (Sentiment tab)
+    Reasoning: The reading (0.61) is shown with a caption "Illustrative sample
+    value — not a live feed" directly beneath it, but the page footer states
+    the Put/Call Ratio IS a real live Cboe feed. These two statements cannot
+    both be true. Whichever is correct, make the on-card label and the footer
+    agree. This is a trust issue — if one number on the page is unreliable,
+    it casts doubt on the ones that are actually live.
+
+[ ] 2. Fed Watch odds — source real data or remove (Fed & Economic tab)
+    Reasoning: The FOMC hold/cut probability odds are explicitly labeled
+    illustrative, not actual fed funds futures pricing. This sits directly
+    next to real Treasury yield data, which makes it read as credible when
+    it isn't. A fabricated number next to real numbers is worse than a
+    placeholder — either wire this to a real source (e.g., CME fed funds
+    futures pricing, ZQ contracts) or pull the section until it can be.
+
+[ ] 3. Site-wide banner is stale and contradicts individual pages
+    Reasoning: The global banner on every tab reads "Illustrative sample
+    data — not live market feeds." But Sector Ratios explicitly states
+    several series ARE live (sector/SPY ratios via Yahoo; VIX9D/VIX/VIX3M/
+    VIX6M/VIX1Y and Dispersion Index via Cboe), and Sentiment's footer claims
+    Fear & Greed and Put/Call are live. The banner appears to be leftover
+    copy from an earlier mockup stage. Update it to accurately reflect
+    per-section status, or remove the blanket claim and rely on the
+    per-section disclaimers only.
+
+[ ] 4. Confirm Overview tab tables are actually populated in-browser
+    Reasoning: Major Indices, Dollar & Commodities, and Economic Snapshot
+    show table headers with no visible rows in a static fetch. This may be
+    client-side rendering that a non-JS fetch can't see — need to confirm
+    in-browser whether these are live, broken, or simply not yet built.
+    This is the first tab seen every morning; if it's the least finished
+    page, that's a problem regardless of cause.
+
+================================================================
+P1 — CLOSES AN EXISTING WORKFLOW GAP
+================================================================
+
+[ ] 5. Add HYG (credit) trend to the dashboard
+    Reasoning: The existing Daily Pre-Market Checklist (PM Reference doc,
+    section 16.1) has five items. Regime Classifier and Exposure Model live
+    in TOS by design. GEX is manually pulled from Tradytics/SpotGamma by
+    design. But "Check Credit: HYG trending — confirms or contradicts the
+    regime read" is item 4 on that checklist and is completely absent from
+    this site. Cheapest possible build (single ticker time series, same
+    Yahoo Finance source already used for sector ratios) and it's the one
+    checklist item this dashboard could serve today and doesn't.
+
+[ ] 6. (Lower priority, optional) Add $SPXA50R / $SPXA200R breadth reads
+    Reasoning: Also on the pre-market checklist, but already visible the
+    moment TOS is opened (it's a pillar inside Regime Classifier v2). Not
+    urgent — HYG is the real gap, this is a nice-to-have if breadth data
+    sourcing turns out to be cheap (see item 8 below, same data problem).
+
+================================================================
+P2 — HIGH-VALUE NEW BUILD
+================================================================
+
+[ ] 7. Build a live VRP (Variance Risk Premium) gauge
+    Reasoning: Internal research (Institutional Methodology doc) ranks VRP
+    as the single highest-conviction gap in the entire indicator stack —
+    a Phase 1, two-week priority. The hard part (implied vol) is already
+    solved: Sector Ratios already pulls live 3-month ATM implied vol
+    (Core 3M) and the full VIX term structure from Cboe. The only missing
+    input is realized variance off SPY OHLC (Yang-Zhang estimator preferred
+    per the same internal doc — already flagged as the correct upgrade over
+    close-to-close StDev). This is closer to done than any other item on
+    this list. Formula: VRP = Implied Variance - Realized Variance,
+    Z-scored against its own 252-day history.
+
+================================================================
+P3 — PHASE TWO / LARGER LIFT
+================================================================
+
+[ ] 8. Explore a read-only "Regime Classifier preview" panel
+    Reasoning: Three of the four Regime Classifier v2 pillars are nearly
+    free to replicate given what's already on this site — VIX term
+    structure (already live via Cboe) and SPY price structure (trivial
+    Yahoo pull for 50-day MA). The fourth pillar, breadth ($SPXA50R), is
+    the blocker — it's not a standard Yahoo/FRED series and needs a real
+    data source (StockCharts, Barchart, or computed in-house by pulling
+    all S&P 500 constituents). Do NOT treat this as a replacement for the
+    TOS Regime Classifier. If built, it must be labeled "context only" and
+    explicitly NOT wired into trade permission — exact same pattern already
+    used correctly on the Fed Dashboard tab ("Context only — not wired into
+    Regime Classifier or Exposure Model. Gate 1 still runs on Regime
+    Classifier v2."). Do not create a second source of truth.
+
+================================================================
+EXPLICITLY OUT OF SCOPE — DO NOT BUILD
+================================================================
+
+- GEX / dark pool / order flow data. This stays a manual pre-market pull
+  from Tradytics/SpotGamma by design (TOS cannot loop over an options
+  chain natively, and a broken GEX approximation is worse than none — see
+  Trading Infrastructure Reference doc). Do not attempt to replicate this
+  on the dashboard.
+
+================================================================
+SUGGESTED ORDER FOR NEXT SPRINT
+================================================================
+1. Items 1-3 (data integrity fixes — cheap, high trust cost if left alone)
+2. Item 5 (HYG — closes real checklist gap, cheap build)
+3. Item 4 (verify Overview tab — may just be a confirmation, not a build)
+4. Item 7 (VRP — highest value net-new build, most of the inputs exist)
+5. Item 8 (Regime Classifier preview — larger lift, phase two)

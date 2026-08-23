@@ -97,6 +97,26 @@
       "change": 2.532544378698226,
       "changeType": "pct",
       "unit": "$"
+    },
+    {
+      "id": "bonds",
+      "name": "20+ Yr Treasury",
+      "ticker": "TLT",
+      "live": true,
+      "value": 82.05,
+      "change": 0.012188932228186673,
+      "changeType": "pct",
+      "unit": "$"
+    },
+    {
+      "id": "commodity_basket",
+      "name": "Broad Commodities",
+      "ticker": "DBC",
+      "live": true,
+      "value": 31.26,
+      "change": 4.2,
+      "changeType": "pct",
+      "unit": "$"
     }
   ]
 }

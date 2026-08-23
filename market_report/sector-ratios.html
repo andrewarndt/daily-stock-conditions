@@ -19,10 +19,10 @@
     </div>
     <nav class="tabs">
       <a href="index.html" class="tab">Overview</a>
-      <a href="fed-economic.html" class="tab">Fed &amp; Economic</a>
-      <a href="fed-dashboard.html" class="tab">Fed Dashboard</a>
       <a href="sentiment.html" class="tab">Sentiment</a>
       <a href="sector-ratios.html" class="tab active">Sector Ratios</a>
+      <a href="fed-economic.html" class="tab">Fed &amp; Economic</a>
+      <a href="fed-dashboard.html" class="tab">Fed Dashboard</a>
     </nav>
   </div>
 </div>
@@ -38,6 +38,11 @@
       <h2>Sector / SPY Ratio</h2>
       <span class="section-note" id="sector-asof">All 11 GICS sectors, ~6-month trend</span>
     </div>
+    <div class="weight-toggle" role="group" aria-label="Sector weighting">
+      <button type="button" class="weight-toggle-btn active" data-mode="cap">Cap-Weight</button>
+      <button type="button" class="weight-toggle-btn" data-mode="equal">Equal-Weight</button>
+    </div>
+    <p class="chart-sub" id="weight-toggle-note" style="margin:-0.5rem 0 1rem">Cap-weight: each sector ETF against SPY -- a sector's biggest names dominate the ratio, same as the index itself.</p>
     <div class="legend">
       <span class="legend-item"><span class="legend-swatch dashed" style="background:var(--ink-soft)"></span>10-day moving average</span>
       <span class="legend-item"><span class="legend-swatch" style="background:var(--up)"></span>Ratio above its 10-day MA</span>
@@ -65,7 +70,12 @@
   <section>
     <div class="section-head">
       <h2>SPX Volatility Term Structure<span id="termstructure-flag"></span></h2>
-      <span class="section-note">3M&ndash;30D spread: <strong id="vol-spread-value" style="color:var(--up)">+3.37 pts</strong> <span id="vol-spread-trend">(contango)</span></span>
+      <span class="section-note">VIX3M/VIX: <strong id="vol-ratio-value" style="color:var(--up)">1.22</strong> <span id="vol-ratio-zone">(contango)</span> &middot; 3M&ndash;30D spread: <strong id="vol-spread-value" style="color:var(--up)">+3.37 pts</strong> <span id="vol-spread-trend">(contango)</span></span>
+    </div>
+    <div class="chart-card">
+      <h3>VIX3M / VIX Ratio</h3>
+      <p class="chart-sub">Below 1.0 is backwardation (stress); above 1.2 is steep contango</p>
+      <svg id="chart-vol-ratio" width="900" height="200"></svg>
     </div>
     <div class="chart-card">
       <h3>Front month vs. back month implied vol &mdash; today vs. 1 month ago</h3>
@@ -108,8 +118,9 @@
   </section>
 
   <footer>
-    <p>Sector/SPY ratios are live daily closes from Yahoo Finance, refreshed once per weekday after market close. Constituent Volatility, Volatility Term Structure, Core 3M, and Dispersion Index are live Cboe index data (VIX9D, VIX, VIX3M, VIX6M, VIX1Y, VIXEQ, DSPX), refreshed on the same schedule. Skew Structure below is still an illustrative placeholder.</p>
+    <p>Sector/SPY ratios are live daily closes from Yahoo Finance, refreshed once per weekday after market close -- both weightings: cap-weight from the SPDR sector ETFs against SPY, equal-weight from Invesco's RSP-family sector ETFs against RSP. Constituent Volatility, Volatility Term Structure, Core 3M, and Dispersion Index are live Cboe index data (VIX9D, VIX, VIX3M, VIX6M, VIX1Y, VIXEQ, DSPX), refreshed on the same schedule. Skew Structure below is still an illustrative placeholder.</p>
     <p>Badges mark each sector's ratio move over the trailing month: green outperforming SPY, red underperforming. The line color is a separate, shorter-term signal: green when the ratio is currently above its own 10-day moving average (dashed line), red when below.</p>
+    <p>Credit (HYG) has moved to the <a href="fed-dashboard.html">Fed Dashboard</a> tab, Tier 3 — Financial Conditions &amp; Credit.</p>
   </footer>
 </div>
 
@@ -126,20 +137,22 @@
     updated: "2026-08-07T20:15:00Z",
     source: "seed",
     spyLive: false,
+    spyEqualWeightLive: false,
     dates: ["2026-08-03", "2026-08-04", "2026-08-05", "2026-08-06", "2026-08-07"],
     spy: [768.56, 770.10, 771.40, 772.20, 773.26],
+    spyEqualWeight: [214.10, 214.90, 215.30, 215.80, 216.20],
     sectors: {
-      xlk: { name: "Technology", ticker: "XLK", close: [469.80, 471.00, 472.60, 474.10, 473.20], live: false },
-      xlf: { name: "Financials", ticker: "XLF", close: [152.10, 152.50, 152.90, 153.10, 153.10], live: false },
-      xlv: { name: "Health Care", ticker: "XLV", close: [111.50, 111.60, 111.40, 111.30, 111.20], live: false },
-      xly: { name: "Consumer Disc.", ticker: "XLY", close: [125.20, 125.60, 125.90, 126.10, 125.90], live: false },
-      xlp: { name: "Consumer Staples", ticker: "XLP", close: [70.90, 70.80, 70.85, 70.75, 70.70], live: false },
-      xle: { name: "Energy", ticker: "XLE", close: [42.60, 42.50, 42.40, 42.30, 42.10], live: false },
-      xli: { name: "Industrials", ticker: "XLI", close: [91.20, 91.50, 91.70, 91.90, 91.70], live: false },
-      xlb: { name: "Materials", ticker: "XLB", close: [29.30, 29.35, 29.30, 29.25, 29.30], live: false },
-      xlu: { name: "Utilities", ticker: "XLU", close: [23.90, 23.92, 23.95, 23.90, 23.95], live: false },
-      xlre: { name: "Real Estate", ticker: "XLRE", close: [20.10, 20.05, 20.08, 20.02, 20.05], live: false },
-      xlc: { name: "Communication Svcs.", ticker: "XLC", close: [109.90, 110.50, 110.80, 110.20, 109.80], live: false }
+      xlk: { name: "Technology", ticker: "XLK", close: [469.80, 471.00, 472.60, 474.10, 473.20], live: false, equalTicker: "RSPT", closeEqualWeight: [62.10, 62.30, 62.60, 62.90, 62.70], equalWeightLive: false },
+      xlf: { name: "Financials", ticker: "XLF", close: [152.10, 152.50, 152.90, 153.10, 153.10], live: false, equalTicker: "RSPF", closeEqualWeight: [82.40, 82.60, 82.90, 83.10, 83.20], equalWeightLive: false },
+      xlv: { name: "Health Care", ticker: "XLV", close: [111.50, 111.60, 111.40, 111.30, 111.20], live: false, equalTicker: "RSPH", closeEqualWeight: [37.10, 37.05, 36.95, 36.90, 36.85], equalWeightLive: false },
+      xly: { name: "Consumer Disc.", ticker: "XLY", close: [125.20, 125.60, 125.90, 126.10, 125.90], live: false, equalTicker: "RSPD", closeEqualWeight: [55.60, 55.90, 56.10, 56.30, 56.10], equalWeightLive: false },
+      xlp: { name: "Consumer Staples", ticker: "XLP", close: [70.90, 70.80, 70.85, 70.75, 70.70], live: false, equalTicker: "RSPS", closeEqualWeight: [30.90, 30.85, 30.88, 30.80, 30.78], equalWeightLive: false },
+      xle: { name: "Energy", ticker: "XLE", close: [42.60, 42.50, 42.40, 42.30, 42.10], live: false, equalTicker: "RSPG", closeEqualWeight: [110.40, 110.10, 109.80, 109.50, 109.10], equalWeightLive: false },
+      xli: { name: "Industrials", ticker: "XLI", close: [91.20, 91.50, 91.70, 91.90, 91.70], live: false, equalTicker: "RSPN", closeEqualWeight: [61.90, 62.10, 62.30, 62.50, 62.30], equalWeightLive: false },
+      xlb: { name: "Materials", ticker: "XLB", close: [29.30, 29.35, 29.30, 29.25, 29.30], live: false, equalTicker: "RSPM", closeEqualWeight: [40.10, 40.15, 40.10, 40.05, 40.12], equalWeightLive: false },
+      xlu: { name: "Utilities", ticker: "XLU", close: [23.90, 23.92, 23.95, 23.90, 23.95], live: false, equalTicker: "RSPU", closeEqualWeight: [74.20, 74.30, 74.40, 74.30, 74.45], equalWeightLive: false },
+      xlre: { name: "Real Estate", ticker: "XLRE", close: [20.10, 20.05, 20.08, 20.02, 20.05], live: false, equalTicker: "RSPR", closeEqualWeight: [35.80, 35.70, 35.75, 35.65, 35.70], equalWeightLive: false },
+      xlc: { name: "Communication Svcs.", ticker: "XLC", close: [109.90, 110.50, 110.80, 110.20, 109.80], live: false, equalTicker: "RSPC", closeEqualWeight: [36.10, 36.40, 36.60, 36.30, 36.10], equalWeightLive: false }
     }
   };
 
@@ -147,26 +160,54 @@
     return sectorClose.map(function (c, i) { return c / spy[i]; });
   }
 
+  // Toggle state -- re-render from the already-fetched data on click,
+  // no re-fetch needed. See Dark_Pool_Access_and_Full_Gap_Checklist.txt
+  // item 5: a toggle keeps cap-weight vs. equal-weight a single visual
+  // comparison instead of two panels the eye has to jump between.
+  var latestSectorData = null;
+  var weightMode = "cap";
+  var WEIGHT_NOTE = {
+    cap: "Cap-weight: each sector ETF against SPY -- a sector's biggest names dominate the ratio, same as the index itself.",
+    equal: "Equal-weight: each sector's RSP-family ETF against RSP -- every constituent counts the same, so this reads whether a sector's strength is broad or concentrated in one or two mega-caps."
+  };
+
   function renderSectors(data) {
+    latestSectorData = data;
+    renderSectorGrid();
+  }
+
+  function renderSectorGrid() {
+    var data = latestSectorData;
+    if (!data) return;
     var grid = document.getElementById("sector-grid");
     grid.innerHTML = "";
     var n = data.dates.length;
+    var isEqual = weightMode === "equal";
+    var spySeries = isEqual ? data.spyEqualWeight : data.spy;
+    var spyLive = isEqual ? data.spyEqualWeightLive : data.spyLive;
+
+    document.getElementById("weight-toggle-note").textContent = WEIGHT_NOTE[weightMode];
 
     SECTOR_ORDER.forEach(function (id) {
       var sec = data.sectors[id];
       if (!sec) return;
-      var ratio = ratioSeries(sec.close, data.spy);
+      var closeSeries = isEqual ? sec.closeEqualWeight : sec.close;
+      var ticker = isEqual ? sec.equalTicker : sec.ticker;
+      var denomTicker = isEqual ? "RSP" : "SPY";
+      var secLive = isEqual ? sec.equalWeightLive : sec.live;
+
+      var ratio = ratioSeries(closeSeries, spySeries);
       var current = ratio[n - 1];
       var lookbackIdx = Math.max(0, n - 1 - CHANGE_LOOKBACK_DAYS);
       var chg = (current / ratio[lookbackIdx] - 1) * 100;
       var up = chg >= 0;
-      var live = sec.live && data.spyLive;
+      var live = secLive && spyLive;
 
       var card = document.createElement("div");
       card.className = "sector-card";
       var staticFlag = live ? "" : '<span class="placeholder-flag">static</span>';
       card.innerHTML =
-        '<div class="sector-head"><span class="sector-name">' + sec.name + staticFlag + '</span><span class="sector-ticker">' + sec.ticker + '/SPY</span></div>' +
+        '<div class="sector-head"><span class="sector-name">' + sec.name + staticFlag + '</span><span class="sector-ticker">' + ticker + '/' + denomTicker + '</span></div>' +
         '<div class="sector-value-row"><span class="sector-value">' + current.toFixed(3) + '</span>' +
         '<span class="sector-badge ' + (up ? "up" : "down") + '">' + (up ? "▲" : "▼") + ' ' + Math.abs(chg).toFixed(1) + '%</span></div>' +
         '<svg id="sector-spark-' + id + '" width="196" height="46"></svg>';
@@ -194,6 +235,16 @@
       ? "Live data — Yahoo Finance daily closes, refreshed once per weekday after close"
       : "Illustrative sample data — not live market feeds";
   }
+
+  document.querySelectorAll(".weight-toggle-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      if (btn.classList.contains("active")) return;
+      document.querySelectorAll(".weight-toggle-btn").forEach(function (b) { b.classList.remove("active"); });
+      btn.classList.add("active");
+      weightMode = btn.getAttribute("data-mode");
+      renderSectorGrid();
+    });
+  });
 
   fetch("data/sector-ratios.json?t=" + Date.now(), { cache: "no-store" })
     .then(function (res) { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); })
@@ -269,7 +320,39 @@
       });
     }
 
+    renderVolRatio(vix, vix3m, labels);
     renderTermStructure(data.termStructure);
+  }
+
+  // VIX3M/VIX ratio -- the headline stat for this section (per explicit
+  // request: bring it to the top, ahead of the pt-spread already here).
+  // Same regime signal as the 3M-30D spread below, but normalized as a
+  // ratio rather than raw vol points, which is the more standard form
+  // vol traders actually watch and stays comparable across vol regimes
+  // the way a point spread doesn't. Reference lines at 1.0 (the
+  // backwardation/contango boundary) and 1.2 (steep-contango watch
+  // level) per explicit request -- both real, commonly-cited levels.
+  function renderVolRatio(vix, vix3m, labels) {
+    var valueEl = document.getElementById("vol-ratio-value");
+    var zoneEl = document.getElementById("vol-ratio-zone");
+    if (!vix || !vix3m) return;
+
+    var ratios = vix3m.values.map(function (v3, i) { return v3 / vix.values[i]; });
+    var current = ratios[ratios.length - 1];
+    var color = current >= 1 ? MC.css("--up") : MC.css("--down");
+
+    valueEl.textContent = current.toFixed(2);
+    valueEl.style.color = color;
+    zoneEl.textContent = "(" + (current >= 1.2 ? "steep contango" : current >= 1 ? "contango" : "backwardation") + ")";
+
+    MC.lineChart(document.getElementById("chart-vol-ratio"), {
+      xLabels: labels,
+      series: [{ name: "VIX3M/VIX", color: color, area: true, data: ratios }],
+      yFmt: function (v) { return v.toFixed(2); },
+      referenceLine: { value: 1.2, label: "steep contango" },
+      referenceLine2: { value: 1.0, label: "backwardation" },
+      maxXLabels: 6
+    });
   }
 
   function renderTermStructure(list) {
