@@ -1,5 +1,5 @@
 {
-  "updated": "2026-08-23T09:50:54.507364Z",
+  "updated": "2026-08-24T13:35:17.935Z",
   "source": "live",
   "live": true,
   "asof": "2026-08-19",
@@ -10,15 +10,15 @@
   "history": [
     {
       "date": "2026-07-29",
-      "bullish": 31.0,
+      "bullish": 31,
       "neutral": 26.9,
       "bearish": 42.1
     },
     {
       "date": "2026-08-05",
-      "bullish": 37.0,
-      "neutral": 25.0,
-      "bearish": 38.0
+      "bullish": 37,
+      "neutral": 25,
+      "bearish": 38
     },
     {
       "date": "2026-08-12",
