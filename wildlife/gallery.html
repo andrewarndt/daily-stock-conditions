@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gallery — Wildlife Photography</title>
+<meta name="description" content="Wildlife photography galleries by national park, from real trips. Full-resolution prints available.">
+<link rel="canonical" href="https://4aholdingscompany.com/wildlife/gallery.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Gallery — Wildlife Photography">
+<meta property="og:description" content="Wildlife photography galleries by national park, from real trips. Full-resolution prints available.">
+<meta property="og:url" content="https://4aholdingscompany.com/wildlife/gallery.html">
+<meta property="og:image" content="https://4aholdingscompany.com/wildlife/assets/web/Everglades%20National%20Park%2C%20Florida/IMG_7093.jpg">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="stylesheet" href="assets/style.css">
 </head>
@@ -57,6 +65,7 @@
     titleEl.textContent = park.name;
     subtitleEl.textContent = park.location;
     document.title = park.name + " — Wildlife Photography";
+    updateGallerySeo(park);
 
     if (park.photos.length === 0) {
       gridEl.outerHTML = '<div class="empty-state">No photos posted yet for this park &mdash; check back soon.</div>';
