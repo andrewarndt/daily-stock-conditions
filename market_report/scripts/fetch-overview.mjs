@@ -39,6 +39,14 @@
  * TWELVEDATA_API_KEY, and FRED_API_KEY (see .github/workflows). On any
  * single-symbol failure, falls back to the previous value already in
  * data/overview.json rather than failing the whole run.
+ *
+ * Also writes `gammaDayRange`: today's session high/low for SPY, IWM, and
+ * QQQ (Alpaca's dailyBar.h/.l), piggybacked onto the same snapshot call as
+ * the SPY/DIA/QQQ index quotes above (IWM added to that one request) so it
+ * costs nothing extra. This is what index.html's Gamma Levels cards compare
+ * MenthorQ's CR/HVL/PS/0DTE levels against to flag a level as "touched"
+ * today -- a level is touched if it falls within [low, high], which holds
+ * for any level actually crossed intraday since price moves continuously.
  */
 
 import { readFile, writeFile } from "node:fs/promises";
@@ -65,6 +73,10 @@ const ALPACA_STOCK_SYMBOLS = {
   dow: { name: "Dow Jones", symbol: "DIA", unit: "$", ticker: "DIA" },
   nasdaq: { name: "Nasdaq-100", symbol: "QQQ", unit: "$", ticker: "QQQ" }
 };
+
+// Not shown as its own "Major Indices" card -- fetched only so its dailyBar
+// high/low is available for the Gamma Levels "touched" check below.
+const GAMMA_RANGE_SYMBOLS = ["SPY", "IWM", "QQQ"];
 
 const COMMODITY_SYMBOLS = {
   btc: { name: "Bitcoin", symbol: "BTC/USD", changeType: "pct", unit: "$" },
@@ -93,26 +105,37 @@ async function loadPrevious() {
     const json = JSON.parse(raw);
     const byId = {};
     for (const item of [...(json.indices || []), ...(json.commodities || [])]) byId[item.id] = item;
-    return byId;
+    return { byId, gammaDayRange: json.gammaDayRange || {} };
   } catch {
-    return {};
+    return { byId: {}, gammaDayRange: {} };
   }
 }
 
-async function fetchAlpacaStocks(defsById, previous) {
+function fallbackDayRange(previousRange) {
+  const out = {};
+  for (const sym of GAMMA_RANGE_SYMBOLS) {
+    out[sym] = previousRange[sym] ? { ...previousRange[sym], live: false } : null;
+  }
+  return out;
+}
+
+async function fetchAlpacaStocks(defsById, previous, previousRange) {
   const out = {};
   const ids = Object.keys(defsById);
   if (!ALPACA_API_KEY_ID || !ALPACA_API_SECRET_KEY) {
     console.warn("[alpaca] no API credentials set, keeping previous values for", ids.join(", "));
     for (const id of ids) out[id] = previous[id] ? { ...previous[id], live: false } : null;
-    return out;
+    return { indices: out, gammaDayRange: fallbackDayRange(previousRange) };
   }
-  const symbols = ids.map((id) => defsById[id].symbol).join(",");
+  // GAMMA_RANGE_SYMBOLS (SPY/IWM/QQQ) piggyback onto this same request --
+  // SPY and QQQ are fetched here anyway, IWM is the only added symbol.
+  const symbols = Array.from(new Set([...ids.map((id) => defsById[id].symbol), ...GAMMA_RANGE_SYMBOLS])).join(",");
   const url = `https://data.alpaca.markets/v2/stocks/snapshots?symbols=${encodeURIComponent(symbols)}&feed=iex`;
+  let json = null;
   try {
     const res = await fetch(url, { headers: ALPACA_HEADERS });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const json = await res.json();
+    json = await res.json();
     for (const id of ids) {
       const def = defsById[id];
       const snap = json[def.symbol];
@@ -135,7 +158,21 @@ async function fetchAlpacaStocks(defsById, previous) {
     console.warn(`[alpaca] snapshot request failed: ${err.message}. Keeping previous values for`, ids.join(", "));
     for (const id of ids) out[id] = previous[id] ? { ...previous[id], live: false } : null;
   }
-  return out;
+
+  const gammaDayRange = {};
+  for (const sym of GAMMA_RANGE_SYMBOLS) {
+    try {
+      const bar = json?.[sym]?.dailyBar;
+      const high = bar?.h, low = bar?.l;
+      if (!Number.isFinite(high) || !Number.isFinite(low)) throw new Error(`missing dailyBar high/low for ${sym}`);
+      gammaDayRange[sym] = { high, low, live: true };
+    } catch (err) {
+      console.warn(`[alpaca] day-range failed for ${sym}: ${err.message}. Keeping previous value.`);
+      gammaDayRange[sym] = previousRange[sym] ? { ...previousRange[sym], live: false } : null;
+    }
+  }
+
+  return { indices: out, gammaDayRange };
 }
 
 async function fetchTwelveData(id, def, previous) {
@@ -235,10 +272,10 @@ function sortByOrder(items, order) {
 }
 
 async function main() {
-  const previous = await loadPrevious();
+  const { byId: previous, gammaDayRange: previousRange } = await loadPrevious();
 
   const [stockResults, vix, treasury, dxy, oil, bonds, commodityBasket] = await Promise.all([
-    fetchAlpacaStocks(ALPACA_STOCK_SYMBOLS, previous),
+    fetchAlpacaStocks(ALPACA_STOCK_SYMBOLS, previous, previousRange),
     fetchYahooCommodity("vix", YAHOO_SYMBOLS.vix, previous),
     fetchTreasuryYield(previous),
     fetchYahooCommodity("dxy", YAHOO_SYMBOLS.dxy, previous),
@@ -249,7 +286,7 @@ async function main() {
   const commodityResults = await fetchTwelveDataSequential(COMMODITY_SYMBOLS, previous);
 
   const indices = sortByOrder(
-    [stockResults.sp500, stockResults.dow, stockResults.nasdaq, treasury, vix],
+    [stockResults.indices.sp500, stockResults.indices.dow, stockResults.indices.nasdaq, treasury, vix],
     INDEX_ORDER
   );
   const commodities = sortByOrder(
@@ -262,7 +299,8 @@ async function main() {
     updated: new Date().toISOString(),
     source: anyLive ? "live" : "seed",
     indices,
-    commodities
+    commodities,
+    gammaDayRange: stockResults.gammaDayRange
   };
 
   await writeFile(OUT_PATH, JSON.stringify(out, null, 2) + "\n", "utf8");
