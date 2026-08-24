@@ -579,10 +579,23 @@ svg .end-label { font-family: var(--font-mono); font-size: 11px; font-weight: 60
 
 .gamma-card { background: var(--paper-raised); padding: 1.1rem 1.2rem 1rem; }
 
-.gamma-card-head { display: flex; justify-content: space-between; align-items: baseline; }
+.gamma-card-head { display: flex; justify-content: space-between; align-items: flex-start; }
+
+.gamma-regime {
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+  margin-bottom: 0.15rem;
+}
+.gamma-regime.negative { color: var(--blue); }
 
 .gamma-ticker { font-family: var(--font-display); font-weight: 600; font-size: 1.02rem; }
 .gamma-asof { font-family: var(--font-mono); color: var(--ink-soft); font-size: 0.72rem; }
+
+.gamma-stale-warning { color: var(--blue); font-weight: 600; }
 
 /* High-performance-HMI convention: gray is the only color at rest --
    nothing here competes for attention. Blue is reserved exclusively for
