@@ -1,5 +1,5 @@
 {
-  "updated": "2026-08-22T18:00:00.000Z",
+  "updated": "2026-08-24T15:10:55.881Z",
   "source": "live",
   "series": [
     {
@@ -10,7 +10,7 @@
       "unit": "%",
       "value": 3.75,
       "prior": 3.75,
-      "asof": "2026-08-22",
+      "asof": "2026-08-24",
       "live": true
     },
     {
@@ -19,9 +19,9 @@
       "seriesId": "DFEDTARL",
       "name": "Fed Funds Target (Lower)",
       "unit": "%",
-      "value": 3.50,
-      "prior": 3.50,
-      "asof": "2026-08-22",
+      "value": 3.5,
+      "prior": 3.5,
+      "asof": "2026-08-24",
       "live": true
     },
     {
@@ -32,7 +32,7 @@
       "unit": "%",
       "value": 3.63,
       "prior": 3.63,
-      "asof": "2026-08-20",
+      "asof": "2026-08-21",
       "live": true
     },
     {
@@ -41,9 +41,9 @@
       "seriesId": "SOFR",
       "name": "SOFR",
       "unit": "%",
-      "value": 3.63,
-      "prior": 3.62,
-      "asof": "2026-08-20",
+      "value": 3.65,
+      "prior": 3.63,
+      "asof": "2026-08-21",
       "live": true
     },
     {
@@ -54,7 +54,7 @@
       "unit": "%",
       "value": 3.65,
       "prior": 3.65,
-      "asof": "2026-08-22",
+      "asof": "2026-08-24",
       "live": true
     },
     {
@@ -102,11 +102,11 @@
       "seriesId": "RRPONTSYD",
       "name": "Overnight Reverse Repo",
       "unit": "$B",
-      "value": 0.200,
+      "value": 0.2,
       "prior": 0.225,
       "asof": "2026-08-21",
       "live": true,
-      "change5d": -0.050,
+      "change5d": -0.04999999999999999,
       "stressed": false
     },
     {
@@ -128,12 +128,12 @@
       "seriesId": "BAMLH0A0HYM2",
       "name": "High Yield OAS",
       "unit": "bps",
-      "value": 275,
-      "prior": 273,
-      "asof": "2026-08-20",
+      "value": 270,
+      "prior": 275,
+      "asof": "2026-08-21",
       "live": true,
       "trend": "up",
-      "trendChange": 4,
+      "trendChange": 3,
       "trendLabel": "5-day",
       "condition": "Very Tight",
       "conditionClass": "up"
@@ -144,12 +144,12 @@
       "seriesId": "BAMLC0A0CM",
       "name": "Investment Grade OAS",
       "unit": "bps",
-      "value": 82,
-      "prior": 81,
-      "asof": "2026-08-20",
+      "value": 81,
+      "prior": 82,
+      "asof": "2026-08-21",
       "live": true,
       "trend": "up",
-      "trendChange": 3,
+      "trendChange": 1,
       "trendLabel": "5-day",
       "condition": "Very Tight",
       "conditionClass": "up"
