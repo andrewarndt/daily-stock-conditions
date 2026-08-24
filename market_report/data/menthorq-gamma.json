@@ -1,0 +1,47 @@
+{
+  "updated": "2026-08-24T21:54:51.000Z",
+  "source": "menthorq",
+  "live": true,
+  "asof": "2026-08-24",
+  "levels": {
+    "SPY": {
+      "callResistance": 800,
+      "putSupport": 765,
+      "hvl": 766,
+      "oneDayMin": 757.39,
+      "oneDayMax": 769.55,
+      "callResistance0DTE": 770,
+      "putSupport0DTE": 764,
+      "hvl0DTE": 765,
+      "gammaWall0DTE": 770,
+      "gex": [760, 762, 761, 768, 769, 755, 757, 774, 775, 772],
+      "raw": "$SPY: Call Resistance, 800, Put Support, 765, HVL, 766, 1D Min, 757.39, 1D Max, 769.55, Call Resistance 0DTE, 770, Put Support 0DTE, 764, HVL 0DTE, 765, Gamma Wall 0DTE, 770, GEX 1, 760, GEX 2, 762, GEX 3, 761, GEX 4, 768, GEX 5, 769, GEX 6, 755, GEX 7, 757, GEX 8, 774, GEX 9, 775, GEX 10, 772"
+    },
+    "IWM": {
+      "callResistance": 305,
+      "putSupport": 295,
+      "hvl": 300,
+      "oneDayMin": 294.77,
+      "oneDayMax": 301.17,
+      "callResistance0DTE": 300,
+      "putSupport0DTE": 298,
+      "hvl0DTE": 299,
+      "gammaWall0DTE": 300,
+      "gex": [297, 296, 297.5, 301, 293, 294, 304, 292, 303, 302],
+      "raw": "$IWM: Call Resistance, 305, Put Support, 295, HVL, 300, 1D Min, 294.77, 1D Max, 301.17, Call Resistance 0DTE, 300, Put Support 0DTE, 298, HVL 0DTE, 299, Gamma Wall 0DTE, 300, GEX 1, 297, GEX 2, 296, GEX 3, 297.5, GEX 4, 301, GEX 5, 293, GEX 6, 294, GEX 7, 304, GEX 8, 292, GEX 9, 303, GEX 10, 302"
+    },
+    "QQQ": {
+      "callResistance": 730,
+      "putSupport": 700,
+      "hvl": 710,
+      "oneDayMin": 697.51,
+      "oneDayMax": 715.13,
+      "callResistance0DTE": 716,
+      "putSupport0DTE": 705,
+      "hvl0DTE": 713,
+      "gammaWall0DTE": 716,
+      "gex": [715, 703, 698, 701, 707, 690, 720, 695, 718, 717],
+      "raw": "$QQQ: Call Resistance, 730, Put Support, 700, HVL, 710, 1D Min, 697.51, 1D Max, 715.13, Call Resistance 0DTE, 716, Put Support 0DTE, 705, HVL 0DTE, 713, Gamma Wall 0DTE, 716, GEX 1, 715, GEX 2, 703, GEX 3, 698, GEX 4, 701, GEX 5, 707, GEX 6, 690, GEX 7, 720, GEX 8, 695, GEX 9, 718, GEX 10, 717"
+    }
+  }
+}
