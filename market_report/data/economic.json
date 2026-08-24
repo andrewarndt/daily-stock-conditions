@@ -1,5 +1,5 @@
 {
-  "updated": "2026-08-23T12:19:24.242478Z",
+  "updated": "2026-08-24T14:46:37.748Z",
   "source": "live",
   "indicators": [
     {
@@ -19,61 +19,61 @@
         1.5
       ],
       "live": true,
-      "nextRelease": null
+      "nextRelease": "2026-08-26"
     },
     {
       "id": "cpi",
       "name": "CPI, Year-over-Year",
       "desc": "Bureau of Labor Statistics",
-      "value": 3.3039,
-      "prior": 3.4635,
+      "value": 3.30386,
+      "prior": 3.46353,
       "asof": "2026-07-01",
       "unit": "%",
       "trend": [
         2.434,
-        3.286,
-        3.7793,
-        4.1666,
-        3.4635,
-        3.3039
+        3.28596,
+        3.77925,
+        4.16661,
+        3.46353,
+        3.30386
       ],
       "live": true,
-      "nextRelease": null
+      "nextRelease": "2026-09-11"
     },
     {
       "id": "ppi",
       "name": "PPI, Year-over-Year",
       "desc": "Bureau of Labor Statistics",
-      "value": 8.2708,
-      "prior": 9.8998,
+      "value": 8.27076,
+      "prior": 9.89977,
       "asof": "2026-07-01",
       "unit": "%",
       "trend": [
-        3.8678,
-        6.8017,
+        3.86785,
+        6.80166,
         9.4287,
-        12.3076,
-        9.8998,
-        8.2708
+        12.30758,
+        9.89977,
+        8.27076
       ],
       "live": true,
-      "nextRelease": null
+      "nextRelease": "2026-09-10"
     },
     {
       "id": "lei",
       "name": "OECD Leading Indicator (US)",
       "desc": "OECD, amplitude-adjusted, 100 = trend",
-      "value": 100.8024,
-      "prior": 100.7588,
+      "value": 100.802396471123,
+      "prior": 100.758798652186,
       "asof": "2026-06-01",
       "unit": "idx",
       "trend": [
-        100.3954,
-        100.5385,
-        100.6396,
-        100.7113,
-        100.7588,
-        100.8024
+        100.395377820569,
+        100.538535273365,
+        100.639621464448,
+        100.711273811123,
+        100.758798652186,
+        100.802396471123
       ],
       "live": true,
       "nextRelease": null
@@ -95,26 +95,26 @@
         4.1
       ],
       "live": true,
-      "nextRelease": null
+      "nextRelease": "2026-09-04"
     },
     {
       "id": "housing_starts",
       "name": "Housing Starts, Year-over-Year",
       "desc": "US Census Bureau",
-      "value": -13.4777,
-      "prior": 2.6106,
+      "value": -13.47765,
+      "prior": 2.61059,
       "asof": "2026-07-01",
       "unit": "%",
       "trend": [
-        -9.725,
-        13.0758,
-        1.0,
-        -8.301,
-        2.6106,
-        -13.4777
+        -9.72502,
+        13.07578,
+        1,
+        -8.30101,
+        2.61059,
+        -13.47765
       ],
       "live": true,
-      "nextRelease": null
+      "nextRelease": "2026-08-25"
     },
     {
       "id": "existing_home_sales",
@@ -133,26 +133,26 @@
         4.06
       ],
       "live": true,
-      "nextRelease": null
+      "nextRelease": "2026-09-10"
     },
     {
       "id": "industrial_production",
       "name": "Industrial Production, Year-over-Year",
       "desc": "Federal Reserve Board",
-      "value": 1.0795,
-      "prior": 1.2892,
+      "value": 1.07946,
+      "prior": 1.28924,
       "asof": "2026-07-01",
       "unit": "%",
       "trend": [
-        0.7972,
-        0.7066,
-        1.3764,
-        1.5296,
-        1.2892,
-        1.0795
+        0.79724,
+        0.70655,
+        1.37638,
+        1.52963,
+        1.28924,
+        1.07946
       ],
       "live": true,
-      "nextRelease": null
+      "nextRelease": "2026-09-18"
     }
   ]
 }
