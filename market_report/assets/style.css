@@ -584,6 +584,10 @@ svg .end-label { font-family: var(--font-mono); font-size: 11px; font-weight: 60
 .gamma-ticker { font-family: var(--font-display); font-weight: 600; font-size: 1.02rem; }
 .gamma-asof { font-family: var(--font-mono); color: var(--ink-soft); font-size: 0.72rem; }
 
+/* High-performance-HMI convention: gray is the only color at rest --
+   nothing here competes for attention. Blue is reserved exclusively for
+   "touched today" so it reads as a real alarm state, not decoration. */
+
 .gamma-range-track {
   position: relative;
   height: 6px;
@@ -597,26 +601,63 @@ svg .end-label { font-family: var(--font-mono); font-size: 11px; font-weight: 60
   top: 50%;
   width: 11px; height: 11px;
   border-radius: 50%;
+  background: var(--ink-soft);
   border: 2px solid var(--paper-raised);
   transform: translate(-50%, -50%);
 }
-.gamma-dot.down { background: var(--down); }
-.gamma-dot.blue { background: var(--blue); }
-.gamma-dot.up { background: var(--up); }
-.gamma-dot.touched { box-shadow: 0 0 0 3px var(--accent-soft), 0 0 0 4px var(--accent); }
+.gamma-dot.touched {
+  background: var(--blue);
+  box-shadow: 0 0 0 3px var(--paper-raised), 0 0 0 5px var(--blue);
+}
 
 .gamma-tick {
   position: absolute;
   top: 50%;
   width: 2px; height: 14px;
-  opacity: 0.6;
+  background: var(--ink-soft);
+  opacity: 0.55;
   transform: translate(-50%, -50%);
 }
-.gamma-tick.down { background: var(--down); }
-.gamma-tick.blue { background: var(--blue); }
-.gamma-tick.up { background: var(--up); }
-.gamma-tick.accent { background: var(--accent); }
-.gamma-tick.touched { opacity: 1; width: 3px; box-shadow: 0 0 0 2px var(--accent-soft); }
+.gamma-tick.touched { background: var(--blue); opacity: 1; width: 3px; height: 16px; }
+
+/* Hover-triggered symbol key -- explains dot vs. tick and gray vs. blue
+   without permanently occupying card space. Lives directly inside
+   .gamma-range-track (not a separate overlay) so it doesn't intercept
+   pointer events the individual dots/ticks need for their own native
+   title tooltips -- hovering a dot still counts as hovering its
+   .gamma-range-track ancestor, which is all :hover below needs. */
+.gamma-range-track { cursor: help; }
+
+.gamma-key-pop {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 208px;
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.22);
+  padding: 0.65rem 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--ink-soft);
+  line-height: 1.7;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.12s ease;
+  z-index: 5;
+  pointer-events: none;
+}
+.gamma-range-track:hover .gamma-key-pop { opacity: 1; visibility: visible; }
+
+.gamma-key-pop .key-row { display: flex; align-items: center; gap: 0.5rem; }
+.gamma-key-pop .key-swatch { flex: none; }
+.gamma-key-pop .key-dot {
+  width: 9px; height: 9px; border-radius: 50%; background: var(--ink-soft);
+}
+.gamma-key-pop .key-tick { width: 2px; height: 12px; background: var(--ink-soft); opacity: 0.6; }
+.gamma-key-pop .key-dot.blue, .gamma-key-pop .key-tick.blue { background: var(--blue); opacity: 1; }
 
 .gamma-legend-row {
   display: flex;
@@ -624,9 +665,8 @@ svg .end-label { font-family: var(--font-mono); font-size: 11px; font-weight: 60
   font-family: var(--font-mono);
   font-size: 0.8rem;
 }
-.gamma-stat.down { color: var(--down); }
-.gamma-stat.blue { color: var(--blue); }
-.gamma-stat.up { color: var(--up); }
+.gamma-stat { color: var(--ink-soft); }
+.gamma-stat.touched { color: var(--blue); }
 .gamma-stat strong { font-weight: 600; }
 
 .gamma-substats {
@@ -638,6 +678,7 @@ svg .end-label { font-family: var(--font-mono); font-size: 11px; font-weight: 60
   line-height: 1.6;
 }
 .gamma-substats div + div { margin-top: 0.15rem; }
+.gamma-substats .gamma-stat.touched strong { color: var(--blue); }
 
 .alert-flag {
   display: inline-block;
@@ -647,24 +688,10 @@ svg .end-label { font-family: var(--font-mono); font-size: 11px; font-weight: 60
   text-transform: uppercase;
   letter-spacing: 0.03em;
   color: var(--paper-raised);
-  background: var(--accent);
+  background: var(--blue);
   padding: 0.12rem 0.4rem;
   border-radius: 2px;
   margin-left: 0.5rem;
-  vertical-align: middle;
-}
-
-.touch-flag {
-  display: inline-block;
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--accent);
-  background: var(--accent-soft);
-  padding: 0.03rem 0.3rem;
-  border-radius: 2px;
-  margin-left: 0.35rem;
   vertical-align: middle;
 }
 

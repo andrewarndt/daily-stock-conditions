@@ -325,46 +325,58 @@
 
     var touchedCount = core.filter(function (v) { return isTouched(v, range); }).length;
 
-    function stat(cls, label, value) {
+    // HMI convention: gray at rest, blue only once a level is actually
+    // touched -- no per-level "touched" tag repeated at the bottom, the
+    // color change on the value itself (and the header count) is the
+    // whole signal. See .gamma-stat / .gamma-dot / .gamma-tick in
+    // style.css.
+    function stat(label, value) {
       var touched = isTouched(value, range);
-      return '<span class="gamma-stat ' + cls + '">' + label + ' <strong>' + fmtGammaPrice(value) + '</strong>' +
-        (touched ? '<span class="touch-flag" title="Touched today\'s range (' + fmtGammaPrice(range.low) + '-' + fmtGammaPrice(range.high) + ')">touched</span>' : '') +
-        '</span>';
+      return '<span class="gamma-stat' + (touched ? " touched" : "") + '"' +
+        (touched ? ' title="Touched today\'s range (' + fmtGammaPrice(range.low) + '-' + fmtGammaPrice(range.high) + ')"' : '') +
+        '>' + label + ' <strong>' + fmtGammaPrice(value) + '</strong></span>';
     }
 
-    function dot(cls, value, label) {
+    function dot(value, label) {
       if (!Number.isFinite(value)) return "";
       var touched = isTouched(value, range);
-      return '<span class="gamma-dot ' + cls + (touched ? " touched" : "") + '" style="left:' + gammaPos(value, lo, hi) + '" title="' + label + ': ' + fmtGammaPrice(value) + (touched ? " (touched today)" : "") + '"></span>';
+      return '<span class="gamma-dot' + (touched ? " touched" : "") + '" style="left:' + gammaPos(value, lo, hi) + '" title="' + label + ': ' + fmtGammaPrice(value) + (touched ? " (touched today)" : "") + '"></span>';
     }
 
-    function tick(cls, value, label) {
+    function tick(value, label) {
       if (!Number.isFinite(value)) return "";
       var touched = isTouched(value, range);
-      return '<span class="gamma-tick ' + cls + (touched ? " touched" : "") + '" style="left:' + gammaPos(value, lo, hi) + '" title="' + label + ': ' + fmtGammaPrice(value) + (touched ? " (touched today)" : "") + '"></span>';
+      return '<span class="gamma-tick' + (touched ? " touched" : "") + '" style="left:' + gammaPos(value, lo, hi) + '" title="' + label + ': ' + fmtGammaPrice(value) + (touched ? " (touched today)" : "") + '"></span>';
     }
 
     var staticFlag = live ? "" : '<span class="placeholder-flag">static</span>';
     var alertFlag = touchedCount > 0 ? '<span class="alert-flag">⚠ ' + touchedCount + ' touched</span>' : "";
 
+    var keyPop = '<div class="gamma-key-pop">' +
+        '<div class="key-row"><span class="key-swatch key-dot"></span> EOD level (Call / HVL / Put)</div>' +
+        '<div class="key-row"><span class="key-swatch key-tick"></span> 0DTE level</div>' +
+        '<div class="key-row"><span class="key-swatch key-dot blue"></span> Touched today\'s range</div>' +
+      '</div>';
+
     return '<div class="gamma-card">' +
       '<div class="gamma-card-head"><span class="gamma-ticker">' + ticker + staticFlag + alertFlag + '</span><span class="gamma-asof">' + asofLabel + '</span></div>' +
       '<div class="gamma-range-track">' +
-        tick("down", d.putSupport0DTE, "Put Support 0DTE") +
-        tick("blue", d.hvl0DTE, "HVL 0DTE") +
-        tick("accent", d.gammaWall0DTE, "Gamma Wall 0DTE") +
-        tick("up", d.callResistance0DTE, "Call Resistance 0DTE") +
-        dot("down", d.putSupport, "Put Support") +
-        dot("blue", d.hvl, "HVL") +
-        dot("up", d.callResistance, "Call Resistance") +
+        tick(d.putSupport0DTE, "Put Support 0DTE") +
+        tick(d.hvl0DTE, "HVL 0DTE") +
+        tick(d.gammaWall0DTE, "Gamma Wall 0DTE") +
+        tick(d.callResistance0DTE, "Call Resistance 0DTE") +
+        dot(d.putSupport, "Put Support") +
+        dot(d.hvl, "HVL") +
+        dot(d.callResistance, "Call Resistance") +
+        keyPop +
       '</div>' +
       '<div class="gamma-legend-row">' +
-        stat("down", "Put", d.putSupport) +
-        stat("blue", "HVL", d.hvl) +
-        stat("up", "Call", d.callResistance) +
+        stat("Put", d.putSupport) +
+        stat("HVL", d.hvl) +
+        stat("Call", d.callResistance) +
       '</div>' +
       '<div class="gamma-substats">' +
-        '<div>0DTE &mdash; ' + stat("down", "Put", d.putSupport0DTE) + ' &middot; ' + stat("blue", "HVL", d.hvl0DTE) + ' &middot; ' + stat("up", "Call", d.callResistance0DTE) + ' &middot; ' + stat("accent", "Wall", d.gammaWall0DTE) + '</div>' +
+        '<div>0DTE &mdash; ' + stat("Put", d.putSupport0DTE) + ' &middot; ' + stat("HVL", d.hvl0DTE) + ' &middot; ' + stat("Call", d.callResistance0DTE) + ' &middot; ' + stat("Wall", d.gammaWall0DTE) + '</div>' +
       '</div>' +
     '</div>';
   }
