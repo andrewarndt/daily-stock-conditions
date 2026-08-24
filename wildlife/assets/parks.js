@@ -63,3 +63,31 @@ function randomCoverPhoto(parks) {
 function photoQualityNoteHtml() {
   return `<div class="notice-banner">📷 Photos on this site are shown at reduced resolution for faster loading. Full high-resolution files are available for prints — get in touch.</div>`;
 }
+
+// Updates <meta name="description">, the canonical link, and Open
+// Graph/Twitter tags for one park's gallery page -- progressive enhancement
+// over the generic fallback tags already in gallery.html's <head>. Search
+// crawlers that execute JS (Google's does) pick up these per-park values,
+// including a canonical URL that matches this park's actual sitemap.xml
+// entry; anything that doesn't run JS still gets the sensible fallback.
+function updateGallerySeo(park) {
+  const count = park.photos.length;
+  const where = park.location ? `${park.name}, ${park.location}` : park.name;
+  const desc = count
+    ? `${count} wildlife photo${count === 1 ? "" : "s"} from ${where} — full-resolution prints available.`
+    : `Wildlife photography from ${where}. Full-resolution prints available.`;
+  const url = `https://4aholdingscompany.com/wildlife/gallery.html?park=${encodeURIComponent(park.slug)}`;
+  const title = `${park.name} — Wildlife Photography`;
+  const image = count ? `https://4aholdingscompany.com/wildlife/${webPhotoUrl(park, park.photos[0])}` : null;
+
+  const setMeta = (selector, attr, value) => {
+    const el = document.querySelector(selector);
+    if (el && value) el.setAttribute(attr, value);
+  };
+  setMeta('meta[name="description"]', "content", desc);
+  setMeta('link[rel="canonical"]', "href", url);
+  setMeta('meta[property="og:title"]', "content", title);
+  setMeta('meta[property="og:description"]', "content", desc);
+  setMeta('meta[property="og:url"]', "content", url);
+  if (image) setMeta('meta[property="og:image"]', "content", image);
+}
