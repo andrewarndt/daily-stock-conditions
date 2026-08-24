@@ -46,7 +46,7 @@
   <section>
     <div class="section-head">
       <h2>Gamma Levels<span id="gamma-flag"></span></h2>
-      <span class="section-note" id="gamma-note">SPY / IWM / QQQ dealer gamma positioning, from MenthorQ</span>
+      <span class="section-note" id="gamma-note">SPY / IWM / QQQ dealer gamma positioning</span>
     </div>
     <div class="gamma-row" id="gamma-row">
       <!-- populated from data/menthorq-gamma.json + data/overview.json; see script at bottom of page -->
@@ -290,10 +290,12 @@
   };
   // Illustrative session range so the "touched" alert has something to
   // show even when data/overview.json can't be loaded (e.g. file://).
+  // `last` also drives the gamma-regime label (positive/negative vs. that
+  // ticker's HVL) -- picked here to show one of each across the demo.
   var GAMMA_DAYRANGE_FALLBACK = {
-    SPY: { high: 775.10, low: 761.40, live: false },
-    IWM: { high: 303.20, low: 296.80, live: false },
-    QQQ: { high: 718.60, low: 703.10, live: false }
+    SPY: { high: 775.10, low: 761.40, last: 763.20, live: false },
+    IWM: { high: 303.20, low: 296.80, last: 301.50, live: false },
+    QQQ: { high: 718.60, low: 703.10, last: 707.40, live: false }
   };
 
   function fmtGammaPrice(v) {
@@ -352,6 +354,16 @@
     var staticFlag = live ? "" : '<span class="placeholder-flag">static</span>';
     var alertFlag = touchedCount > 0 ? '<span class="alert-flag">⚠ ' + touchedCount + ' touched</span>' : "";
 
+    // Gamma regime: spot (range.last) vs. this ticker's HVL -- above is
+    // positive gamma (dealers dampen moves), below is negative (dealers
+    // amplify moves). Only the negative state gets colored -- that's the
+    // one worth a second look -- positive stays neutral gray.
+    var last = range && Number.isFinite(range.last) ? range.last : null;
+    var regime = (Number.isFinite(last) && Number.isFinite(d.hvl)) ? (last < d.hvl ? "negative" : "positive") : null;
+    var regimeLabel = regime
+      ? '<div class="gamma-regime' + (regime === "negative" ? " negative" : "") + '">' + (regime === "negative" ? "Negative Gamma" : "Positive Gamma") + '</div>'
+      : "";
+
     var keyPop = '<div class="gamma-key-pop">' +
         '<div class="key-row"><span class="key-swatch key-dot"></span> EOD level (Call / HVL / Put)</div>' +
         '<div class="key-row"><span class="key-swatch key-tick"></span> 0DTE level</div>' +
@@ -359,7 +371,7 @@
       '</div>';
 
     return '<div class="gamma-card">' +
-      '<div class="gamma-card-head"><span class="gamma-ticker">' + ticker + staticFlag + alertFlag + '</span><span class="gamma-asof">' + asofLabel + '</span></div>' +
+      '<div class="gamma-card-head"><div>' + regimeLabel + '<span class="gamma-ticker">' + ticker + staticFlag + alertFlag + '</span></div><span class="gamma-asof">' + asofLabel + '</span></div>' +
       '<div class="gamma-range-track">' +
         tick(d.putSupport0DTE, "Put Support 0DTE") +
         tick(d.hvl0DTE, "HVL 0DTE") +
@@ -389,6 +401,16 @@
     tryRenderGamma();
   }
 
+  // Today's date in America/New_York as YYYY-MM-DD, to compare against
+  // menthorq-gamma.json's `asof` -- en-CA renders ISO order directly.
+  function todayET() {
+    return new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+  }
+  function isWeekendET() {
+    var day = new Date().toLocaleString("en-US", { timeZone: "America/New_York", weekday: "short" });
+    return day === "Sat" || day === "Sun";
+  }
+
   function tryRenderGamma() {
     var data = latestGammaLevels;
     if (!data) return;
@@ -402,9 +424,18 @@
     var asofLabel = data.asof ? fmtGammaAsOf(data.asof) : "—";
 
     flagEl.innerHTML = isLive ? "" : '<span class="placeholder-flag">static</span>';
-    noteEl.textContent = isLive
-      ? "SPY / IWM / QQQ dealer gamma positioning, from MenthorQ, as of " + asofLabel
-      : "SPY / IWM / QQQ dealer gamma positioning, from MenthorQ";
+
+    // If the local weekday scheduled task didn't run (or failed) this
+    // morning, `asof` is still stuck on a prior session -- surface that
+    // plainly instead of letting the levels below look current.
+    var stale = !!data.asof && !isWeekendET() && data.asof !== todayET();
+    if (stale) {
+      noteEl.innerHTML = '<span class="gamma-stale-warning">⚠ Gamma levels not up to date &mdash; disregard levels below</span>';
+    } else {
+      noteEl.textContent = isLive
+        ? "SPY / IWM / QQQ dealer gamma positioning, as of " + asofLabel
+        : "SPY / IWM / QQQ dealer gamma positioning";
+    }
 
     row.innerHTML = GAMMA_TICKERS.map(function (t) {
       var d = levels[t];

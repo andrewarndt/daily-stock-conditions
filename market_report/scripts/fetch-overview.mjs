@@ -40,13 +40,15 @@
  * single-symbol failure, falls back to the previous value already in
  * data/overview.json rather than failing the whole run.
  *
- * Also writes `gammaDayRange`: today's session high/low for SPY, IWM, and
- * QQQ (Alpaca's dailyBar.h/.l), piggybacked onto the same snapshot call as
- * the SPY/DIA/QQQ index quotes above (IWM added to that one request) so it
- * costs nothing extra. This is what index.html's Gamma Levels cards compare
- * MenthorQ's CR/HVL/PS/0DTE levels against to flag a level as "touched"
- * today -- a level is touched if it falls within [low, high], which holds
- * for any level actually crossed intraday since price moves continuously.
+ * Also writes `gammaDayRange`: today's session high/low/last for SPY, IWM,
+ * and QQQ (Alpaca's dailyBar.h/.l and latestTrade.p), piggybacked onto the
+ * same snapshot call as the SPY/DIA/QQQ index quotes above (IWM added to
+ * that one request) so it costs nothing extra. index.html's Gamma Levels
+ * cards use high/low to flag a level as "touched" today (touched if it
+ * falls within [low, high], which holds for any level actually crossed
+ * intraday since price moves continuously), and `last` vs. that ticker's
+ * HVL to label the card's gamma regime (positive above HVL, negative
+ * below).
  */
 
 import { readFile, writeFile } from "node:fs/promises";
@@ -162,10 +164,13 @@ async function fetchAlpacaStocks(defsById, previous, previousRange) {
   const gammaDayRange = {};
   for (const sym of GAMMA_RANGE_SYMBOLS) {
     try {
-      const bar = json?.[sym]?.dailyBar;
+      const snap = json?.[sym];
+      const bar = snap?.dailyBar;
       const high = bar?.h, low = bar?.l;
+      const last = snap?.latestTrade?.p ?? bar?.c;
       if (!Number.isFinite(high) || !Number.isFinite(low)) throw new Error(`missing dailyBar high/low for ${sym}`);
-      gammaDayRange[sym] = { high, low, live: true };
+      if (!Number.isFinite(last)) throw new Error(`missing last price for ${sym}`);
+      gammaDayRange[sym] = { high, low, last, live: true };
     } catch (err) {
       console.warn(`[alpaca] day-range failed for ${sym}: ${err.message}. Keeping previous value.`);
       gammaDayRange[sym] = previousRange[sym] ? { ...previousRange[sym], live: false } : null;
