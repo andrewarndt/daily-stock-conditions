@@ -32,8 +32,22 @@ IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png"}
 # pages just fall back to the original file for these (see parks.js).
 SKIP_EXTENSIONS = {".gif", ".webp"}
 
-WEB_MAX_DIMENSION = 1920  # px, long edge -- plenty for on-screen viewing
+WEB_MAX_DIMENSION = 900  # px, long edge
 WEB_JPEG_QUALITY = 82
+
+# Every on-page use of this "web" tier is a grid thumbnail -- park-cover
+# (minmax(280px, 1fr)) and photo-grid (minmax(240px, 1fr)) in
+# wildlife/assets/style.css, both capped well under 400px CSS-wide even on a
+# wide screen (the grid adds tracks rather than stretching one card full
+# width). "Full resolution" on this site always means the original file
+# (photoUrl(), opened in a new tab for anyone wanting a print) -- this tier
+# is never displayed any larger than a small grid tile. 900px covers a
+# ~360px tile at 2.5x pixel density with real headroom, at roughly a
+# quarter of the decoded-memory footprint of the old 1920px cap (each
+# 1920px photo was ~11.5MB decoded in the browser regardless of its ~300px
+# on-screen size -- a 15-20 photo gallery could add 150MB+ of that during a
+# scroll-through). If a larger in-page view (e.g. a lightbox) is ever added,
+# give it its own tier rather than raising this one.
 
 
 def human_size(num_bytes):
