@@ -595,7 +595,26 @@ svg .end-label { font-family: var(--font-mono); font-size: 11px; font-weight: 60
 .gamma-ticker { font-family: var(--font-display); font-weight: 600; font-size: 1.02rem; }
 .gamma-asof { font-family: var(--font-mono); color: var(--ink-soft); font-size: 0.72rem; }
 
-.gamma-stale-warning { color: var(--blue); font-weight: 600; }
+/* Pull-status line: shows when the scheduled MenthorQ pull last actually
+   ran, independent of `asof` (the vendor's EOD print date, which is
+   normally the prior session's close -- that's expected, not stale). Only
+   turns red when today's weekday pull looks like it never happened, since
+   that's the case where the levels below could be silently wrong. */
+.gamma-pull-status {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+  margin: -0.5rem 0 0.9rem;
+}
+.gamma-pull-warn {
+  display: inline-block;
+  color: var(--down);
+  background: var(--down-bg);
+  border: 1px solid var(--down);
+  border-radius: 3px;
+  padding: 0.3rem 0.6rem;
+  font-weight: 600;
+}
 
 /* High-performance-HMI convention: gray is the only color at rest --
    nothing here competes for attention. Blue is reserved exclusively for

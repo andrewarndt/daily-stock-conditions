@@ -66,6 +66,7 @@
       <h2>Gamma Levels<span id="gamma-flag"></span></h2>
       <span class="section-note" id="gamma-note">SPY / IWM / QQQ dealer gamma positioning</span>
     </div>
+    <div class="gamma-pull-status" id="gamma-pull-status"></div>
     <div class="gamma-row" id="gamma-row">
       <!-- populated from data/menthorq-gamma.json + data/overview.json; see script at bottom of page -->
     </div>
@@ -428,6 +429,24 @@
     var day = new Date().toLocaleString("en-US", { timeZone: "America/New_York", weekday: "short" });
     return day === "Sat" || day === "Sun";
   }
+  // Same conversion as todayET(), but for an arbitrary ISO timestamp --
+  // used to read the ET calendar date out of menthorq-gamma.json's
+  // `updated` field (when the pull actually ran/committed).
+  function dateET(iso) {
+    var d = new Date(iso);
+    return isNaN(d) ? null : d.toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+  }
+  // The scheduled MenthorQ pull fires weekdays at 8:50 AM ET and normally
+  // finishes in a couple minutes. Give it a comfortable buffer (until
+  // 9:15 AM ET) before treating a same-day `updated` stamp as missing --
+  // otherwise every check before that time would wrongly read as a failed
+  // run just because today's pull hasn't fired yet.
+  function gammaPullOverdueET() {
+    var hm = new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false, hour: "2-digit", minute: "2-digit" });
+    var parts = hm.split(":");
+    var minutesET = (Number(parts[0]) % 24) * 60 + Number(parts[1]);
+    return minutesET >= 9 * 60 + 15;
+  }
 
   function tryRenderGamma() {
     var data = latestGammaLevels;
@@ -436,6 +455,7 @@
 
     var flagEl = document.getElementById("gamma-flag");
     var noteEl = document.getElementById("gamma-note");
+    var pullEl = document.getElementById("gamma-pull-status");
     var row = document.getElementById("gamma-row");
     var levels = data.levels || {};
     var isLive = data.live === true;
@@ -443,16 +463,26 @@
 
     flagEl.innerHTML = isLive ? "" : '<span class="placeholder-flag">static</span>';
 
-    // If the local weekday scheduled task didn't run (or failed) this
-    // morning, `asof` is still stuck on a prior session -- surface that
-    // plainly instead of letting the levels below look current.
-    var stale = !!data.asof && !isWeekendET() && data.asof !== todayET();
-    if (stale) {
-      noteEl.innerHTML = '<span class="gamma-stale-warning">⚠ Gamma levels not up to date &mdash; disregard levels below</span>';
-    } else {
-      noteEl.textContent = isLive
-        ? "SPY / IWM / QQQ dealer gamma positioning, as of " + asofLabel
-        : "SPY / IWM / QQQ dealer gamma positioning";
+    // `asof` is MenthorQ's own EOD print date -- normally the prior
+    // session's close (dealer positioning for today is computed from
+    // yesterday's close), so it lagging "today" by one session is
+    // expected, not a sign anything is broken. Just show it plainly.
+    noteEl.textContent = isLive
+      ? "SPY / IWM / QQQ dealer gamma positioning, as of " + asofLabel
+      : "SPY / IWM / QQQ dealer gamma positioning";
+
+    // Whether *today's* scheduled pull actually ran is a separate
+    // question from `asof` -- answered by `updated` (the pull/commit
+    // timestamp), so a real failed/missed run can be told apart from a
+    // normal one-session-behind EOD print.
+    if (pullEl) {
+      var pulledStamp = data.updated
+        ? new Date(data.updated).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit", timeZone: "America/New_York" }) + " ET"
+        : "unknown";
+      var missedPull = !!data.updated && !isWeekendET() && gammaPullOverdueET() && dateET(data.updated) !== todayET();
+      pullEl.innerHTML = missedPull
+        ? '<span class="gamma-pull-warn">⚠ No successful gamma pull today &mdash; last pull ' + pulledStamp + '. Verify before trading on these levels.</span>'
+        : "Pulled " + pulledStamp;
     }
 
     row.innerHTML = GAMMA_TICKERS.map(function (t) {
