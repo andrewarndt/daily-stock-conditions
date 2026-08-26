@@ -1,5 +1,5 @@
 {
-  "updated": "2026-08-25T15:23:05.728Z",
+  "updated": "2026-08-26T16:01:36.196Z",
   "source": "live",
   "series": [
     {
@@ -10,7 +10,7 @@
       "unit": "%",
       "value": 3.75,
       "prior": 3.75,
-      "asof": "2026-08-25",
+      "asof": "2026-08-26",
       "live": true
     },
     {
@@ -21,7 +21,7 @@
       "unit": "%",
       "value": 3.5,
       "prior": 3.5,
-      "asof": "2026-08-25",
+      "asof": "2026-08-26",
       "live": true
     },
     {
@@ -32,7 +32,7 @@
       "unit": "%",
       "value": 3.63,
       "prior": 3.63,
-      "asof": "2026-08-24",
+      "asof": "2026-08-25",
       "live": true
     },
     {
@@ -41,9 +41,9 @@
       "seriesId": "SOFR",
       "name": "SOFR",
       "unit": "%",
-      "value": 3.65,
+      "value": 3.66,
       "prior": 3.65,
-      "asof": "2026-08-24",
+      "asof": "2026-08-25",
       "live": true
     },
     {
@@ -54,7 +54,7 @@
       "unit": "%",
       "value": 3.65,
       "prior": 3.65,
-      "asof": "2026-08-25",
+      "asof": "2026-08-26",
       "live": true
     },
     {
@@ -102,11 +102,11 @@
       "seriesId": "RRPONTSYD",
       "name": "Overnight Reverse Repo",
       "unit": "$B",
-      "value": 0.38,
-      "prior": 0.2,
-      "asof": "2026-08-24",
+      "value": 0.405,
+      "prior": 0.38,
+      "asof": "2026-08-25",
       "live": true,
-      "change5d": 0.125,
+      "change5d": 0.25,
       "stressed": false
     },
     {
@@ -115,9 +115,9 @@
       "seriesId": "NFCI",
       "name": "Chicago Fed NFCI",
       "unit": "",
-      "value": -0.559,
-      "prior": -0.555,
-      "asof": "2026-08-14",
+      "value": -0.566,
+      "prior": -0.561,
+      "asof": "2026-08-21",
       "live": true,
       "condition": "Loose",
       "conditionClass": "up"
@@ -128,12 +128,12 @@
       "seriesId": "BAMLH0A0HYM2",
       "name": "High Yield OAS",
       "unit": "bps",
-      "value": 269,
-      "prior": 270,
-      "asof": "2026-08-24",
+      "value": 270,
+      "prior": 269,
+      "asof": "2026-08-25",
       "live": true,
       "trend": "down",
-      "trendChange": -1,
+      "trendChange": -5,
       "trendLabel": "5-day",
       "condition": "Very Tight",
       "conditionClass": "up"
@@ -146,10 +146,10 @@
       "unit": "bps",
       "value": 81,
       "prior": 81,
-      "asof": "2026-08-24",
+      "asof": "2026-08-25",
       "live": true,
-      "trend": "flat",
-      "trendChange": 0,
+      "trend": "down",
+      "trendChange": -1,
       "trendLabel": "5-day",
       "condition": "Very Tight",
       "conditionClass": "up"
