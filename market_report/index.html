@@ -239,6 +239,15 @@
   }
 
   function render(data) {
+    // Gamma alert freshness depends on wall-clock time (the 9:00 PM ET
+    // reset), not just on whether overview.json's content changed -- so
+    // this runs on every poll tick, ahead of the dedupe return below,
+    // even on a tick where nothing actually refreshed. See
+    // isGammaRangeCurrent().
+    latestDayRange = data.gammaDayRange || null;
+    latestDayRangeUpdated = data.updated || null;
+    tryRenderGamma();
+
     if (data.updated === lastRenderedUpdate) return; // nothing new since last poll — skip re-render
     lastRenderedUpdate = data.updated;
 
@@ -261,9 +270,6 @@
 
     liveStatus.overview = data.source === "live";
     updateStatusNote();
-
-    latestDayRange = data.gammaDayRange || null;
-    tryRenderGamma();
   }
 
   // GitHub Pages serves every file with a fixed 10-minute Cache-Control,
@@ -332,19 +338,19 @@
     return Math.max(0, Math.min(100, pct)).toFixed(2) + "%";
   }
 
-  function isTouched(level, range) {
-    return Number.isFinite(level) && !!range && Number.isFinite(range.high) && Number.isFinite(range.low)
+  function isTouched(level, range, alertsActive) {
+    return !!alertsActive && Number.isFinite(level) && !!range && Number.isFinite(range.high) && Number.isFinite(range.low)
       && level >= range.low && level <= range.high;
   }
 
-  function renderGammaCard(ticker, d, asofLabel, live, range) {
+  function renderGammaCard(ticker, d, asofLabel, live, range, alertsActive) {
     var core = [d.putSupport, d.hvl, d.callResistance, d.putSupport0DTE, d.hvl0DTE, d.callResistance0DTE, d.gammaWall0DTE]
       .filter(Number.isFinite);
     var lo = Math.min.apply(null, core), hi = Math.max.apply(null, core);
     var pad = (hi - lo) * 0.08 || 1;
     lo -= pad; hi += pad;
 
-    var touchedCount = core.filter(function (v) { return isTouched(v, range); }).length;
+    var touchedCount = core.filter(function (v) { return isTouched(v, range, alertsActive); }).length;
 
     // HMI convention: gray at rest, blue only once a level is actually
     // touched -- no per-level "touched" tag repeated at the bottom, the
@@ -352,7 +358,7 @@
     // whole signal. See .gamma-stat / .gamma-dot / .gamma-tick in
     // style.css.
     function stat(label, value) {
-      var touched = isTouched(value, range);
+      var touched = isTouched(value, range, alertsActive);
       return '<span class="gamma-stat' + (touched ? " touched" : "") + '"' +
         (touched ? ' title="Touched today\'s range (' + fmtGammaPrice(range.low) + '-' + fmtGammaPrice(range.high) + ')"' : '') +
         '>' + label + ' <strong>' + fmtGammaPrice(value) + '</strong></span>';
@@ -360,13 +366,13 @@
 
     function dot(value, label) {
       if (!Number.isFinite(value)) return "";
-      var touched = isTouched(value, range);
+      var touched = isTouched(value, range, alertsActive);
       return '<span class="gamma-dot' + (touched ? " touched" : "") + '" style="left:' + gammaPos(value, lo, hi) + '" title="' + label + ': ' + fmtGammaPrice(value) + (touched ? " (touched today)" : "") + '"></span>';
     }
 
     function tick(value, label) {
       if (!Number.isFinite(value)) return "";
-      var touched = isTouched(value, range);
+      var touched = isTouched(value, range, alertsActive);
       return '<span class="gamma-tick' + (touched ? " touched" : "") + '" style="left:' + gammaPos(value, lo, hi) + '" title="' + label + ': ' + fmtGammaPrice(value) + (touched ? " (touched today)" : "") + '"></span>';
     }
 
@@ -414,6 +420,7 @@
 
   var latestGammaLevels = null;
   var latestDayRange = null;
+  var latestDayRangeUpdated = null;
 
   function renderGamma(data) {
     latestGammaLevels = data;
@@ -448,10 +455,37 @@
     return minutesET >= 9 * 60 + 15;
   }
 
+  // Gate for the "touched" alert (⚠ N touched / blue dots-stats), not for
+  // the levels or the regime label -- those keep showing on whatever the
+  // last successful pull was. Alerts must be OFF, not just eventually
+  // correct, in two situations:
+  //   1. Right after a new gamma pull lands (~8:50 AM ET) but before the
+  //      first fresh overview.json refresh of the day (~9:00 AM ET) --
+  //      until then data/overview.json's gammaDayRange is still dated
+  //      yesterday, so it must not be used to flag "touched" against
+  //      today's brand-new levels. Caught by the dateET() mismatch below.
+  //   2. Every night at 9:00 PM ET -- there's no post-close overview.json
+  //      refresh to naturally roll gammaDayRange over, so without an
+  //      explicit cutoff a same-day-but-hours-stale range would keep
+  //      lighting up alerts all evening. Caught by the minutesET check.
+  // Together these mean alerts are only ever live during the window they
+  // were actually computed for: today's date, before the nightly reset.
+  function isGammaRangeCurrent(updatedIso) {
+    if (dateET(updatedIso) !== todayET()) return false;
+    var hm = new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false, hour: "2-digit", minute: "2-digit" });
+    var minutesET = Number(hm.split(":")[0]) * 60 + Number(hm.split(":")[1]);
+    return minutesET < 21 * 60; // before 9:00 PM ET
+  }
+
   function tryRenderGamma() {
     var data = latestGammaLevels;
     if (!data) return;
     var range = latestDayRange || GAMMA_DAYRANGE_FALLBACK;
+    // Fallback/demo range (no live overview.json) always shows alerts, so
+    // the feature is visible offline -- see GAMMA_DAYRANGE_FALLBACK above.
+    // Real range data is gated through isGammaRangeCurrent() so a stale or
+    // yesterday-dated pull can't light up "touched" against fresh levels.
+    var alertsActive = latestDayRange ? isGammaRangeCurrent(latestDayRangeUpdated) : true;
 
     var flagEl = document.getElementById("gamma-flag");
     var noteEl = document.getElementById("gamma-note");
@@ -487,7 +521,7 @@
 
     row.innerHTML = GAMMA_TICKERS.map(function (t) {
       var d = levels[t];
-      return d ? renderGammaCard(t, d, asofLabel, isLive, range[t]) : "";
+      return d ? renderGammaCard(t, d, asofLabel, isLive, range[t], alertsActive) : "";
     }).join("");
   }
 

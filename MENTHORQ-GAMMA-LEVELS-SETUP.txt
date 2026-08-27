@@ -1,0 +1,233 @@
+HOW THE "GAMMA LEVELS" CARD ON daily-stock-conditions IS POPULATED
+====================================================================
+Written 2026-08-25. Audience: a Claude Code instance setting up an
+equivalent pull on a different Windows machine. Read this whole file
+before changing anything — the pipeline has two independent data
+sources that both feed one UI section, and it's easy to fix one while
+leaving the other broken.
+
+THE BIG PICTURE
+----------------
+The "Gamma Levels" section on index.html (SPY / IWM / QQQ dealer
+gamma positioning: Call Resistance, HVL, Put Support, their 0DTE
+counterparts, and the GEX bars) is built client-side in the browser
+from TWO JSON files in the repo, fetched independently:
+
+  1. market_report/data/menthorq-gamma.json
+     - The actual gamma levels (Call Resistance, Put Support, HVL,
+       0DTE variants, GEX array). Sourced from MenthorQ
+       (dashboard.menthorq.io), a paid dealer-positioning service.
+       MenthorQ has NO public API on this plan — the only way to get
+       the numbers is to load the authenticated web dashboard and
+       read them off the page. This file is written ONCE PER DAY by
+       a local, unattended Claude Code run on Andrew's own Windows
+       machine (details below) and pushed straight to GitHub via the
+       `gh` CLI. It is NOT written by a GitHub Actions workflow,
+       because GitHub's hosted runners have no way to present an
+       already-authenticated MenthorQ session — this only works
+       because it runs on a real desktop where Andrew's own Chrome
+       is signed into MenthorQ.
+
+  2. market_report/data/overview.json  →  the "gammaDayRange" field
+     - Today's session high/low/last for SPY, IWM, QQQ, pulled from
+       Alpaca's market data API. This runs on a normal schedule via
+       GitHub Actions (.github/workflows/refresh-overview.yml calls
+       market_report/scripts/fetch-overview.mjs every 30 minutes,
+       9:00-17:00 ET, Mon-Fri). It piggybacks onto the same Alpaca
+       snapshot request that fetch-overview.mjs already makes for the
+       SPY/DIA/QQQ "Major Indices" cards (IWM is added to that one
+       request, so it costs nothing extra).
+     - index.html uses this ONLY to flag whether a gamma level was
+       "touched" today (price fell within [low, high]) and to decide
+       the positive/negative gamma regime label (last vs. that
+       ticker's HVL). It does not need MenthorQ's session and runs
+       fine unattended on GitHub's servers.
+
+If source #1 (MenthorQ) fails on a given day, index.html keeps
+showing the last successfully-pulled menthorq-gamma.json (it "stays
+fixed for the rest of the day" per the comment in index.html) and
+displays a "No successful gamma pull today" warning banner once it's
+well past the normal pull time. If the file has never existed at all,
+it falls back to hardcoded placeholder numbers (GAMMA_FALLBACK in
+index.html) so the page never breaks outright.
+
+SOURCE #1 IN DETAIL: THE MENTHORQ SCHEDULED PULL
+--------------------------------------------------
+This lives ENTIRELY on the local machine, not in the git repo. Three
+pieces:
+
+A) Windows Task Scheduler task
+   Name: "Claude - MenthorQ Gamma Levels"
+   Trigger: weekly, Mon-Fri, 8:50 AM in whatever the machine's local
+            timezone was when the trigger was created (stored with a
+            fixed UTC offset, e.g. "-04:00" — see CAVEATS below about
+            DST).
+   Action:  powershell.exe -NoProfile -ExecutionPolicy Bypass -File
+            "C:\Users\<user>\.claude\scheduled-tasks\menthorq-gamma-levels\run.ps1"
+   Settings: DisallowStartIfOnBatteries = True, StartWhenAvailable = True
+            (so a sleeping laptop that wakes late still catches up).
+
+B) C:\Users\<user>\.claude\scheduled-tasks\menthorq-gamma-levels\
+   Contains:
+     - SKILL.md    — human-readable copy of the task definition
+                     (frontmatter: name/description) followed by the
+                     exact same instructions as prompt.txt. Kept for
+                     documentation; not read by the scheduled run
+                     itself.
+     - prompt.txt  — the actual prompt piped into `claude -p`. This
+                     is the full spec: navigate to
+                     https://dashboard.menthorq.io/en/levels in the
+                     user's REAL Chrome (via the claude-in-chrome MCP
+                     tools, i.e. --chrome), verify already signed in
+                     (NEVER attempt to log in — that's a hard rule in
+                     the prompt), select tickers SPY/IWM/QQQ one at a
+                     time via the "Select Tickers" search box
+                     (triple-click to clear before each new ticker —
+                     typing without clearing can silently fail to
+                     replace the previous query), confirm the
+                     level-type dropdown says "Gamma Levels EOD",
+                     click Search, read the resulting monospace text
+                     block (one line per ticker, format
+                     "$SPY: Call Resistance, 800, Put Support, 765, ..."),
+                     parse labels into camelCase JSON keys (see the
+                     exact label→key map in prompt.txt — includes
+                     Call Resistance, Put Support, HVL, 1D Min/Max,
+                     the 0DTE variants, and GEX 1..GEX 10 collected
+                     into a "gex" array), assemble the JSON shape
+                     shown below, and push it straight to GitHub with
+                     `gh api` PUT (base64-encoded content) to
+                     market_report/data/menthorq-gamma.json on branch
+                     main of the andrewarndt/daily-stock-conditions
+                     repo — NOT a local git commit/push, no local
+                     clone is touched at all. On any failure
+                     (session expired, page didn't behave, no ticker
+                     parsed, push failed after retries) it calls
+                     PushNotification with a short message and does
+                     NOT push partial/broken data. On success it does
+                     NOT notify — silent success by design.
+     - run.ps1     — the scheduled-task entry point. Reads prompt.txt,
+                     sets a fixed --allowedTools allowlist (Bash,
+                     Write, ToolSearch, PushNotification, and the six
+                     claude-in-chrome MCP tools it needs), and runs:
+                       claude.exe -p --chrome --allowedTools "<list>"
+                                  --output-format text
+                     with prompt.txt piped in via stdin, logging
+                     stdout/stderr and start/end timestamps to
+                     run.log in the same folder.
+     - run.log     — append-only log of every run, for debugging.
+
+C) The exact JSON shape written to menthorq-gamma.json:
+   {
+     "updated": "<ISO8601 UTC timestamp of the run>",
+     "source": "menthorq",
+     "live": true,
+     "asof": "<YYYY-MM-DD MenthorQ displayed as the levels' date>",
+     "levels": {
+       "SPY": { "callResistance": 800, "putSupport": 765, "hvl": 766,
+                 "oneDayMin": 757.39, "oneDayMax": 769.55,
+                 "callResistance0DTE": 770, "putSupport0DTE": 764,
+                 "hvl0DTE": 765, "gammaWall0DTE": 770,
+                 "gex": [760,762,761,768,769,755,757,774,775,772],
+                 "raw": "$SPY: Call Resistance, 800, ..." },
+       "IWM": { ...same shape... },
+       "QQQ": { ...same shape... }
+     }
+   }
+
+WHAT'S REQUIRED FOR THIS TO KEEP WORKING (or to set up fresh on a new
+machine)
+------------------------------------------------------------------
+1. A paid MenthorQ subscription, and that machine's actual Chrome
+   browser signed into dashboard.menthorq.io. There is no API key —
+   auth is whatever cookies/session Chrome already holds. If the
+   session expires, the task fails loudly via PushNotification; it
+   will never try to type a password.
+2. The Claude in Chrome browser extension installed and connected in
+   that Chrome profile (required for `claude -p --chrome` and the
+   claude-in-chrome MCP tools used in prompt.txt).
+3. Claude Code CLI installed at a known path (referenced literally in
+   run.ps1 as C:\Users\<user>\.local\bin\claude.exe — update this
+   path for the new machine/user).
+4. GitHub CLI (`gh`) installed and authenticated as an account with
+   write access to the andrewarndt/daily-stock-conditions repo (or
+   whatever the target repo is — update the repo path throughout
+   prompt.txt/SKILL.md if this is being pointed at a fork). No local
+   git clone is needed — everything goes through `gh api` content
+   PUTs.
+5. Windows Task Scheduler configured to run run.ps1 weekdays around
+   8:50 AM ET (before market open, so the prior session's EOD gamma
+   levels are in place before the trading day begins) — see the CAVEATS
+   below about timezone/DST before copying the trigger verbatim.
+6. The repo itself needs no special setup for this half — it's just a
+   plain JSON file at market_report/data/menthorq-gamma.json that
+   index.html fetches with cache:"no-store". Nothing server-side
+   depends on how the file got there.
+
+TO REPLICATE ON A NEW COMPUTER
+--------------------------------
+1. Copy the C:\Users\<user>\.claude\scheduled-tasks\menthorq-gamma-levels\
+   folder (SKILL.md, prompt.txt, run.ps1) to the new machine, same
+   relative structure under the new user's home directory.
+2. Edit run.ps1: fix $claudeExe (path to claude.exe on the new
+   machine) and $repoDir (only used as a working directory — the
+   actual push doesn't need a local clone, but Set-Location still
+   runs, so make sure the path exists or just point it somewhere
+   valid).
+3. Confirm prompt.txt/SKILL.md still reference the correct GitHub
+   repo (andrewarndt/daily-stock-conditions) and file path
+   (market_report/data/menthorq-gamma.json) — change both if this
+   new install is meant to feed a different repo/fork.
+4. Sign into dashboard.menthorq.io in that machine's Chrome (the same
+   Chrome profile the Claude in Chrome extension is attached to) and
+   confirm `gh auth status` shows write access to the target repo.
+5. Register the Windows Scheduled Task:
+     schtasks /Create /TN "Claude - MenthorQ Gamma Levels" /TR "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"C:\Users\<user>\.claude\scheduled-tasks\menthorq-gamma-levels\run.ps1\"" /SC WEEKLY /D MON,TUE,WED,THU,FRI /ST 08:50
+   (or use Task Scheduler GUI / New-ScheduledTask* PowerShell cmdlets;
+   set DisallowStartIfOnBatteries=$false and StartWhenAvailable=$true
+   if this machine sleeps/is a laptop.)
+6. Do a manual dry run first: powershell -File run.ps1, then check
+   run.log and the repo for the committed file, before trusting the
+   schedule.
+
+SOURCE #2 IN DETAIL: THE ALPACA gammaDayRange (for context only —
+this part needs no local machine, it already runs on GitHub Actions)
+------------------------------------------------------------------
+market_report/scripts/fetch-overview.mjs fetches an Alpaca snapshot
+for SPY, DIA, QQQ (index cards) and adds IWM to the same request
+purely to also get SPY/IWM/QQQ's dailyBar.h/.l (session high/low) and
+latestTrade.p (last price). It writes these into overview.json as:
+  "gammaDayRange": {
+    "SPY": { "high": ..., "low": ..., "last": ..., "live": true },
+    "IWM": { ... }, "QQQ": { ... }
+  }
+This requires only the ALPACA_API_KEY_ID / ALPACA_API_SECRET_KEY
+secrets already configured in the GitHub Actions workflow — nothing
+to set up locally. Mentioned here only so you don't confuse it with
+the MenthorQ pull when debugging the Gamma Levels card — a wrong or
+stale-looking "touched" flag or regime label is source #2's problem,
+a wrong or stale level value (Call Resistance/Put Support/HVL/GEX) is
+source #1's problem.
+
+CAVEATS / GOTCHAS
+-------------------
+- Windows weekly triggers store StartBoundary with a fixed UTC
+  offset (e.g. "2026-08-24T08:50:00-04:00" = EDT). Windows Task
+  Scheduler DOES correctly reinterpret this across DST changes for
+  weekly triggers in practice (it fires at 8:50 local time
+  year-round), but if you ever see it firing an hour off after a DST
+  transition, that's the first thing to check.
+- index.html independently computes whether a pull is "overdue" using
+  its own ~8:50 AM ET assumption (see gammaPullOverdueET() /
+  isWeekendET() in index.html) to decide when to show the "No
+  successful gamma pull today" banner. If you change the scheduled
+  time, update that logic too or the banner will fire at the wrong
+  time.
+- The scheduled task's Claude run is fully unattended and has a
+  narrow --allowedTools list — it cannot ask you anything mid-run. If
+  MenthorQ changes its page layout (different selectors, a different
+  results-box format), the run will fail closed (per FAILURE HANDLING
+  in prompt.txt) rather than push bad data, but someone will need to
+  manually update prompt.txt to match the new page.
+- This task pushes directly to the `main` branch content API with no
+  PR/review step. Don't point it at a repo/branch where that's not
+  acceptable.
