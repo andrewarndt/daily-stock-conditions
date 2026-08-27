@@ -1,5 +1,5 @@
 {
-  "updated": "2026-08-26T14:48:20.740Z",
+  "updated": "2026-08-27T23:40:08.705Z",
   "source": "live",
   "indicators": [
     {
@@ -19,7 +19,7 @@
         1.5
       ],
       "live": true,
-      "nextRelease": "2026-08-26"
+      "nextRelease": "2026-09-30"
     },
     {
       "id": "cpi",
