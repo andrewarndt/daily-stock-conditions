@@ -51,10 +51,13 @@
     <p>The data the Fed is watching, what the market thinks the Fed does next, and where yields sit across the curve.</p>
   </div>
 
-  <div class="next-release-strip">
-    <span class="next-release-label">Next up</span>
-    <span id="next-release-text" class="next-release-text">Loading&hellip;</span>
-  </div>
+  <section class="upcoming-releases">
+    <div class="section-head">
+      <h2>Upcoming Releases</h2>
+      <span class="section-note">Next 7 days</span>
+    </div>
+    <div id="next-release-list" class="release-list">Loading&hellip;</div>
+  </section>
 
   <section>
     <div class="section-head">
@@ -186,7 +189,7 @@
   };
 
   // Friendlier labels than the table's "X, Year-over-Year" names for the
-  // one-line "Next up" strip.
+  // Upcoming Releases box.
   var RELEASE_LABEL = {
     cpi: "CPI",
     ppi: "PPI",
@@ -238,7 +241,7 @@
   var latestEconData = null;
 
   function renderNextRelease(data) {
-    var el = document.getElementById("next-release-text");
+    var el = document.getElementById("next-release-list");
     var now = new Date();
     now.setHours(0, 0, 0, 0);
 
@@ -247,23 +250,27 @@
         var d = new Date(r.date + "T00:00:00");
         return { r: r, d: d, days: Math.round((d - now) / 86400000) };
       })
-      .filter(function (x) { return x.days >= 0; })
+      .filter(function (x) { return x.days >= 0 && x.days <= 7; })
       .sort(function (a, b) { return a.days - b.days; });
 
     if (!upcoming.length) {
-      el.textContent = "No upcoming releases on the calendar.";
+      el.innerHTML = '<p class="release-empty">No releases scheduled in the next 7 days.</p>';
       return;
     }
 
-    // Show everything landing within the next 7 days; if nothing is that
-    // close, just show the single nearest release.
-    var withinWeek = upcoming.filter(function (x) { return x.days <= 7; });
-    var items = withinWeek.length ? withinWeek : [upcoming[0]];
-
-    el.innerHTML = items.map(function (x) {
-      return '<strong>' + x.r.name + '</strong> (' + x.r.period + ') — ' +
-        fmtReleaseDate(x.r.date) + ' <span class="countdown-badge">' + fmtCountdown(x.days) + '</span>';
-    }).join('<span class="next-release-sep">&middot;</span>');
+    el.innerHTML = upcoming.map(function (x) {
+      return '' +
+        '<div class="release-row">' +
+          '<div class="release-row-main">' +
+            '<span class="release-name">' + x.r.name + '</span>' +
+            '<span class="release-desc">' + x.r.desc + (x.r.period !== "—" ? ' &middot; ' + x.r.period : '') + '</span>' +
+          '</div>' +
+          '<div class="release-row-when">' +
+            '<span class="release-date">' + fmtReleaseDate(x.r.date) + '</span>' +
+            '<span class="countdown-badge">' + fmtCountdown(x.days) + '</span>' +
+          '</div>' +
+        '</div>';
+    }).join('');
   }
 
   function fmtEconValue(v, unit) {
