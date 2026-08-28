@@ -1,5 +1,5 @@
 {
-  "updated": "2026-08-28T14:50:03.505Z",
+  "updated": "2026-08-28T15:02:24.834Z",
   "source": "live",
   "indicators": [
     {
@@ -172,6 +172,62 @@
       ],
       "live": true,
       "nextRelease": "2026-09-18"
+    }
+  ],
+  "releaseCalendar": [
+    {
+      "id": "pce_price_index",
+      "name": "PCE Price Index",
+      "desc": "Bureau of Economic Analysis",
+      "date": "2026-09-30"
+    },
+    {
+      "id": "retail_sales",
+      "name": "Retail Sales",
+      "desc": "US Census Bureau",
+      "date": "2026-09-16"
+    },
+    {
+      "id": "durable_goods",
+      "name": "Durable Goods Orders",
+      "desc": "US Census Bureau",
+      "date": "2026-09-02"
+    },
+    {
+      "id": "new_home_sales",
+      "name": "New Home Sales",
+      "desc": "US Census Bureau",
+      "date": "2026-09-24"
+    },
+    {
+      "id": "building_permits",
+      "name": "Building Permits",
+      "desc": "US Census Bureau",
+      "date": "2026-09-17"
+    },
+    {
+      "id": "trade_balance",
+      "name": "Trade Balance",
+      "desc": "Census Bureau / BEA",
+      "date": "2026-09-03"
+    },
+    {
+      "id": "factory_orders",
+      "name": "Factory Orders",
+      "desc": "US Census Bureau",
+      "date": "2026-09-02"
+    },
+    {
+      "id": "consumer_credit",
+      "name": "Consumer Credit",
+      "desc": "Federal Reserve (G.19)",
+      "date": "2026-09-08"
+    },
+    {
+      "id": "consumer_sentiment",
+      "name": "Consumer Sentiment",
+      "desc": "University of Michigan",
+      "date": "2026-08-28"
     }
   ]
 }
