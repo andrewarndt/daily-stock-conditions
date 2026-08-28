@@ -1,5 +1,5 @@
 {
-  "updated": "2026-08-27T23:53:07.678Z",
+  "updated": "2026-08-28T23:38:28.525Z",
   "source": "live",
   "series": [
     {
@@ -10,7 +10,7 @@
       "unit": "%",
       "value": 3.75,
       "prior": 3.75,
-      "asof": "2026-08-27",
+      "asof": "2026-08-28",
       "live": true
     },
     {
@@ -21,7 +21,7 @@
       "unit": "%",
       "value": 3.5,
       "prior": 3.5,
-      "asof": "2026-08-27",
+      "asof": "2026-08-28",
       "live": true
     },
     {
@@ -32,7 +32,7 @@
       "unit": "%",
       "value": 3.63,
       "prior": 3.63,
-      "asof": "2026-08-26",
+      "asof": "2026-08-27",
       "live": true
     },
     {
@@ -42,8 +42,8 @@
       "name": "SOFR",
       "unit": "%",
       "value": 3.64,
-      "prior": 3.66,
-      "asof": "2026-08-26",
+      "prior": 3.64,
+      "asof": "2026-08-27",
       "live": true
     },
     {
@@ -54,7 +54,7 @@
       "unit": "%",
       "value": 3.65,
       "prior": 3.65,
-      "asof": "2026-08-28",
+      "asof": "2026-08-31",
       "live": true
     },
     {
@@ -102,11 +102,11 @@
       "seriesId": "RRPONTSYD",
       "name": "Overnight Reverse Repo",
       "unit": "$B",
-      "value": 0.456,
-      "prior": 0.702,
-      "asof": "2026-08-27",
+      "value": 0.175,
+      "prior": 0.456,
+      "asof": "2026-08-28",
       "live": true,
-      "change5d": 0.231,
+      "change5d": -0.025000000000000022,
       "stressed": false
     },
     {
@@ -128,12 +128,12 @@
       "seriesId": "BAMLH0A0HYM2",
       "name": "High Yield OAS",
       "unit": "bps",
-      "value": 267,
-      "prior": 270,
-      "asof": "2026-08-26",
+      "value": 263,
+      "prior": 267,
+      "asof": "2026-08-27",
       "live": true,
       "trend": "down",
-      "trendChange": -6,
+      "trendChange": -12,
       "trendLabel": "5-day",
       "condition": "Very Tight",
       "conditionClass": "up"
@@ -144,12 +144,12 @@
       "seriesId": "BAMLC0A0CM",
       "name": "Investment Grade OAS",
       "unit": "bps",
-      "value": 80,
-      "prior": 81,
-      "asof": "2026-08-26",
+      "value": 79,
+      "prior": 80,
+      "asof": "2026-08-27",
       "live": true,
       "trend": "down",
-      "trendChange": -1,
+      "trendChange": -3,
       "trendLabel": "5-day",
       "condition": "Very Tight",
       "conditionClass": "up"
