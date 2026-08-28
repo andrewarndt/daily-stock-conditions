@@ -186,6 +186,19 @@
       { id: "housing_starts", name: "Housing Starts, Year-over-Year", desc: "US Census Bureau", value: -3.5, prior: -1.8, asof: "2026-06-01", unit: "%", trend: [-1.0, -2.2, -1.5, -2.6, -1.8, -3.5], live: false, nextRelease: "2026-09-17" },
       { id: "existing_home_sales", name: "Existing Home Sales", desc: "National Association of Realtors", value: 4.06, prior: 4.13, asof: "2026-06-01", unit: "M", trend: [4.03, 4.03, 4.08, 4.11, 4.09, 4.06], live: false, nextRelease: "2026-09-21" },
       { id: "industrial_production", name: "Industrial Production, Year-over-Year", desc: "Federal Reserve Board", value: 1.4, prior: 1.1, asof: "2026-06-01", unit: "%", trend: [0.6, 0.8, 0.9, 1.0, 1.1, 1.4], live: false, nextRelease: "2026-09-16" }
+    ],
+    // Same illustrative-fallback status as the indicators above -- only
+    // used if the live data/economic.json fetch fails outright.
+    releaseCalendar: [
+      { id: "pce_price_index", name: "PCE Price Index", desc: "Bureau of Economic Analysis", date: "2026-09-30" },
+      { id: "retail_sales", name: "Retail Sales", desc: "US Census Bureau", date: "2026-09-15" },
+      { id: "durable_goods", name: "Durable Goods Orders", desc: "US Census Bureau", date: "2026-09-24" },
+      { id: "new_home_sales", name: "New Home Sales", desc: "US Census Bureau", date: "2026-09-24" },
+      { id: "building_permits", name: "Building Permits", desc: "US Census Bureau", date: "2026-09-17" },
+      { id: "trade_balance", name: "Trade Balance", desc: "Census Bureau / BEA", date: "2026-09-04" },
+      { id: "factory_orders", name: "Factory Orders", desc: "US Census Bureau", date: "2026-09-03" },
+      { id: "consumer_credit", name: "Consumer Credit", desc: "Federal Reserve (G.19)", date: "2026-09-05" },
+      { id: "consumer_sentiment", name: "Consumer Sentiment", desc: "University of Michigan", date: "2026-08-29" }
     ]
   };
 
@@ -273,13 +286,28 @@
     return out;
   }
 
+  // Release-date-only reports (PCE, Retail Sales, Durable Goods, etc.) --
+  // name/date/desc from data/economic.json's releaseCalendar, no
+  // value/trend since these aren't tracked as full indicators (see
+  // fetch-economic.mjs header comment). No "period" info is fetched for
+  // these, so they render without one, same as FOMC entries.
+  // Deliberately NOT included anywhere in this calendar: Treasury auction
+  // announcements/results -- explicit product decision, not an oversight.
+  function releaseOnlyReleases(data) {
+    return (data.releaseCalendar || [])
+      .filter(function (r) { return r.date; })
+      .map(function (r) {
+        return { name: r.name, period: "—", date: r.date, desc: r.desc };
+      });
+  }
+
   function buildReleaseCalendar(data) {
     var fromIndicators = (data.indicators || [])
       .filter(function (r) { return r.nextRelease; })
       .map(function (r) {
         return { name: RELEASE_LABEL[r.id] || r.name, period: periodAfter(r.asof), date: r.nextRelease, desc: r.desc };
       });
-    return fromIndicators.concat(fomcReleases()).concat(pmiReleases());
+    return fromIndicators.concat(fomcReleases()).concat(pmiReleases()).concat(releaseOnlyReleases(data));
   }
 
   var latestEconData = null;

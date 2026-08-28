@@ -77,6 +77,30 @@
  * those straight off the Fed Watch section already on the page, so there's
  * one source of truth instead of two hardcoded copies.
  *
+ * `releaseCalendar` (a second top-level array alongside `indicators`) is the
+ * same fetchNextReleaseDate() lookup applied to a wider set of standard US
+ * economic reports that the team wants on the Upcoming Releases calendar but
+ * NOT as full priced/tracked rows in the Economic Indicators table -- name +
+ * next date only, no value/trend/observations call, so it's cheap even
+ * though the list is long:
+ *   - PCEPI (PCE Price Index -- the Fed's preferred inflation gauge --
+ *     released as part of BEA's "Personal Income and Outlays" report)
+ *   - RSAFS (Advance Retail Sales, Census)
+ *   - DGORDER (Durable Goods Orders, Census)
+ *   - HSN1F (New Home Sales, Census)
+ *   - PERMIT (Building Permits, Census -- same report/day as Housing Starts
+ *     but listed as its own named line item, same as real economic
+ *     calendars do)
+ *   - BOPGSTB (Trade Balance, Census/BEA)
+ *   - AMTMNO (Factory Orders, Census)
+ *   - TOTALSL (Consumer Credit, Federal Reserve G.19)
+ *   - UMCSENT (Consumer Sentiment, University of Michigan -- also charted in
+ *     full on sentiment.html via fetch-consumer-sentiment.mjs; this is just
+ *     the release date, fetched independently rather than shared, to keep
+ *     each page's data file self-contained the way every other page here is)
+ * Treasury auction announcements/results are deliberately never included in
+ * either list -- explicit product decision, not an oversight.
+ *
  * Requires env var FRED_API_KEY (see .github/workflows/refresh-economic.yml).
  * On any single-series failure, falls back to the previous value already in
  * data/economic.json rather than failing the whole run.
@@ -110,15 +134,37 @@ const SERIES_DEFS = {
   industrial_production: { seriesId: "INDPRO", units: "pc1", unit: "%", name: "Industrial Production, Year-over-Year", desc: "Federal Reserve Board" }
 };
 
+// Release-date-only reports for the Upcoming Releases calendar -- see header
+// comment. No `unit`/divisor since no value is ever fetched for these.
+const RELEASE_ONLY_ORDER = [
+  "pce_price_index", "retail_sales", "durable_goods", "new_home_sales",
+  "building_permits", "trade_balance", "factory_orders", "consumer_credit",
+  "consumer_sentiment"
+];
+
+const RELEASE_ONLY_DEFS = {
+  pce_price_index: { seriesId: "PCEPI", name: "PCE Price Index", desc: "Bureau of Economic Analysis" },
+  retail_sales: { seriesId: "RSAFS", name: "Retail Sales", desc: "US Census Bureau" },
+  durable_goods: { seriesId: "DGORDER", name: "Durable Goods Orders", desc: "US Census Bureau" },
+  new_home_sales: { seriesId: "HSN1F", name: "New Home Sales", desc: "US Census Bureau" },
+  building_permits: { seriesId: "PERMIT", name: "Building Permits", desc: "US Census Bureau" },
+  trade_balance: { seriesId: "BOPGSTB", name: "Trade Balance", desc: "Census Bureau / BEA" },
+  factory_orders: { seriesId: "AMTMNO", name: "Factory Orders", desc: "US Census Bureau" },
+  consumer_credit: { seriesId: "TOTALSL", name: "Consumer Credit", desc: "Federal Reserve (G.19)" },
+  consumer_sentiment: { seriesId: "UMCSENT", name: "Consumer Sentiment", desc: "University of Michigan" }
+};
+
 async function loadPrevious() {
   try {
     const raw = await readFile(OUT_PATH, "utf8");
     const json = JSON.parse(raw);
     const byId = {};
     for (const item of json.indicators || []) byId[item.id] = item;
-    return byId;
+    const releaseById = {};
+    for (const item of json.releaseCalendar || []) releaseById[item.id] = item;
+    return { byId, releaseById };
   } catch {
-    return {};
+    return { byId: {}, releaseById: {} };
   }
 }
 
@@ -195,8 +241,8 @@ async function main() {
     INDICATOR_ORDER.map(async (id) => {
       const def = SERIES_DEFS[id];
       const [series, nextRelease] = await Promise.all([
-        fetchFredSeries(id, def, previous),
-        fetchNextReleaseDate(def.seriesId, previous[id] && previous[id].nextRelease)
+        fetchFredSeries(id, def, previous.byId),
+        fetchNextReleaseDate(def.seriesId, previous.byId[id] && previous.byId[id].nextRelease)
       ]);
       if (series) series.nextRelease = nextRelease;
       return series;
@@ -205,16 +251,27 @@ async function main() {
 
   const indicators = sortByOrder(results, INDICATOR_ORDER);
 
+  const releaseResults = await Promise.all(
+    RELEASE_ONLY_ORDER.map(async (id) => {
+      const def = RELEASE_ONLY_DEFS[id];
+      const date = await fetchNextReleaseDate(def.seriesId, previous.releaseById[id] && previous.releaseById[id].date);
+      if (!date) return null;
+      return { id, name: def.name, desc: def.desc, date };
+    })
+  );
+  const releaseCalendar = sortByOrder(releaseResults, RELEASE_ONLY_ORDER);
+
   const anyLive = indicators.some((i) => i.live);
   const out = {
     updated: new Date().toISOString(),
     source: anyLive ? "live" : "seed",
-    indicators
+    indicators,
+    releaseCalendar
   };
 
   await writeFile(OUT_PATH, JSON.stringify(out, null, 2) + "\n", "utf8");
   const liveCount = indicators.filter((i) => i.live).length;
-  console.log(`Wrote ${OUT_PATH}: ${liveCount}/${indicators.length} indicators live this run.`);
+  console.log(`Wrote ${OUT_PATH}: ${liveCount}/${indicators.length} indicators live, ${releaseCalendar.length}/${RELEASE_ONLY_ORDER.length} release-only dates this run.`);
 }
 
 main().catch((err) => {
