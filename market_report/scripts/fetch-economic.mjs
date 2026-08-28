@@ -51,6 +51,11 @@
  *     prior point for a delta or any trend history at all). Revisit
  *     switching this to YoY once enough monthly history has accumulated.
  *   - INDPRO (Industrial Production Index, YoY via pc1)
+ *   - JTSJOL (JOLTS, Job Openings: Total Nonfarm, thousands SA), read as a
+ *     raw level (millions, dividing the thousands units by 1e3) same as
+ *     Existing Home Sales, not YoY -- job openings don't have the kind of
+ *     stable seasonal trailing-year baseline that makes a YoY % reading
+ *     meaningful the way it is for prices or production.
  *
  * PMI (S&P Global Composite) and ISM Manufacturing/Services remain
  * deliberately excluded: both are proprietary/subscription-gated with no
@@ -58,10 +63,13 @@
  * FRED discontinued mirroring ISM's PMI in 2016 over licensing), and this
  * project doesn't ship static/illustrative stand-ins for indicators it
  * can't source live -- per team decision (unchanged from before this
- * expansion).
+ * expansion). Their release *dates* (unlike their values) are public and
+ * rule-based, so fed-economic.html computes those separately for the
+ * Upcoming Releases calendar without a value/trend attached -- see
+ * pmiReleases() there.
  *
  * Each indicator also carries a `nextRelease` date (YYYY-MM-DD), used by the
- * "Next up" strip on fed-economic.html so that line never needs hand-editing:
+ * Upcoming Releases box on fed-economic.html so it never needs hand-editing:
  * the actual next scheduled date from FRED's own release calendar
  * (fred/release/dates), looked up via fred/series/release to map the series
  * to its release_id. Genuinely live, same as the values.
@@ -86,7 +94,7 @@ const FRED_API_KEY = process.env.FRED_API_KEY;
 // Order doubles as display order in both tables. Roughly: growth/prices
 // headline pair first, then the forward-looking Leading Index, then
 // labor, then the housing/production detail.
-const INDICATOR_ORDER = ["gdp", "cpi", "ppi", "lei", "unemployment", "housing_starts", "existing_home_sales", "industrial_production"];
+const INDICATOR_ORDER = ["gdp", "cpi", "ppi", "lei", "unemployment", "jolts", "housing_starts", "existing_home_sales", "industrial_production"];
 
 const SERIES_DEFS = {
   gdp: { seriesId: "A191RL1Q225SBEA", unit: "%", name: "Real GDP, QoQ Annualized", desc: "Bureau of Economic Analysis" },
@@ -94,6 +102,8 @@ const SERIES_DEFS = {
   ppi: { seriesId: "PPIACO", units: "pc1", unit: "%", name: "PPI, Year-over-Year", desc: "Bureau of Labor Statistics" },
   lei: { seriesId: "USALOLITOAASTSAM", unit: "idx", name: "OECD Leading Indicator (US)", desc: "OECD, amplitude-adjusted, 100 = trend" },
   unemployment: { seriesId: "UNRATE", unit: "%", name: "Unemployment Rate", desc: "Bureau of Labor Statistics" },
+  // Raw level (millions, seasonally adjusted), not YoY -- see header comment for why.
+  jolts: { seriesId: "JTSJOL", divisor: 1e3, unit: "M", name: "JOLTS Job Openings", desc: "Bureau of Labor Statistics" },
   housing_starts: { seriesId: "HOUST", units: "pc1", unit: "%", name: "Housing Starts, Year-over-Year", desc: "US Census Bureau" },
   // Raw level (millions, SAAR), not YoY -- see header comment for why.
   existing_home_sales: { seriesId: "EXHOSLUSM495S", divisor: 1e6, unit: "M", name: "Existing Home Sales", desc: "National Association of Realtors" },

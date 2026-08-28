@@ -182,6 +182,7 @@
       { id: "ppi", name: "PPI, Year-over-Year", desc: "Bureau of Labor Statistics", value: 2.2, prior: 2.4, asof: "2026-06-01", unit: "%", trend: [2.8, 2.7, 2.6, 2.5, 2.4, 2.2], live: false, nextRelease: "2026-08-14" },
       { id: "lei", name: "OECD Leading Indicator (US)", desc: "OECD, amplitude-adjusted, 100 = trend", value: 100.8, prior: 100.7, asof: "2026-06-01", unit: "idx", trend: [100.1, 100.2, 100.4, 100.5, 100.7, 100.8], live: false, nextRelease: "2026-09-19" },
       { id: "unemployment", name: "Unemployment Rate", desc: "Bureau of Labor Statistics", value: 4.1, prior: 4.0, asof: "2026-07-01", unit: "%", trend: [3.8, 3.9, 3.9, 4.0, 4.0, 4.1], live: false, nextRelease: "2026-09-04" },
+      { id: "jolts", name: "JOLTS Job Openings", desc: "Bureau of Labor Statistics", value: 7.4, prior: 7.5, asof: "2026-06-01", unit: "M", trend: [6.9, 7.0, 7.2, 7.3, 7.5, 7.4], live: false, nextRelease: "2026-09-01" },
       { id: "housing_starts", name: "Housing Starts, Year-over-Year", desc: "US Census Bureau", value: -3.5, prior: -1.8, asof: "2026-06-01", unit: "%", trend: [-1.0, -2.2, -1.5, -2.6, -1.8, -3.5], live: false, nextRelease: "2026-09-17" },
       { id: "existing_home_sales", name: "Existing Home Sales", desc: "National Association of Realtors", value: 4.06, prior: 4.13, asof: "2026-06-01", unit: "M", trend: [4.03, 4.03, 4.08, 4.11, 4.09, 4.06], live: false, nextRelease: "2026-09-21" },
       { id: "industrial_production", name: "Industrial Production, Year-over-Year", desc: "Federal Reserve Board", value: 1.4, prior: 1.1, asof: "2026-06-01", unit: "%", trend: [0.6, 0.8, 0.9, 1.0, 1.1, 1.4], live: false, nextRelease: "2026-09-16" }
@@ -229,13 +230,56 @@
     });
   }
 
+  // ISM Manufacturing/Services PMI have no free live-data source (see
+  // fetch-economic.mjs header comment), so they aren't tracked as full
+  // indicators with a value/trend. Their release *dates* are public and
+  // rule-based, though (1st and 3rd business day of the month, per ISM's
+  // published schedule), so they're computed here just for the calendar --
+  // weekends only, no US federal holiday adjustment, hence "est." in the
+  // label below.
+  function nthBusinessDayOfMonth(year, monthIndex, n) {
+    var d = new Date(Date.UTC(year, monthIndex, 1));
+    var count = 0;
+    while (true) {
+      var dow = d.getUTCDay();
+      if (dow !== 0 && dow !== 6) {
+        count++;
+        if (count === n) return d;
+      }
+      d.setUTCDate(d.getUTCDate() + 1);
+    }
+  }
+
+  function isoDate(d) { return d.toISOString().slice(0, 10); }
+
+  function priorMonthLabel(d) {
+    var p = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() - 1, 1));
+    return p.toLocaleString("en-US", { month: "short", year: "numeric", timeZone: "UTC" });
+  }
+
+  function pmiReleases() {
+    var now = new Date();
+    var months = [
+      { y: now.getUTCFullYear(), m: now.getUTCMonth() },
+      { y: now.getUTCFullYear(), m: now.getUTCMonth() + 1 }
+    ];
+    var out = [];
+    months.forEach(function (mo) {
+      var mfg = nthBusinessDayOfMonth(mo.y, mo.m, 1);
+      var svc = nthBusinessDayOfMonth(mo.y, mo.m, 3);
+      out.push({ name: "ISM Manufacturing PMI", period: priorMonthLabel(mfg), date: isoDate(mfg), desc: "Institute for Supply Management (est.)" });
+      out.push({ name: "ISM Services PMI", period: priorMonthLabel(svc), date: isoDate(svc), desc: "Institute for Supply Management (est.)" });
+    });
+    return out;
+  }
+
   function buildReleaseCalendar(data) {
     var fromIndicators = (data.indicators || [])
       .filter(function (r) { return r.nextRelease; })
       .map(function (r) {
         return { name: RELEASE_LABEL[r.id] || r.name, period: periodAfter(r.asof), date: r.nextRelease, desc: r.desc };
       });
-    return fromIndicators.concat(fomcReleases());
+    return fromIndicators.concat(fomcReleases()).concat(pmiReleases());
   }
 
   var latestEconData = null;
