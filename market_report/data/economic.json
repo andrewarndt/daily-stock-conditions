@@ -1,5 +1,5 @@
 {
-  "updated": "2026-08-27T23:40:08.705Z",
+  "updated": "2026-08-28T14:50:03.505Z",
   "source": "live",
   "indicators": [
     {
@@ -96,6 +96,25 @@
       ],
       "live": true,
       "nextRelease": "2026-09-04"
+    },
+    {
+      "id": "jolts",
+      "name": "JOLTS Job Openings",
+      "desc": "Bureau of Labor Statistics",
+      "value": 7.359,
+      "prior": 7.537,
+      "asof": "2026-06-01",
+      "unit": "M",
+      "trend": [
+        7.24,
+        6.922,
+        6.887,
+        7.585,
+        7.537,
+        7.359
+      ],
+      "live": true,
+      "nextRelease": "2026-09-01"
     },
     {
       "id": "housing_starts",
