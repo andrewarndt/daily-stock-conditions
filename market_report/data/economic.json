@@ -1,5 +1,5 @@
 {
-  "updated": "2026-08-28T23:28:31.640Z",
+  "updated": "2026-08-31T19:52:47.504Z",
   "source": "live",
   "indicators": [
     {
@@ -227,7 +227,7 @@
       "id": "consumer_sentiment",
       "name": "Consumer Sentiment",
       "desc": "University of Michigan",
-      "date": "2026-08-28"
+      "date": "2026-09-25"
     }
   ]
 }
