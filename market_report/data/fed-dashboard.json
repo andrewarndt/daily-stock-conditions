@@ -1,5 +1,5 @@
 {
-  "updated": "2026-08-31T20:17:41.222Z",
+  "updated": "2026-09-01T17:54:58.638Z",
   "source": "live",
   "series": [
     {
@@ -10,7 +10,7 @@
       "unit": "%",
       "value": 3.75,
       "prior": 3.75,
-      "asof": "2026-08-31",
+      "asof": "2026-09-01",
       "live": true
     },
     {
@@ -21,7 +21,7 @@
       "unit": "%",
       "value": 3.5,
       "prior": 3.5,
-      "asof": "2026-08-31",
+      "asof": "2026-09-01",
       "live": true
     },
     {
@@ -32,7 +32,7 @@
       "unit": "%",
       "value": 3.63,
       "prior": 3.63,
-      "asof": "2026-08-28",
+      "asof": "2026-08-31",
       "live": true
     },
     {
@@ -41,9 +41,9 @@
       "seriesId": "SOFR",
       "name": "SOFR",
       "unit": "%",
-      "value": 3.65,
-      "prior": 3.64,
-      "asof": "2026-08-28",
+      "value": 3.68,
+      "prior": 3.65,
+      "asof": "2026-08-31",
       "live": true
     },
     {
@@ -54,7 +54,7 @@
       "unit": "%",
       "value": 3.65,
       "prior": 3.65,
-      "asof": "2026-08-31",
+      "asof": "2026-09-01",
       "live": true
     },
     {
@@ -128,12 +128,12 @@
       "seriesId": "BAMLH0A0HYM2",
       "name": "High Yield OAS",
       "unit": "bps",
-      "value": 260,
-      "prior": 263,
-      "asof": "2026-08-28",
+      "value": 263,
+      "prior": 260,
+      "asof": "2026-08-31",
       "live": true,
       "trend": "down",
-      "trendChange": -10,
+      "trendChange": -6,
       "trendLabel": "5-day",
       "condition": "Very Tight",
       "conditionClass": "up"
@@ -144,12 +144,12 @@
       "seriesId": "BAMLC0A0CM",
       "name": "Investment Grade OAS",
       "unit": "bps",
-      "value": 79,
+      "value": 80,
       "prior": 79,
-      "asof": "2026-08-28",
+      "asof": "2026-08-31",
       "live": true,
       "trend": "down",
-      "trendChange": -2,
+      "trendChange": -1,
       "trendLabel": "5-day",
       "condition": "Very Tight",
       "conditionClass": "up"
