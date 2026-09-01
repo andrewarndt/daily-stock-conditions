@@ -1,47 +1,47 @@
 {
-  "updated": "2026-08-31T17:15:15Z",
+  "updated": "2026-09-01T15:28:05Z",
   "source": "menthorq",
   "live": true,
-  "asof": "2026-08-28",
+  "asof": "2026-08-31",
   "levels": {
     "SPY": {
       "callResistance": 800,
-      "putSupport": 760,
-      "hvl": 768,
-      "oneDayMin": 763.72,
-      "oneDayMax": 774.98,
+      "putSupport": 765,
+      "hvl": 769,
+      "oneDayMin": 761.19,
+      "oneDayMax": 772.91,
       "callResistance0DTE": 772,
-      "putSupport0DTE": 760,
-      "hvl0DTE": 770,
+      "putSupport0DTE": 765,
+      "hvl0DTE": 769,
       "gammaWall0DTE": 772,
-      "gex": [765, 774, 766, 769, 764, 780, 775, 778, 762, 761],
-      "raw": "$SPY: Call Resistance, 800, Put Support, 760, HVL, 768, 1D Min, 763.72, 1D Max, 774.98, Call Resistance 0DTE, 772, Put Support 0DTE, 760, HVL 0DTE, 770, Gamma Wall 0DTE, 772, GEX 1, 765, GEX 2, 774, GEX 3, 766, GEX 4, 769, GEX 5, 764, GEX 6, 780, GEX 7, 775, GEX 8, 778, GEX 9, 762, GEX 10, 761"
+      "gex": [766, 768, 770, 771, 763, 775, 760, 761, 778, 758],
+      "raw": "$SPY: Call Resistance, 800, Put Support, 765, HVL, 769, 1D Min, 761.19, 1D Max, 772.91, Call Resistance 0DTE, 772, Put Support 0DTE, 765, HVL 0DTE, 769, Gamma Wall 0DTE, 772, GEX 1, 766, GEX 2, 768, GEX 3, 770, GEX 4, 771, GEX 5, 763, GEX 6, 775, GEX 7, 760, GEX 8, 761, GEX 9, 778, GEX 10, 758"
     },
     "IWM": {
       "callResistance": 310,
-      "putSupport": 295,
+      "putSupport": 290,
       "hvl": 299,
-      "oneDayMin": 292.81,
-      "oneDayMax": 298.69,
-      "callResistance0DTE": 303,
-      "putSupport0DTE": 297,
+      "oneDayMin": 290.93,
+      "oneDayMax": 296.93,
+      "callResistance0DTE": 302,
+      "putSupport0DTE": 293,
       "hvl0DTE": 300,
-      "gammaWall0DTE": 303,
-      "gex": [293, 296, 294, 298, 297.5, 290, 291, 292, 301, 292.5],
-      "raw": "$IWM: Call Resistance, 310, Put Support, 295, HVL, 299, 1D Min, 292.81, 1D Max, 298.69, Call Resistance 0DTE, 303, Put Support 0DTE, 297, HVL 0DTE, 300, Gamma Wall 0DTE, 303, GEX 1, 293, GEX 2, 296, GEX 3, 294, GEX 4, 298, GEX 5, 297.5, GEX 6, 290, GEX 7, 291, GEX 8, 292, GEX 9, 301, GEX 10, 292.5"
+      "gammaWall0DTE": 302,
+      "gex": [295, 291, 296, 294, 292, 289, 288, 297, 298, 297.5],
+      "raw": "$IWM: Call Resistance, 310, Put Support, 290, HVL, 299, 1D Min, 290.93, 1D Max, 296.93, Call Resistance 0DTE, 302, Put Support 0DTE, 293, HVL 0DTE, 300, Gamma Wall 0DTE, 302, GEX 1, 295, GEX 2, 291, GEX 3, 296, GEX 4, 294, GEX 5, 292, GEX 6, 289, GEX 7, 288, GEX 8, 297, GEX 9, 298, GEX 10, 297.5"
     },
     "QQQ": {
       "callResistance": 730,
       "putSupport": 700,
-      "hvl": 714,
-      "oneDayMin": 708.56,
-      "oneDayMax": 724.3,
-      "callResistance0DTE": 720,
-      "putSupport0DTE": 714,
-      "hvl0DTE": 715,
-      "gammaWall0DTE": 720,
-      "gex": [710, 712, 716, 722, 718, 725, 705, 704, 732, 708],
-      "raw": "$QQQ: Call Resistance, 730, Put Support, 700, HVL, 714, 1D Min, 708.56, 1D Max, 724.3, Call Resistance 0DTE, 720, Put Support 0DTE, 714, HVL 0DTE, 715, Gamma Wall 0DTE, 720, GEX 1, 710, GEX 2, 712, GEX 3, 716, GEX 4, 722, GEX 5, 718, GEX 6, 725, GEX 7, 705, GEX 8, 704, GEX 9, 732, GEX 10, 708"
+      "hvl": 718,
+      "oneDayMin": 708.99,
+      "oneDayMax": 724.53,
+      "callResistance0DTE": 725,
+      "putSupport0DTE": 715,
+      "hvl0DTE": 718,
+      "gammaWall0DTE": 725,
+      "gex": [720, 710, 712, 722, 719, 705, 729, 704, 727, 708],
+      "raw": "$QQQ: Call Resistance, 730, Put Support, 700, HVL, 718, 1D Min, 708.99, 1D Max, 724.53, Call Resistance 0DTE, 725, Put Support 0DTE, 715, HVL 0DTE, 718, Gamma Wall 0DTE, 725, GEX 1, 720, GEX 2, 710, GEX 3, 712, GEX 4, 722, GEX 5, 719, GEX 6, 705, GEX 7, 729, GEX 8, 704, GEX 9, 727, GEX 10, 708"
     }
   }
 }
