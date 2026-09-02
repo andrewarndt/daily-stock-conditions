@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-01T16:35:13.181Z",
+  "updated": "2026-09-02T16:31:28.448Z",
   "source": "live",
   "live": true,
   "provider": "Kalshi (KXFEDDECISION)",
@@ -21,12 +21,12 @@
         {
           "key": "hold",
           "label": "Hold",
-          "pct": 38.5
+          "pct": 40.5
         },
         {
           "key": "hike25",
           "label": "Hike 25 bp",
-          "pct": 59
+          "pct": 57.1
         },
         {
           "key": "hike50",
@@ -47,17 +47,17 @@
         {
           "key": "cut25",
           "label": "Cut 25 bp",
-          "pct": 2.5
+          "pct": 2.9
         },
         {
           "key": "hold",
           "label": "Hold",
-          "pct": 67.5
+          "pct": 67.2
         },
         {
           "key": "hike25",
           "label": "Hike 25 bp",
-          "pct": 27.1
+          "pct": 27
         },
         {
           "key": "hike50",
