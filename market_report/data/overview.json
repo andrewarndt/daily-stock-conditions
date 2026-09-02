@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-02T20:01:34.891Z",
+  "updated": "2026-09-02T22:46:34.301Z",
   "source": "live",
   "indices": [
     {
@@ -25,8 +25,8 @@
     {
       "id": "nasdaq",
       "name": "Nasdaq-100",
-      "value": 709.32,
-      "change": 0.23599236910903312,
+      "value": 709.48,
+      "change": 0.25860241644881526,
       "changeType": "pct",
       "unit": "$",
       "ticker": "QQQ",
@@ -35,8 +35,8 @@
     {
       "id": "ust10y",
       "name": "10-Yr Treasury",
-      "value": 4.75,
-      "change": 0.02,
+      "value": 4.79,
+      "change": 0.04,
       "changeType": "pt",
       "unit": "%",
       "live": true
@@ -45,8 +45,8 @@
       "id": "vix",
       "name": "VIX",
       "live": true,
-      "value": 15.26,
-      "change": 0.75,
+      "value": 15.2,
+      "change": 0.6899999999999995,
       "changeType": "abs"
     }
   ],
@@ -56,35 +56,35 @@
       "name": "US Dollar Index",
       "ticker": "$DXY",
       "live": true,
-      "value": 99.592,
-      "change": -0.10832497492477841,
+      "value": 99.577,
+      "change": -0.12337011033099765,
       "changeType": "pct"
     },
     {
       "id": "btc",
       "name": "Bitcoin",
-      "value": 77185.04,
-      "change": -0.32794845,
+      "value": 77084.51,
+      "change": -0.45776676,
       "changeType": "pct",
-      "live": false,
+      "live": true,
       "unit": "$"
     },
     {
       "id": "gold",
       "name": "Gold",
-      "value": 4369.36753,
-      "change": 0.942351,
+      "value": 4384.90806,
+      "change": -0.065117658,
       "changeType": "pct",
-      "live": false,
+      "live": true,
       "unit": "$"
     },
     {
       "id": "silver",
       "name": "Silver",
-      "value": 58.69,
-      "change": 1.32942,
+      "value": 59.07,
+      "change": 1.9855,
       "changeType": "pct",
-      "live": false,
+      "live": true,
       "unit": "$",
       "ticker": "SLV"
     },
@@ -93,8 +93,8 @@
       "name": "Crude Oil",
       "ticker": "/CL",
       "live": true,
-      "value": 90.88,
-      "change": 8.968824940047949,
+      "value": 90.79,
+      "change": 8.860911270983214,
       "changeType": "pct",
       "unit": "$"
     },
@@ -129,13 +129,13 @@
     "IWM": {
       "high": 294.345,
       "low": 291.205,
-      "last": 294.03,
+      "last": 294.08,
       "live": true
     },
     "QQQ": {
       "high": 709.77,
       "low": 705.185,
-      "last": 709.32,
+      "last": 709.48,
       "live": true
     }
   }
