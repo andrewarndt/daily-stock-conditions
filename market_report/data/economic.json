@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-02T17:44:42.544Z",
+  "updated": "2026-09-03T17:39:58.297Z",
   "source": "live",
   "indicators": [
     {
@@ -191,7 +191,7 @@
       "id": "durable_goods",
       "name": "Durable Goods Orders",
       "desc": "US Census Bureau",
-      "date": "2026-09-02"
+      "date": "2026-09-25"
     },
     {
       "id": "new_home_sales",
@@ -215,7 +215,7 @@
       "id": "factory_orders",
       "name": "Factory Orders",
       "desc": "US Census Bureau",
-      "date": "2026-09-02"
+      "date": "2026-09-25"
     },
     {
       "id": "consumer_credit",
