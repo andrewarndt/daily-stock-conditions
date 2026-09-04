@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 /**
- * Refreshes data/fed-dashboard.json for fed-dashboard.html -- the pre-market
+ * Refreshes data/fed-dashboard.json for bonds.html -- the pre-market
  * "Fed Dashboard" checklist (Tier 1 Policy & Rate Path / Tier 2 Liquidity
- * Plumbing / Tier 3 Financial Conditions & Credit). Built up line by line
- * against market_report/fed_dashboard_checklist.txt rather than all at once.
+ * Plumbing / Tier 3 Financial Conditions & Credit), part of the Bonds page.
+ * Built up line by line against market_report/fed_dashboard_checklist.txt
+ * rather than all at once.
  *
  * Source: FRED (St. Louis Fed), same series-observations endpoint as
  * fetch-economic.mjs and fetch-yields.mjs. Every entry here is a free,
@@ -41,7 +42,7 @@
  * the latest level exceeds `levelThreshold`. Computed here (not client-side)
  * because it needs the raw multi-day observation history, which this file
  * doesn't otherwise store -- only the derived flag + reason string do. The
- * fed-dashboard.html page reads `stressed`/`stressReason` off any series
+ * bonds.html page reads `stressed`/`stressReason` off any series
  * generically, so a future line item just needs its own `stressRule` to
  * show up in the page's warning banner -- no page change required.
  *

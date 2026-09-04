@@ -12,13 +12,13 @@
 
   gtag('config', 'G-SS82YDJ0GN');
 </script>
-<title>Fed Dashboard — Market Desk</title>
-<meta name="description" content="Pre-market review checklist: policy &amp; rate path, liquidity plumbing, and financial conditions &amp; credit.">
-<link rel="canonical" href="https://4aholdingscompany.com/market_report/fed-dashboard.html">
+<title>Bonds — Market Desk</title>
+<meta name="description" content="Treasury yields and the curve, credit spreads and conditions, and the policy &amp; liquidity plumbing behind them — the bond market in one place.">
+<link rel="canonical" href="https://4aholdingscompany.com/market_report/bonds.html">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Fed Dashboard — Market Desk">
-<meta property="og:description" content="Pre-market review checklist: policy &amp; rate path, liquidity plumbing, and financial conditions &amp; credit.">
-<meta property="og:url" content="https://4aholdingscompany.com/market_report/fed-dashboard.html">
+<meta property="og:title" content="Bonds — Market Desk">
+<meta property="og:description" content="Treasury yields and the curve, credit spreads and conditions, and the policy &amp; liquidity plumbing behind them — the bond market in one place.">
+<meta property="og:url" content="https://4aholdingscompany.com/market_report/bonds.html">
 <meta property="og:image" content="https://4aholdingscompany.com/favicon.png">
 <meta name="twitter:card" content="summary">
 <link rel="icon" type="image/png" href="/favicon.png">
@@ -40,21 +40,71 @@
       <a href="sentiment.html" class="tab">Sentiment</a>
       <a href="sector-ratios.html" class="tab">Sector Ratios</a>
       <a href="fed-economic.html" class="tab">Fed &amp; Economic</a>
-      <a href="fed-dashboard.html" class="tab active">Fed Dashboard</a>
+      <a href="bonds.html" class="tab active">Bonds</a>
     </nav>
   </div>
 </div>
 
 <div class="page">
   <div class="page-head">
-    <h1>Fed Dashboard</h1>
-    <p>Pre-market review checklist: policy &amp; rate path, liquidity plumbing, and financial conditions &amp; credit. Context only — not wired into the Regime Classifier or Exposure Model.</p>
+    <h1>Bonds</h1>
+    <p>Treasury yields and the curve, credit spreads and conditions, and the policy &amp; liquidity plumbing behind them. Context only — not wired into the Regime Classifier or Exposure Model.</p>
   </div>
 
   <div id="stress-banner" class="stress-banner" hidden>
     <span class="stress-banner-label">⚠ Stress flag</span>
     <div class="stress-banner-body" id="stress-banner-body"></div>
   </div>
+
+  <section>
+    <div class="section-head">
+      <h2>Treasury &amp; Bond ETF Snapshot</h2>
+      <span class="section-note">Intraday, spot as of last print</span>
+    </div>
+    <div class="metric-grid" id="snapshot-grid">
+      <!-- populated from data/overview.json; see script at bottom of page -->
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Treasury Yields</h2>
+      <span class="section-note">2s10s spread: <strong id="spread-value" style="color:var(--up)">+29 bps</strong> <span id="spread-trend">(steepening)</span></span>
+    </div>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <div class="metric-name">2-Year<span id="yield-2y-flag"></span></div>
+        <div class="metric-value" id="yield-2y-value">3.92%</div>
+        <div class="metric-change down" id="yield-2y-change">▼ 0.02 pt</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-name">10-Year<span id="yield-10y-flag"></span></div>
+        <div class="metric-value" id="yield-10y-value">4.21%</div>
+        <div class="metric-change down" id="yield-10y-change">▼ 0.03 pt</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-name">30-Year<span id="yield-30y-flag"></span></div>
+        <div class="metric-value" id="yield-30y-value">4.48%</div>
+        <div class="metric-change down" id="yield-30y-change">▼ 0.01 pt</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Yield Curve<span id="yieldcurve-flag"></span></h2>
+      <span class="section-note" id="yieldcurve-asof">Constant-maturity Treasury</span>
+    </div>
+    <div class="chart-card">
+      <h3>UST Curve — today vs. 1 month ago</h3>
+      <p class="chart-sub">Yield (%) by maturity</p>
+      <div class="legend">
+        <span class="legend-item"><span class="legend-swatch" style="background:var(--accent)"></span>Today</span>
+        <span class="legend-item"><span class="legend-swatch dashed" style="background:var(--ink-soft)"></span>1 month ago</span>
+      </div>
+      <svg id="chart-yield-curve" width="900" height="260"></svg>
+    </div>
+  </section>
 
   <section>
     <div class="section-head">
@@ -122,7 +172,7 @@
   </section>
 
   <footer>
-    <p>Sourced from FRED (St. Louis Fed) unless noted otherwise. Derived metrics (Net Liquidity, SOFR&ndash;IORB spread, 10Y&ndash;3M spread) are computed client-side from the live series above rather than fetched separately. HYG in Tier 3 is the exception -- a live daily close from Yahoo Finance, refreshed once per weekday after market close.</p>
+    <p>Sourced from FRED (St. Louis Fed) unless noted otherwise. Treasury Yields, the Yield Curve, and derived metrics (Net Liquidity, SOFR&ndash;IORB spread, 10Y&ndash;3M spread, 2s10s spread) are computed client-side from the live series above rather than fetched separately. Two exceptions: HYG in Tier 3 is a live daily close from Yahoo Finance, refreshed once per weekday after market close; the Treasury &amp; Bond ETF Snapshot cards above are live intraday quotes from Twelve Data, refreshed every 30 min on weekdays.</p>
     <p>Context only. Not wired into Regime Classifier or Exposure Model. Gate 1 of the Macro Permission Hierarchy still runs on Regime Classifier v2.</p>
   </footer>
 </div>
@@ -196,9 +246,8 @@
   }
 
   // Once a tier actually has rows, the "Being built out line by line"
-  // caption (Task 4's exact-change #4) no longer applies -- swap in a
-  // real source line, same tone as every other populated section-note on
-  // this site (see fed-economic.html's Treasury Yields section-note).
+  // caption no longer applies -- swap in a real source line, same tone as
+  // every other populated section-note on this site.
   var TIER_NOTE_LIVE = "Sourced from FRED, refreshed once per weekday morning";
   var TIER_NOTE_EMPTY = "Being built out line by line — check back soon";
 
@@ -241,12 +290,11 @@
     banner.hidden = false;
   }
 
-  // Net Liquidity = WALCL - TGA - RRP, computed here rather than in the
-  // fetch script per the file header's derived-metrics note -- it's plain
-  // arithmetic on values already present. WALCL/WTREGEN are in raw $M, RRP
-  // in raw $B, so RRP is scaled up to $M before subtracting. Direction is
-  // the change since each component's own last refresh, not a fixed
-  // calendar window, since WALCL/TGA update weekly and RRP daily.
+  // Net Liquidity = WALCL - TGA - RRP, computed here rather than server-side
+  // -- it's plain arithmetic on values already present. WALCL/WTREGEN are
+  // in raw $M, RRP in raw $B, so RRP is scaled up to $M before subtracting.
+  // Direction is the change since each component's own last refresh, not a
+  // fixed calendar window, since WALCL/TGA update weekly and RRP daily.
   function computeNetLiquidity(byId) {
     var walcl = byId.walcl, tga = byId.wtregen, rrp = byId.rrp;
     if (!walcl || !tga || !rrp) return null;
@@ -302,11 +350,10 @@
   }
 
   // 10Y-3M spread, in bps -- the classic recession-watch yield-curve
-  // measure (distinct from the 2s10s spread already shown on
-  // fed-economic.html). Sourced from data/yields.json rather than
-  // duplicated here, per the file-header note above: it's arithmetic on
-  // values already live elsewhere on the site, not a second fetch of the
-  // same FRED series.
+  // measure (distinct from the 2s10s spread in the Treasury Yields section
+  // above). Sourced from data/yields.json rather than duplicated here: it's
+  // arithmetic on values already live elsewhere on this page, not a second
+  // fetch of the same FRED series.
   function computeYieldCurveSpread(yieldsSeries) {
     if (!yieldsSeries) return null;
     var byId = {};
@@ -337,10 +384,10 @@
     };
   }
 
-  // Tracks the newest `updated` timestamp seen across this page's two
-  // independent fetches (Fed Dashboard series, Treasury Yields) and
-  // reflects it in the header stamp -- same pattern as sentiment.html /
-  // fed-economic.html.
+  // Tracks the newest `updated` timestamp seen across this page's several
+  // independent fetches (Fed Dashboard series, Treasury Yields, Credit,
+  // Snapshot) and reflects it in the header stamp -- same pattern as
+  // sentiment.html / fed-economic.html.
   var latestStamp = null;
   function noteUpdated(iso) {
     var d = new Date(iso);
@@ -352,6 +399,20 @@
         month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", timeZone: "America/New_York"
       }) + " ET";
     }
+  }
+
+  // Top banner reflects the two FRED-sourced feeds (Fed Dashboard tiers,
+  // Treasury Yields) since they share a refresh cadence -- same convention
+  // as index.html and fed-economic.html. HYG (Yahoo) and the Snapshot cards
+  // (Twelve Data) carry their own inline "static" flags instead, same as
+  // every other page that mixes feeds of different cadences.
+  var liveStatus = { dashboard: false, yields: false };
+  function updateLiveNotice() {
+    var notice = document.getElementById("live-notice");
+    if (!notice) return;
+    notice.textContent = (liveStatus.dashboard && liveStatus.yields)
+      ? "Live data — FRED, refreshed on weekdays"
+      : "Illustrative sample data — not live market feeds";
   }
 
   var latestDashboard = null;
@@ -380,10 +441,8 @@
     renderTier("tier3-rows", "tier3-note", tier3Items);
     renderStressBanner(series);
 
-    var notice = document.getElementById("live-notice");
-    notice.textContent = latestDashboard.source === "live"
-      ? "Live data — FRED, refreshed once per weekday morning"
-      : "Illustrative sample data — not live market feeds";
+    liveStatus.dashboard = latestDashboard.source === "live";
+    updateLiveNotice();
   }
 
   fetch("data/fed-dashboard.json?t=" + Date.now(), { cache: "no-store" })
@@ -395,19 +454,110 @@
       renderAll();
     });
 
+  // Treasury Yields + Yield Curve -- moved here from fed-economic.html.
+  var YIELDS_FALLBACK = {
+    updated: "2026-08-07T20:15:00Z",
+    source: "seed",
+    series: [
+      { id: "1mo", name: "1-Month", label: "1M", value: 4.98, prior: 4.99, monthAgo: 5.05, asof: "2026-08-07", live: false },
+      { id: "3mo", name: "3-Month", label: "3M", value: 4.85, prior: 4.86, monthAgo: 4.95, asof: "2026-08-07", live: false },
+      { id: "6mo", name: "6-Month", label: "6M", value: 4.62, prior: 4.63, monthAgo: 4.78, asof: "2026-08-07", live: false },
+      { id: "1y", name: "1-Year", label: "1Y", value: 4.20, prior: 4.22, monthAgo: 4.40, asof: "2026-08-07", live: false },
+      { id: "2y", name: "2-Year", label: "2Y", value: 3.92, prior: 3.94, monthAgo: 4.05, asof: "2026-08-07", live: false },
+      { id: "5y", name: "5-Year", label: "5Y", value: 3.95, prior: 3.96, monthAgo: 4.02, asof: "2026-08-07", live: false },
+      { id: "10y", name: "10-Year", label: "10Y", value: 4.21, prior: 4.24, monthAgo: 4.24, asof: "2026-08-07", live: false },
+      { id: "30y", name: "30-Year", label: "30Y", value: 4.48, prior: 4.49, monthAgo: 4.46, asof: "2026-08-07", live: false }
+    ]
+  };
+
+  function fmtYieldPct(v) {
+    return v.toFixed(2) + "%";
+  }
+
+  function renderYieldCard(id, entry) {
+    var valueEl = document.getElementById("yield-" + id + "-value");
+    var changeEl = document.getElementById("yield-" + id + "-change");
+    var flagEl = document.getElementById("yield-" + id + "-flag");
+    if (!entry || !valueEl) return;
+    var delta = entry.value - entry.prior;
+    var dir = delta > 0.0001 ? "up" : delta < -0.0001 ? "down" : "flat";
+    var arrow = dir === "up" ? "▲" : dir === "down" ? "▼" : "▬";
+    valueEl.textContent = fmtYieldPct(entry.value);
+    changeEl.className = "metric-change " + dir;
+    changeEl.textContent = arrow + " " + Math.abs(delta).toFixed(2) + " pt";
+    flagEl.innerHTML = entry.live === false ? '<span class="placeholder-flag">static</span>' : "";
+  }
+
+  function renderYieldCurve(series) {
+    var withCurve = series.filter(function (s) { return s && Number.isFinite(s.monthAgo); });
+    if (!series.length) return;
+
+    var flagEl = document.getElementById("yieldcurve-flag");
+    var asofEl = document.getElementById("yieldcurve-asof");
+    var allLive = series.every(function (s) { return s.live; });
+    flagEl.innerHTML = allLive ? "" : '<span class="placeholder-flag">static</span>';
+    var mostRecentAsof = series.reduce(function (max, s) { return s.asof > max ? s.asof : max; }, series[0].asof);
+    asofEl.textContent = allLive ? "Constant-maturity Treasury, as of " + mostRecentAsof : "Constant-maturity Treasury";
+
+    MC.lineChart(document.getElementById("chart-yield-curve"), {
+      xLabels: series.map(function (s) { return s.label || s.name; }),
+      series: [
+        { name: "Today", color: MC.css("--accent"), data: series.map(function (s) { return s.value; }) },
+        { name: "1M ago", color: MC.css("--ink-soft"), dashed: true, data: withCurve.length === series.length ? series.map(function (s) { return s.monthAgo; }) : null }
+      ].filter(function (s) { return s.data; }),
+      yFmt: function (v) { return v.toFixed(1) + "%"; },
+      maxXLabels: 8
+    });
+  }
+
+  function renderYields(data) {
+    var byId = {};
+    (data.series || []).forEach(function (s) { byId[s.id] = s; });
+    renderYieldCard("2y", byId["2y"]);
+    renderYieldCard("10y", byId["10y"]);
+    renderYieldCard("30y", byId["30y"]);
+
+    var two = byId["2y"], ten = byId["10y"];
+    var spreadEl = document.getElementById("spread-value");
+    var trendEl = document.getElementById("spread-trend");
+    if (two && ten && spreadEl) {
+      var spreadBps = (ten.value - two.value) * 100;
+      var priorSpreadBps = (ten.prior - two.prior) * 100;
+      var sign = spreadBps >= 0 ? "+" : "";
+      spreadEl.textContent = sign + Math.round(spreadBps) + " bps";
+      spreadEl.style.color = spreadBps < 0 ? "var(--down)" : "var(--up)";
+
+      var trend = spreadBps < 0 ? "inverted"
+        : spreadBps > priorSpreadBps + 0.05 ? "steepening"
+        : spreadBps < priorSpreadBps - 0.05 ? "flattening"
+        : "unchanged";
+      trendEl.textContent = "(" + trend + ")";
+    }
+
+    renderYieldCurve((data.series || []).filter(Boolean));
+  }
+
   fetch("data/yields.json?t=" + Date.now(), { cache: "no-store" })
     .then(function (res) { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); })
-    .then(function (data) { latestYields = data; renderAll(); if (data.updated) noteUpdated(data.updated); })
+    .then(function (data) {
+      latestYields = data;
+      renderYields(data);
+      renderAll(); // re-run so the 10Y-3M derived spread picks up latestYields
+      liveStatus.yields = data.source === "live";
+      updateLiveNotice();
+      if (data.updated) noteUpdated(data.updated);
+    })
     .catch(function (err) {
-      console.warn("Could not load data/yields.json, 10Y-3M spread will be omitted:", err);
+      console.warn("Could not load data/yields.json, showing fallback values:", err);
+      renderYields(YIELDS_FALLBACK);
     });
 
-  // Credit (HYG) -- lives here in Tier 3 rather than as a data-driven row
-  // in the table above, since it's a full price trend rather than a
-  // point-in-time level (see scripts/fetch-credit.mjs). Closes Daily
+  // Credit (HYG) -- a full price trend rather than a point-in-time level
+  // (see scripts/fetch-credit.mjs), so it lives here as its own chart
+  // rather than a data-driven row in the Tier 3 table above. Closes
   // Pre-Market Checklist item 4 ("Check Credit: HYG trending"); the
-  // Financial Conditions & Credit label above is also where HY OAS will
-  // land once built, as a proper tier-3 SERIES_DEFS row.
+  // Financial Conditions & Credit table above carries HY OAS / IG OAS as
+  // proper tier-3 SERIES_DEFS rows.
   var CREDIT_MA_WINDOW = 10;
   var CREDIT_CHANGE_LOOKBACK_DAYS = 21; // ~1 trading month, drives the % delta only
 
@@ -480,6 +630,65 @@
     .catch(function (err) {
       console.warn("Could not load data/credit.json, showing fallback values:", err);
       renderCredit(CREDIT_FALLBACK);
+    });
+
+  // Treasury & Bond ETF Snapshot -- 10-Yr Treasury yield and 20+ Yr
+  // Treasury (TLT) price, both intraday quotes off the same Twelve Data
+  // feed as the Overview tab's Major Indices / Dollar & Commodities cards
+  // (data/overview.json). Moved here from index.html so every bond figure
+  // lives on one page; the underlying feed and its `ust10y`/`bonds` fields
+  // are unchanged, this page just reads them instead.
+  var SNAPSHOT_FALLBACK = {
+    updated: "2026-08-07T20:15:00Z",
+    source: "seed",
+    indices: [
+      { id: "ust10y", name: "10-Yr Treasury", value: 4.21, change: -0.03, changeType: "pt", unit: "%", live: false }
+    ],
+    commodities: [
+      { id: "bonds", name: "20+ Yr Treasury", ticker: "TLT", value: 82.05, change: 0.01, changeType: "pct", unit: "$", live: false }
+    ]
+  };
+
+  function fmtSnapshotValue(item) {
+    var formatted = item.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    if (item.unit === "%") return item.value.toFixed(2) + "%";
+    if (item.unit === "$") return "$" + formatted;
+    return formatted;
+  }
+
+  function fmtSnapshotChange(item) {
+    var up = item.change >= 0;
+    var abs = Math.abs(item.change).toFixed(2);
+    var suffix = item.changeType === "pct" ? "%" : item.changeType === "pt" ? " pt" : "";
+    return { text: (up ? "▲ " : "▼ ") + abs + suffix, cls: up ? "up" : "down" };
+  }
+
+  function renderSnapshot(data) {
+    var items = (data.indices || []).filter(function (i) { return i.id === "ust10y"; })
+      .concat((data.commodities || []).filter(function (i) { return i.id === "bonds"; }));
+    var grid = document.getElementById("snapshot-grid");
+    grid.innerHTML = "";
+    items.forEach(function (item) {
+      var chg = fmtSnapshotChange(item);
+      var card = document.createElement("div");
+      card.className = "metric-card";
+      var label = item.name + (item.ticker ? " (" + item.ticker + ")" : "");
+      var staticFlag = item.live === false ? '<span class="placeholder-flag">static</span>' : "";
+      card.innerHTML =
+        '<div class="metric-name">' + label + staticFlag + '</div>' +
+        '<div class="metric-value">' + fmtSnapshotValue(item) + '</div>' +
+        '<div class="metric-change ' + chg.cls + '">' + chg.text + '</div>';
+      grid.appendChild(card);
+    });
+    if (data.updated) noteUpdated(data.updated);
+  }
+
+  fetch("data/overview.json?t=" + Date.now(), { cache: "no-store" })
+    .then(function (res) { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); })
+    .then(renderSnapshot)
+    .catch(function (err) {
+      console.warn("Could not load data/overview.json, showing fallback values:", err);
+      renderSnapshot(SNAPSHOT_FALLBACK);
     });
 })();
 </script>

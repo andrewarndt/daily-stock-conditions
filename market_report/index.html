@@ -13,11 +13,11 @@
   gtag('config', 'G-SS82YDJ0GN');
 </script>
 <title>Overview — Market Desk</title>
-<meta name="description" content="Where the market stands right now — major indices, the dollar, bonds and key commodities, and the latest economic prints, all in one glance.">
+<meta name="description" content="Where the market stands right now — major indices, the dollar and key commodities, and the latest economic prints, all in one glance.">
 <link rel="canonical" href="https://4aholdingscompany.com/market_report/index.html">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Overview — Market Desk">
-<meta property="og:description" content="Where the market stands right now — major indices, the dollar, bonds and key commodities, and the latest economic prints, all in one glance.">
+<meta property="og:description" content="Where the market stands right now — major indices, the dollar and key commodities, and the latest economic prints, all in one glance.">
 <meta property="og:url" content="https://4aholdingscompany.com/market_report/index.html">
 <meta property="og:image" content="https://4aholdingscompany.com/favicon.png">
 <meta name="twitter:card" content="summary">
@@ -40,7 +40,7 @@
       <a href="sentiment.html" class="tab">Sentiment</a>
       <a href="sector-ratios.html" class="tab">Sector Ratios</a>
       <a href="fed-economic.html" class="tab">Fed &amp; Economic</a>
-      <a href="fed-dashboard.html" class="tab">Fed Dashboard</a>
+      <a href="bonds.html" class="tab">Bonds</a>
     </nav>
   </div>
 </div>
@@ -48,7 +48,7 @@
 <div class="page">
   <div class="page-head">
     <h1>Overview</h1>
-    <p>Where the market stands right now — index levels, the dollar, bonds and key commodities, and the latest economic prints, all in one glance.</p>
+    <p>Where the market stands right now — index levels, the dollar and key commodities, and the latest economic prints, all in one glance.</p>
   </div>
 
   <section>
@@ -74,7 +74,7 @@
 
   <section>
     <div class="section-head">
-      <h2>Dollar, Bonds &amp; Commodities</h2>
+      <h2>Dollar &amp; Commodities</h2>
       <span class="section-note">Intermarket snapshot, spot as of last print</span>
     </div>
     <div class="metric-grid" id="commodities-grid">
@@ -120,7 +120,6 @@
       { id: "sp500", name: "S&P 500", ticker: "SPY", value: 773.26, change: 0.61, changeType: "pct", unit: "$", live: false },
       { id: "dow", name: "Dow Jones", ticker: "DIA", value: 539.62, change: 0.27, changeType: "pct", unit: "$", live: false },
       { id: "nasdaq", name: "Nasdaq-100", ticker: "QQQ", value: 723.03, change: 1.17, changeType: "pct", unit: "$", live: false },
-      { id: "ust10y", name: "10-Yr Treasury", value: 4.21, change: -0.03, changeType: "pt", unit: "%", live: false },
       { id: "vix", name: "VIX", value: 14.62, change: -1.10, changeType: "abs", live: false }
     ],
     commodities: [
@@ -129,7 +128,6 @@
       { id: "gold", name: "Gold", value: 4342.35, change: -0.01, changeType: "pct", unit: "$", live: false },
       { id: "silver", name: "Silver", ticker: "SLV", value: 57.50, change: 2.95, changeType: "pct", unit: "$", live: false },
       { id: "oil", name: "Crude Oil", ticker: "/CL", value: 78.18, change: -2.69, changeType: "pct", unit: "$", live: false },
-      { id: "bonds", name: "20+ Yr Treasury", ticker: "TLT", value: 82.05, change: 0.01, changeType: "pct", unit: "$", live: false },
       { id: "commodity_basket", name: "Broad Commodities", ticker: "DBC", value: 24.10, change: 0.42, changeType: "pct", unit: "$", live: false }
     ]
   };
@@ -175,7 +173,7 @@
     var el = document.getElementById("overview-status-note");
     if (!el) return;
     el.textContent = (liveStatus.overview && liveStatus.econ)
-      ? "Major Indices and Dollar, Bonds & Commodities are live Twelve Data feeds; Economic Snapshot is live FRED data -- all three refresh automatically, no manual reload needed."
+      ? "Major Indices and Dollar & Commodities are live Twelve Data feeds; Economic Snapshot is live FRED data -- all three refresh automatically, no manual reload needed."
       : "Some figures on this page are showing illustrative placeholder values because a feed hasn't reported yet or couldn't be loaded -- live sections are unmarked, placeholder ones carry a \"static\" flag above.";
   }
 
@@ -252,8 +250,11 @@
     if (data.updated === lastRenderedUpdate) return; // nothing new since last poll — skip re-render
     lastRenderedUpdate = data.updated;
 
-    renderGrid("indices-grid", data.indices);
-    renderGrid("commodities-grid", data.commodities || []);
+    // ust10y and bonds/TLT moved to their own Bonds page -- filtered out
+    // here rather than dropped from data/overview.json, since bonds.html
+    // still reads both fields off that same feed for its snapshot cards.
+    renderGrid("indices-grid", data.indices.filter(function (i) { return i.id !== "ust10y"; }));
+    renderGrid("commodities-grid", (data.commodities || []).filter(function (i) { return i.id !== "bonds"; }));
 
     var d = new Date(data.updated);
     var stamp = isNaN(d) ? "unknown" : d.toLocaleString("en-US", {
