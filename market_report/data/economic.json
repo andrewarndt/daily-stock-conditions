@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-03T17:39:58.297Z",
+  "updated": "2026-09-04T17:28:09.540Z",
   "source": "live",
   "indicators": [
     {
@@ -83,15 +83,15 @@
       "name": "Unemployment Rate",
       "desc": "Bureau of Labor Statistics",
       "value": 4.1,
-      "prior": 4.2,
-      "asof": "2026-07-01",
+      "prior": 4.1,
+      "asof": "2026-08-01",
       "unit": "%",
       "trend": [
-        4.4,
         4.3,
         4.3,
         4.3,
         4.2,
+        4.1,
         4.1
       ],
       "live": true,
@@ -209,7 +209,7 @@
       "id": "trade_balance",
       "name": "Trade Balance",
       "desc": "Census Bureau / BEA",
-      "date": "2026-09-03"
+      "date": "2026-10-06"
     },
     {
       "id": "factory_orders",
