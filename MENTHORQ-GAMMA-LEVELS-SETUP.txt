@@ -75,7 +75,29 @@ B) C:\Users\<user>\.claude\scheduled-tasks\menthorq-gamma-levels\
                      documentation; not read by the scheduled run
                      itself.
      - prompt.txt  — the actual prompt piped into `claude -p`. This
-                     is the full spec: navigate to
+                     is the full spec: FIRST, select the local Chrome
+                     browser explicitly. NOTE (2026-09-01): this used
+                     to mean "pick the list_connected_browsers entry
+                     with isLocal: true" but that field turned out to
+                     be unreliable (observed marking the WRONG
+                     machine's browser isLocal: true, and even marking
+                     two different machines' browsers isLocal: true at
+                     the same time) — browser `name` is unstable too
+                     (arbitrary across calls, doesn't persist a custom
+                     name). The fix in place now instead hardcodes
+                     each machine's own deviceId in its prompt.txt and
+                     calls select_browser with that literal value,
+                     failing closed if it's not in the
+                     list_connected_browsers output. This machine's
+                     deviceId: 8636eb36-20ad-48bf-bca5-7c605783666e.
+                     Required in the first place because this account
+                     has claude-in-chrome connected on BOTH machines
+                     running this pull, and without pinning to a
+                     specific browser the automation can silently grab
+                     the OTHER machine's browser instead of this one's
+                     (bit us on 2026-08-31, and the isLocal-based first
+                     fix attempt turned out not to actually solve it —
+                     see CAVEATS). Then navigate to
                      https://dashboard.menthorq.io/en/levels in the
                      user's REAL Chrome (via the claude-in-chrome MCP
                      tools, i.e. --chrome), verify already signed in
@@ -107,8 +129,10 @@ B) C:\Users\<user>\.claude\scheduled-tasks\menthorq-gamma-levels\
                      NOT notify — silent success by design.
      - run.ps1     — the scheduled-task entry point. Reads prompt.txt,
                      sets a fixed --allowedTools allowlist (Bash,
-                     Write, ToolSearch, PushNotification, and the six
-                     claude-in-chrome MCP tools it needs), and runs:
+                     Write, ToolSearch, PushNotification, and the
+                     eight claude-in-chrome MCP tools it needs,
+                     including list_connected_browsers/select_browser
+                     for the local-browser pin above), and runs:
                        claude.exe -p --chrome --allowedTools "<list>"
                                   --output-format text
                      with prompt.txt piped in via stdin, logging
@@ -231,3 +255,70 @@ CAVEATS / GOTCHAS
 - This task pushes directly to the `main` branch content API with no
   PR/review step. Don't point it at a repo/branch where that's not
   acceptable.
+- Since this pull now runs redundantly on two machines under the same
+  Anthropic account, claude-in-chrome can have BOTH machines' Chrome
+  connected at once. The claude-in-chrome MCP tools operate on
+  whichever browser is currently "selected" for the account, which is
+  NOT guaranteed to be the one on the same machine as the running
+  script — it can pick up the other machine's browser instead,
+  causing the unattended run to try to control (or fail to find) a
+  browser window nobody on that machine can see. First fix attempt
+  (2026-08-31): had prompt.txt call list_connected_browsers and
+  select_browser on the entry with "isLocal": true as its very first
+  step. THIS TURNED OUT TO BE BROKEN (found 2026-09-01): isLocal is
+  not a reliable same-machine signal — observed marking the thin
+  client's browser isLocal: true when queried from the main computer,
+  and separately marking two different machines' browsers isLocal:
+  true simultaneously. Browser `name` was tried as an alternative and
+  also ruled out — it's unstable/arbitrary across list_connected_browsers
+  calls and doesn't persist a name set via switch_browser's Connect
+  prompt. CURRENT FIX: each machine's prompt.txt hardcodes that
+  machine's own deviceId (a literal UUID string) and calls
+  select_browser with it directly, failing closed if
+  list_connected_browsers doesn't include that exact deviceId. This
+  machine's deviceId is 8636eb36-20ad-48bf-bca5-7c605783666e (the
+  intended 8:50am/main machine); the other machine's deviceId is
+  0a4ec9ab-b544-48d6-980a-f30a98bf43bc (the 8:53am/thin client), as of
+  2026-09-01, but its prompt.txt/SKILL.md have NOT yet been updated to
+  hardcode it (no file access to that machine from here) — do that
+  next time it's touched. Caveat: a deviceId can change if the
+  extension is reinstalled or the Chrome profile reset on that
+  machine; if STEP 0 starts failing with "deviceId not connected"
+  after such an event on either machine, re-derive the current
+  deviceId (list_connected_browsers + switch_browser, having the user
+  click Connect on the correct physical machine) rather than assuming
+  it's a different problem. If you add a third machine or otherwise
+  touch this pull again, keep the explicit-deviceId approach — don't
+  let tabs_context_mcp/navigate run before the browser is pinned, and
+  don't reintroduce isLocal- or name-based matching.
+- THIRD INCIDENT (2026-09-03): despite the deviceId fix above being
+  correctly in place and working on the 8636eb36 (main) machine, gamma
+  data was observed being pulled via the thin client's browser instead
+  of the main machine's that morning. Root cause turned out to be
+  unrelated to deviceId selection: the 8636eb36 machine's actual
+  Windows Task Scheduler trigger was misconfigured to fire at 8:53am
+  (`Get-ScheduledTask`/`schtasks /Query` both confirmed "Start Time:
+  8:53:00 AM"), i.e. it collided with/mirrored the OTHER machine's
+  intended 8:53am slot instead of running at its own intended 8:50am —
+  so on any morning the two machines' Chrome extensions were BOTH
+  connected to the account within that same 3-minute window, the
+  isLocal-mislabeling bug (still reproducible live as of this writing
+  — list_connected_browsers marked BOTH connected browsers isLocal:
+  true simultaneously) had more opportunity to bite despite the
+  explicit-deviceId pinning being correct. Fixed via `schtasks /Change
+  /TN "Claude - MenthorQ Gamma Levels" /ST 08:50` on the 8636eb36
+  machine, verified via both Get-ScheduledTask and schtasks /Query
+  showing "Start Time: 8:50:00 AM" / next run 8:50am. The other
+  machine's (0a4ec9ab) actual configured trigger time was NOT
+  independently verified this session (no file/task-scheduler access
+  to it from here) — confirm it's genuinely 8:53am next time it's
+  touched, don't just trust the label. NOTE: `schtasks /Change`
+  printed a run-as-password warning on this edit ("When the run-as
+  password is empty, the scheduled task may not run because of the
+  security policy") even though the task's LogonType stayed
+  "Interactive" (unchanged, and correct for a task that drives a real
+  visible Chrome window) — a full live run.ps1 execution immediately
+  after the change was used to confirm nothing broke, rather than
+  trusting the trigger-time fix alone. Do the same (a real end-to-end
+  run.ps1 execution, not just a browser-navigate dry run) after any
+  future schtasks /Change on either machine.
