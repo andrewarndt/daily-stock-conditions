@@ -2,7 +2,7 @@
 /**
  * Refreshes data/credit.json: ~6 months of daily closes for HYG (iShares
  * High Yield Corporate Bond ETF), for the Tier 3 -- Financial Conditions
- * & Credit section on fed-dashboard.html.
+ * & Credit section on bonds.html.
  *
  * Closes the P1 gap flagged in Market_Desk_Sprint_Checklist.txt item 5:
  * the existing Daily Pre-Market Checklist's "Check Credit: HYG trending"

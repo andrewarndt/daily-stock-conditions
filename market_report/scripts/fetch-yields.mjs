@@ -2,7 +2,7 @@
 /**
  * Refreshes data/yields.json (full Treasury curve: 1M/3M/6M/1Y/2Y/5Y/10Y/30Y)
  * for the Treasury Yields cards, 2s10s spread, and Yield Curve chart on
- * fed-economic.html.
+ * bonds.html.
  *
  * Source: FRED (St. Louis Fed) -> DGS1MO/DGS3MO/DGS6MO/DGS1/DGS2/DGS5/
  * DGS10/DGS30 (daily Treasury constant maturity rate, percent, not
