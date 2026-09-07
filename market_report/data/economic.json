@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-04T17:28:09.540Z",
+  "updated": "2026-09-07T18:39:04.588Z",
   "source": "live",
   "indicators": [
     {
@@ -95,7 +95,7 @@
         4.1
       ],
       "live": true,
-      "nextRelease": "2026-09-04"
+      "nextRelease": "2026-10-02"
     },
     {
       "id": "jolts",
