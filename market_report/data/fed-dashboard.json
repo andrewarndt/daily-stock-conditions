@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-04T17:43:39.376Z",
+  "updated": "2026-09-07T18:49:20.844Z",
   "source": "live",
   "series": [
     {
@@ -10,7 +10,7 @@
       "unit": "%",
       "value": 3.75,
       "prior": 3.75,
-      "asof": "2026-09-04",
+      "asof": "2026-09-07",
       "live": true
     },
     {
@@ -21,7 +21,7 @@
       "unit": "%",
       "value": 3.5,
       "prior": 3.5,
-      "asof": "2026-09-04",
+      "asof": "2026-09-07",
       "live": true
     },
     {
@@ -54,7 +54,7 @@
       "unit": "%",
       "value": 3.65,
       "prior": 3.65,
-      "asof": "2026-09-04",
+      "asof": "2026-09-08",
       "live": true
     },
     {
@@ -102,11 +102,11 @@
       "seriesId": "RRPONTSYD",
       "name": "Overnight Reverse Repo",
       "unit": "$B",
-      "value": 0.702,
-      "prior": 0.525,
-      "asof": "2026-09-03",
+      "value": 0.675,
+      "prior": 0.702,
+      "asof": "2026-09-04",
       "live": true,
-      "change5d": 0.24599999999999994,
+      "change5d": 0.5,
       "stressed": false
     },
     {
