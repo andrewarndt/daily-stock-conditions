@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-07T18:49:20.844Z",
+  "updated": "2026-09-08T18:01:31.450Z",
   "source": "live",
   "series": [
     {
@@ -10,7 +10,7 @@
       "unit": "%",
       "value": 3.75,
       "prior": 3.75,
-      "asof": "2026-09-07",
+      "asof": "2026-09-08",
       "live": true
     },
     {
@@ -21,7 +21,7 @@
       "unit": "%",
       "value": 3.5,
       "prior": 3.5,
-      "asof": "2026-09-07",
+      "asof": "2026-09-08",
       "live": true
     },
     {
@@ -32,7 +32,7 @@
       "unit": "%",
       "value": 3.63,
       "prior": 3.63,
-      "asof": "2026-09-03",
+      "asof": "2026-09-04",
       "live": true
     },
     {
@@ -41,9 +41,9 @@
       "seriesId": "SOFR",
       "name": "SOFR",
       "unit": "%",
-      "value": 3.66,
-      "prior": 3.65,
-      "asof": "2026-09-03",
+      "value": 3.65,
+      "prior": 3.66,
+      "asof": "2026-09-04",
       "live": true
     },
     {
@@ -128,12 +128,12 @@
       "seriesId": "BAMLH0A0HYM2",
       "name": "High Yield OAS",
       "unit": "bps",
-      "value": 265,
-      "prior": 266,
-      "asof": "2026-09-03",
+      "value": 268,
+      "prior": 268,
+      "asof": "2026-09-07",
       "live": true,
       "trend": "up",
-      "trendChange": 2,
+      "trendChange": 5,
       "trendLabel": "5-day",
       "condition": "Very Tight",
       "conditionClass": "up"
@@ -146,10 +146,10 @@
       "unit": "bps",
       "value": 81,
       "prior": 81,
-      "asof": "2026-09-03",
+      "asof": "2026-09-07",
       "live": true,
       "trend": "up",
-      "trendChange": 2,
+      "trendChange": 1,
       "trendLabel": "5-day",
       "condition": "Very Tight",
       "conditionClass": "up"
