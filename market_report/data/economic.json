@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-08T17:49:43.913Z",
+  "updated": "2026-09-09T17:41:42.578Z",
   "source": "live",
   "indicators": [
     {
@@ -221,7 +221,7 @@
       "id": "consumer_credit",
       "name": "Consumer Credit",
       "desc": "Federal Reserve (G.19)",
-      "date": "2026-09-08"
+      "date": "2026-10-07"
     },
     {
       "id": "consumer_sentiment",
