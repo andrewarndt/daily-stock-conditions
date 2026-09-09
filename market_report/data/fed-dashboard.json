@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-08T18:01:31.450Z",
+  "updated": "2026-09-09T17:56:15.952Z",
   "source": "live",
   "series": [
     {
@@ -10,7 +10,7 @@
       "unit": "%",
       "value": 3.75,
       "prior": 3.75,
-      "asof": "2026-09-08",
+      "asof": "2026-09-09",
       "live": true
     },
     {
@@ -21,7 +21,7 @@
       "unit": "%",
       "value": 3.5,
       "prior": 3.5,
-      "asof": "2026-09-08",
+      "asof": "2026-09-09",
       "live": true
     },
     {
@@ -32,7 +32,7 @@
       "unit": "%",
       "value": 3.63,
       "prior": 3.63,
-      "asof": "2026-09-04",
+      "asof": "2026-09-08",
       "live": true
     },
     {
@@ -41,9 +41,9 @@
       "seriesId": "SOFR",
       "name": "SOFR",
       "unit": "%",
-      "value": 3.65,
-      "prior": 3.66,
-      "asof": "2026-09-04",
+      "value": 3.64,
+      "prior": 3.65,
+      "asof": "2026-09-08",
       "live": true
     },
     {
@@ -54,7 +54,7 @@
       "unit": "%",
       "value": 3.65,
       "prior": 3.65,
-      "asof": "2026-09-08",
+      "asof": "2026-09-09",
       "live": true
     },
     {
@@ -102,11 +102,11 @@
       "seriesId": "RRPONTSYD",
       "name": "Overnight Reverse Repo",
       "unit": "$B",
-      "value": 0.675,
-      "prior": 0.702,
-      "asof": "2026-09-04",
+      "value": 0.626,
+      "prior": 0.675,
+      "asof": "2026-09-08",
       "live": true,
-      "change5d": 0.5,
+      "change5d": -6.1,
       "stressed": false
     },
     {
@@ -128,12 +128,12 @@
       "seriesId": "BAMLH0A0HYM2",
       "name": "High Yield OAS",
       "unit": "bps",
-      "value": 268,
+      "value": 267,
       "prior": 268,
-      "asof": "2026-09-07",
+      "asof": "2026-09-08",
       "live": true,
       "trend": "up",
-      "trendChange": 5,
+      "trendChange": 2,
       "trendLabel": "5-day",
       "condition": "Very Tight",
       "conditionClass": "up"
@@ -146,10 +146,10 @@
       "unit": "bps",
       "value": 81,
       "prior": 81,
-      "asof": "2026-09-07",
+      "asof": "2026-09-08",
       "live": true,
-      "trend": "up",
-      "trendChange": 1,
+      "trend": "flat",
+      "trendChange": 0,
       "trendLabel": "5-day",
       "condition": "Very Tight",
       "conditionClass": "up"
