@@ -1,12 +1,12 @@
 {
-  "updated": "2026-09-09T19:58:05.217Z",
+  "updated": "2026-09-09T22:27:00.174Z",
   "source": "live",
   "indices": [
     {
       "id": "sp500",
       "name": "S&P 500",
-      "value": 762.315,
-      "change": -0.4888651019502247,
+      "value": 762.28,
+      "change": -0.4934339346787423,
       "changeType": "pct",
       "unit": "$",
       "ticker": "SPY",
@@ -15,8 +15,8 @@
     {
       "id": "dow",
       "name": "Dow Jones",
-      "value": 524.4,
-      "change": -0.6949836195959006,
+      "value": 524.055,
+      "change": -0.7603158672145927,
       "changeType": "pct",
       "unit": "$",
       "ticker": "DIA",
@@ -25,8 +25,8 @@
     {
       "id": "nasdaq",
       "name": "Nasdaq-100",
-      "value": 715.765,
-      "change": -0.3709477610901499,
+      "value": 716.29,
+      "change": -0.29787174811742084,
       "changeType": "pct",
       "unit": "$",
       "ticker": "QQQ",
@@ -35,8 +35,8 @@
     {
       "id": "ust10y",
       "name": "10-Yr Treasury",
-      "value": 4.78,
-      "change": 0.01,
+      "value": 4.8,
+      "change": 0.02,
       "changeType": "pt",
       "unit": "%",
       "live": true
@@ -45,8 +45,8 @@
       "id": "vix",
       "name": "VIX",
       "live": true,
-      "value": 16.35,
-      "change": 2.030000000000001,
+      "value": 16.46,
+      "change": 2.1400000000000006,
       "changeType": "abs"
     }
   ],
@@ -56,15 +56,15 @@
       "name": "US Dollar Index",
       "ticker": "$DXY",
       "live": true,
-      "value": 98.804,
-      "change": -0.1979797979797959,
+      "value": 98.783,
+      "change": -0.21919191919191794,
       "changeType": "pct"
     },
     {
       "id": "btc",
       "name": "Bitcoin",
-      "value": 78214.93,
-      "change": -0.30701363,
+      "value": 78021.15,
+      "change": -0.5540062,
       "changeType": "pct",
       "live": true,
       "unit": "$"
@@ -72,8 +72,8 @@
     {
       "id": "gold",
       "name": "Gold",
-      "value": 4398.80967,
-      "change": 0.98208906,
+      "value": 4401.63158,
+      "change": -0.001461255,
       "changeType": "pct",
       "live": true,
       "unit": "$"
@@ -81,8 +81,8 @@
     {
       "id": "silver",
       "name": "Silver",
-      "value": 60.73,
-      "change": 2.29072,
+      "value": 60.72,
+      "change": 2.27388,
       "changeType": "pct",
       "live": true,
       "unit": "$",
@@ -93,8 +93,8 @@
       "name": "Crude Oil",
       "ticker": "/CL",
       "live": true,
-      "value": 96.53,
-      "change": 5.728368017524649,
+      "value": 97.15,
+      "change": 6.407447973713043,
       "changeType": "pct",
       "unit": "$"
     },
@@ -103,8 +103,8 @@
       "name": "20+ Yr Treasury",
       "ticker": "TLT",
       "live": true,
-      "value": 81.715,
-      "change": -0.1893245389031405,
+      "value": 81.73,
+      "change": -0.1710028093318683,
       "changeType": "pct",
       "unit": "$"
     },
@@ -113,8 +113,8 @@
       "name": "Broad Commodities",
       "ticker": "DBC",
       "live": true,
-      "value": 32.855,
-      "change": 2.896962104603812,
+      "value": 32.85,
+      "change": 2.8813028499843463,
       "changeType": "pct",
       "unit": "$"
     }
@@ -123,19 +123,19 @@
     "SPY": {
       "high": 764.45,
       "low": 761,
-      "last": 762.315,
+      "last": 762.28,
       "live": true
     },
     "IWM": {
       "high": 294.14,
       "low": 290.315,
-      "last": 290.61,
+      "last": 290.72,
       "live": true
     },
     "QQQ": {
       "high": 719.635,
       "low": 714.04,
-      "last": 715.765,
+      "last": 716.29,
       "live": true
     }
   }
