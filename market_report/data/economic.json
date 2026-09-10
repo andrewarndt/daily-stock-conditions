@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-09T17:41:42.578Z",
+  "updated": "2026-09-10T17:34:54.139Z",
   "source": "live",
   "indicators": [
     {
@@ -44,17 +44,17 @@
       "id": "ppi",
       "name": "PPI, Year-over-Year",
       "desc": "Bureau of Labor Statistics",
-      "value": 8.27076,
-      "prior": 9.89977,
-      "asof": "2026-07-01",
+      "value": 9.85006,
+      "prior": 8.69918,
+      "asof": "2026-08-01",
       "unit": "%",
       "trend": [
-        3.86785,
         6.80166,
-        9.4287,
-        12.30758,
-        9.89977,
-        8.27076
+        9.41593,
+        12.18581,
+        9.80149,
+        8.69918,
+        9.85006
       ],
       "live": true,
       "nextRelease": "2026-09-10"
@@ -139,17 +139,17 @@
       "id": "existing_home_sales",
       "name": "Existing Home Sales",
       "desc": "National Association of Realtors",
-      "value": 4.06,
-      "prior": 4.13,
-      "asof": "2026-07-01",
+      "value": 3.98,
+      "prior": 4.06,
+      "asof": "2026-08-01",
       "unit": "M",
       "trend": [
-        4.13,
         4.01,
         4.04,
         4.19,
         4.13,
-        4.06
+        4.06,
+        3.98
       ],
       "live": true,
       "nextRelease": "2026-09-10"
