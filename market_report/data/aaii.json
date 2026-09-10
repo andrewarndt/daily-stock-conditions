@@ -1,12 +1,12 @@
 {
-  "updated": "2026-09-09T16:53:08.680Z",
+  "updated": "2026-09-10T16:40:41.433Z",
   "source": "live",
   "live": true,
-  "asof": "2026-09-02",
-  "bullish": 39.7,
+  "asof": "2026-09-09",
+  "bullish": 38,
   "neutral": 22.7,
-  "bearish": 37.6,
-  "spread": 2.1,
+  "bearish": 39.3,
+  "spread": -1.3,
   "history": [
     {
       "date": "2026-07-29",
@@ -43,6 +43,12 @@
       "bullish": 39.7,
       "neutral": 22.7,
       "bearish": 37.6
+    },
+    {
+      "date": "2026-09-09",
+      "bullish": 38,
+      "neutral": 22.7,
+      "bearish": 39.3
     }
   ]
 }
