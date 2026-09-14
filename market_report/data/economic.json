@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-11T17:37:57.224Z",
+  "updated": "2026-09-14T19:06:41.980Z",
   "source": "live",
   "indicators": [
     {
@@ -38,7 +38,7 @@
         3.35302
       ],
       "live": true,
-      "nextRelease": "2026-09-11"
+      "nextRelease": "2026-10-14"
     },
     {
       "id": "ppi",
