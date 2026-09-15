@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-14T19:32:29.800Z",
+  "updated": "2026-09-15T18:24:23.746Z",
   "source": "live",
   "series": [
     {
@@ -10,7 +10,7 @@
       "unit": "%",
       "value": 3.75,
       "prior": 3.75,
-      "asof": "2026-09-14",
+      "asof": "2026-09-15",
       "live": true
     },
     {
@@ -21,7 +21,7 @@
       "unit": "%",
       "value": 3.5,
       "prior": 3.5,
-      "asof": "2026-09-14",
+      "asof": "2026-09-15",
       "live": true
     },
     {
@@ -32,7 +32,7 @@
       "unit": "%",
       "value": 3.63,
       "prior": 3.63,
-      "asof": "2026-09-11",
+      "asof": "2026-09-14",
       "live": true
     },
     {
@@ -43,7 +43,7 @@
       "unit": "%",
       "value": 3.62,
       "prior": 3.62,
-      "asof": "2026-09-11",
+      "asof": "2026-09-14",
       "live": true
     },
     {
@@ -54,7 +54,7 @@
       "unit": "%",
       "value": 3.65,
       "prior": 3.65,
-      "asof": "2026-09-14",
+      "asof": "2026-09-15",
       "live": true
     },
     {
@@ -102,11 +102,11 @@
       "seriesId": "RRPONTSYD",
       "name": "Overnight Reverse Repo",
       "unit": "$B",
-      "value": 1.42,
-      "prior": 5.255,
-      "asof": "2026-09-14",
+      "value": 0.7,
+      "prior": 1.42,
+      "asof": "2026-09-15",
       "live": true,
-      "change5d": 0.7449999999999999,
+      "change5d": 0.07399999999999995,
       "stressed": false
     },
     {
@@ -128,12 +128,12 @@
       "seriesId": "BAMLH0A0HYM2",
       "name": "High Yield OAS",
       "unit": "bps",
-      "value": 265,
-      "prior": 270,
-      "asof": "2026-09-11",
+      "value": 271,
+      "prior": 265,
+      "asof": "2026-09-14",
       "live": true,
-      "trend": "down",
-      "trendChange": -3,
+      "trend": "up",
+      "trendChange": 3,
       "trendLabel": "5-day",
       "condition": "Very Tight",
       "conditionClass": "up"
@@ -146,7 +146,7 @@
       "unit": "bps",
       "value": 80,
       "prior": 80,
-      "asof": "2026-09-11",
+      "asof": "2026-09-14",
       "live": true,
       "trend": "down",
       "trendChange": -1,
