@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-14T23:55:11.362Z",
+  "updated": "2026-09-15T23:34:35.422Z",
   "source": "live",
   "labels": [
     "Apr",
@@ -18,10 +18,10 @@
         16.45,
         15.99,
         14.92,
-        15.84
+        17.1
       ],
       "live": true,
-      "asof": "2026-09-11"
+      "asof": "2026-09-14"
     },
     "vix3m": {
       "name": "3M ATM IV",
@@ -31,10 +31,10 @@
         19,
         19.02,
         17.53,
-        19.28
+        19.36
       ],
       "live": true,
-      "asof": "2026-09-14"
+      "asof": "2026-09-15"
     },
     "vixeq": {
       "name": "Avg constituent IV",
@@ -44,10 +44,10 @@
         47.39,
         44.42,
         35.8,
-        36.01
+        36.25
       ],
       "live": true,
-      "asof": "2026-09-14"
+      "asof": "2026-09-15"
     },
     "dspx": {
       "name": "Dispersion Index",
@@ -57,11 +57,11 @@
         44.44,
         41.42,
         32.55,
-        31.69
+        31.81
       ],
       "live": true,
-      "asof": "2026-09-14",
-      "avg12mo": 36.219043824701195
+      "asof": "2026-09-15",
+      "avg12mo": 36.201547619047616
     }
   },
   "termStructure": [
@@ -69,45 +69,45 @@
       "id": "vix9d",
       "tenorLabel": "9D",
       "name": "9-Day",
-      "value": 16.91,
+      "value": 17.21,
       "monthAgo": 10.61,
-      "asof": "2026-09-14",
+      "asof": "2026-09-15",
       "live": true
     },
     {
       "id": "vix",
       "tenorLabel": "30D",
       "name": "30-Day",
-      "value": 15.84,
-      "monthAgo": 14.55,
-      "asof": "2026-09-11",
+      "value": 17.1,
+      "monthAgo": 14.25,
+      "asof": "2026-09-14",
       "live": true
     },
     {
       "id": "vix3m",
       "tenorLabel": "3M",
       "name": "3-Month",
-      "value": 19.28,
+      "value": 19.36,
       "monthAgo": 18.46,
-      "asof": "2026-09-14",
+      "asof": "2026-09-15",
       "live": true
     },
     {
       "id": "vix6m",
       "tenorLabel": "6M",
       "name": "6-Month",
-      "value": 20.71,
+      "value": 20.76,
       "monthAgo": 20.8,
-      "asof": "2026-09-14",
+      "asof": "2026-09-15",
       "live": true
     },
     {
       "id": "vix1y",
       "tenorLabel": "1Y",
       "name": "1-Year",
-      "value": 21.97,
+      "value": 21.88,
       "monthAgo": 22.75,
-      "asof": "2026-09-14",
+      "asof": "2026-09-15",
       "live": true
     }
   ]
