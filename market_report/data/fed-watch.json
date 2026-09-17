@@ -1,40 +1,9 @@
 {
-  "updated": "2026-09-16T16:48:52.210Z",
+  "updated": "2026-09-17T16:55:43.016Z",
   "source": "live",
   "live": true,
   "provider": "Kalshi (KXFEDDECISION)",
   "meetings": [
-    {
-      "date": "2026-09-16T18:00:00Z",
-      "label": "FOMC — Sep 16, 2026",
-      "buckets": [
-        {
-          "key": "cut50",
-          "label": "Cut 50+ bp",
-          "pct": 0.5
-        },
-        {
-          "key": "cut25",
-          "label": "Cut 25 bp",
-          "pct": 0.5
-        },
-        {
-          "key": "hold",
-          "label": "Hold",
-          "pct": 12.3
-        },
-        {
-          "key": "hike25",
-          "label": "Hike 25 bp",
-          "pct": 86.2
-        },
-        {
-          "key": "hike50",
-          "label": "Hike 50+ bp",
-          "pct": 0.5
-        }
-      ]
-    },
     {
       "date": "2026-10-28T18:00:00Z",
       "label": "FOMC — Oct 28, 2026",
@@ -47,22 +16,53 @@
         {
           "key": "cut25",
           "label": "Cut 25 bp",
-          "pct": 2.5
+          "pct": 0.5
         },
         {
           "key": "hold",
           "label": "Hold",
-          "pct": 61.2
+          "pct": 52.2
         },
         {
           "key": "hike25",
           "label": "Hike 25 bp",
-          "pct": 34.3
+          "pct": 45.3
         },
         {
           "key": "hike50",
           "label": "Hike 50+ bp",
           "pct": 1.5
+        }
+      ]
+    },
+    {
+      "date": "2026-12-09T19:00:00Z",
+      "label": "FOMC — Dec 9, 2026",
+      "buckets": [
+        {
+          "key": "cut50",
+          "label": "Cut 50+ bp",
+          "pct": 0.5
+        },
+        {
+          "key": "cut25",
+          "label": "Cut 25 bp",
+          "pct": 1.5
+        },
+        {
+          "key": "hold",
+          "label": "Hold",
+          "pct": 27.4
+        },
+        {
+          "key": "hike25",
+          "label": "Hike 25 bp",
+          "pct": 68.2
+        },
+        {
+          "key": "hike50",
+          "label": "Hike 50+ bp",
+          "pct": 2.5
         }
       ]
     }
