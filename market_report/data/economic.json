@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-16T18:01:54.426Z",
+  "updated": "2026-09-17T18:02:12.257Z",
   "source": "live",
   "indicators": [
     {
@@ -56,7 +56,7 @@
         8.69918,
         9.85006
       ],
-      "live": false,
+      "live": true,
       "nextRelease": "2026-10-15"
     },
     {
@@ -120,17 +120,17 @@
       "id": "housing_starts",
       "name": "Housing Starts, Year-over-Year",
       "desc": "US Census Bureau",
-      "value": -13.47765,
-      "prior": 2.61059,
-      "asof": "2026-07-01",
+      "value": -1.23935,
+      "prior": -8.58939,
+      "asof": "2026-08-01",
       "unit": "%",
       "trend": [
-        -9.72502,
         13.07578,
         1,
         -8.30101,
-        2.61059,
-        -13.47765
+        4.35098,
+        -8.58939,
+        -1.23935
       ],
       "live": true,
       "nextRelease": "2026-09-17"
@@ -185,7 +185,7 @@
       "id": "retail_sales",
       "name": "Retail Sales",
       "desc": "US Census Bureau",
-      "date": "2026-09-16"
+      "date": "2026-10-15"
     },
     {
       "id": "durable_goods",
