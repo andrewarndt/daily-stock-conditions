@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-17T18:28:06.196Z",
+  "updated": "2026-09-18T17:48:04.456Z",
   "source": "live",
   "series": [
     {
@@ -9,8 +9,8 @@
       "name": "Fed Funds Target (Upper)",
       "unit": "%",
       "value": 4,
-      "prior": 3.75,
-      "asof": "2026-09-17",
+      "prior": 4,
+      "asof": "2026-09-18",
       "live": true
     },
     {
@@ -20,8 +20,8 @@
       "name": "Fed Funds Target (Lower)",
       "unit": "%",
       "value": 3.75,
-      "prior": 3.5,
-      "asof": "2026-09-17",
+      "prior": 3.75,
+      "asof": "2026-09-18",
       "live": true
     },
     {
@@ -30,9 +30,9 @@
       "seriesId": "EFFR",
       "name": "Effective Fed Funds Rate",
       "unit": "%",
-      "value": 3.63,
+      "value": 3.88,
       "prior": 3.63,
-      "asof": "2026-09-16",
+      "asof": "2026-09-17",
       "live": true
     },
     {
@@ -41,9 +41,9 @@
       "seriesId": "SOFR",
       "name": "SOFR",
       "unit": "%",
-      "value": 3.62,
-      "prior": 3.64,
-      "asof": "2026-09-16",
+      "value": 3.85,
+      "prior": 3.62,
+      "asof": "2026-09-17",
       "live": true
     },
     {
@@ -53,8 +53,8 @@
       "name": "Interest on Reserve Balances",
       "unit": "%",
       "value": 3.9,
-      "prior": 3.65,
-      "asof": "2026-09-17",
+      "prior": 3.9,
+      "asof": "2026-09-18",
       "live": true
     },
     {
@@ -63,12 +63,12 @@
       "seriesId": "WALCL",
       "name": "Fed Balance Sheet (Total Assets)",
       "unit": "$M",
-      "value": 6740619,
-      "prior": 6737204,
-      "asof": "2026-09-09",
+      "value": 6746548,
+      "prior": 6740619,
+      "asof": "2026-09-16",
       "live": true,
-      "trend": "contracting",
-      "trendChange": -19336,
+      "trend": "expanding",
+      "trendChange": 849,
       "trendLabel": "4-wk"
     },
     {
@@ -77,9 +77,9 @@
       "seriesId": "WTREGEN",
       "name": "Treasury General Account",
       "unit": "$M",
-      "value": 883335,
-      "prior": 967935,
-      "asof": "2026-09-09",
+      "value": 877028,
+      "prior": 883335,
+      "asof": "2026-09-16",
       "live": true
     },
     {
@@ -88,12 +88,12 @@
       "seriesId": "WRESBAL",
       "name": "Bank Reserves",
       "unit": "$M",
-      "value": 2991310,
-      "prior": 2894531,
-      "asof": "2026-09-09",
+      "value": 3013794,
+      "prior": 2991310,
+      "asof": "2026-09-16",
       "live": true,
       "trend": "expanding",
-      "trendChange": 47251,
+      "trendChange": 78507,
       "trendLabel": "4-wk"
     },
     {
@@ -129,11 +129,11 @@
       "name": "High Yield OAS",
       "unit": "bps",
       "value": 270,
-      "prior": 276,
-      "asof": "2026-09-16",
+      "prior": 270,
+      "asof": "2026-09-17",
       "live": true,
-      "trend": "down",
-      "trendChange": -1,
+      "trend": "flat",
+      "trendChange": 0,
       "trendLabel": "5-day",
       "condition": "Very Tight",
       "conditionClass": "up"
@@ -145,11 +145,11 @@
       "name": "Investment Grade OAS",
       "unit": "bps",
       "value": 78,
-      "prior": 80,
-      "asof": "2026-09-16",
+      "prior": 78,
+      "asof": "2026-09-17",
       "live": true,
       "trend": "down",
-      "trendChange": -3,
+      "trendChange": -2,
       "trendLabel": "5-day",
       "condition": "Very Tight",
       "conditionClass": "up"
