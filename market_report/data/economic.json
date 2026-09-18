@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-17T18:02:12.257Z",
+  "updated": "2026-09-18T17:35:25.890Z",
   "source": "live",
   "indicators": [
     {
@@ -133,7 +133,7 @@
         -1.23935
       ],
       "live": true,
-      "nextRelease": "2026-09-17"
+      "nextRelease": "2026-09-24"
     },
     {
       "id": "existing_home_sales",
@@ -158,17 +158,17 @@
       "id": "industrial_production",
       "name": "Industrial Production, Year-over-Year",
       "desc": "Federal Reserve Board",
-      "value": 1.07946,
-      "prior": 1.28924,
-      "asof": "2026-07-01",
+      "value": 1.42042,
+      "prior": 1.13,
+      "asof": "2026-08-01",
       "unit": "%",
       "trend": [
-        0.79724,
-        0.70655,
-        1.37638,
-        1.52963,
-        1.28924,
-        1.07946
+        0.68606,
+        1.43422,
+        1.65809,
+        1.34363,
+        1.13,
+        1.42042
       ],
       "live": true,
       "nextRelease": "2026-09-18"
@@ -203,7 +203,7 @@
       "id": "building_permits",
       "name": "Building Permits",
       "desc": "US Census Bureau",
-      "date": "2026-09-17"
+      "date": "2026-09-24"
     },
     {
       "id": "trade_balance",
