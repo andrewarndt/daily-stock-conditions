@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-22T21:00:23.482Z",
+  "updated": "2026-09-22T23:34:37.698Z",
   "source": "live",
   "indices": [
     {
@@ -56,15 +56,15 @@
       "name": "US Dollar Index",
       "ticker": "$DXY",
       "live": true,
-      "value": 100.542,
-      "change": 0.32129315505887324,
+      "value": 100.541,
+      "change": 0.32029535022949307,
       "changeType": "pct"
     },
     {
       "id": "btc",
       "name": "Bitcoin",
-      "value": 86264.01,
-      "change": -0.41097899,
+      "value": 86176.01,
+      "change": -0.51257215,
       "changeType": "pct",
       "live": true,
       "unit": "$"
@@ -72,8 +72,8 @@
     {
       "id": "gold",
       "name": "Gold",
-      "value": 4357.67796,
-      "change": 0.31926629,
+      "value": 4363.30074,
+      "change": 0.12903156,
       "changeType": "pct",
       "live": true,
       "unit": "$"
@@ -81,8 +81,8 @@
     {
       "id": "silver",
       "name": "Silver",
-      "value": 60.74,
-      "change": 1.86148,
+      "value": 60.73,
+      "change": 1.84471,
       "changeType": "pct",
       "live": true,
       "unit": "$",
@@ -93,8 +93,8 @@
       "name": "Crude Oil",
       "ticker": "/CL",
       "live": true,
-      "value": 89.88,
-      "change": -11.804533411833972,
+      "value": 89.67,
+      "change": -12.010597586105384,
       "changeType": "pct",
       "unit": "$"
     },
