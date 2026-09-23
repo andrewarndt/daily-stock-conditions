@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-22T23:41:06.407Z",
+  "updated": "2026-09-23T23:49:21.880Z",
   "source": "live",
   "labels": [
     "Apr",
@@ -18,10 +18,10 @@
         16.45,
         15.99,
         14.92,
-        14.87
+        14.21
       ],
       "live": true,
-      "asof": "2026-09-21"
+      "asof": "2026-09-22"
     },
     "vix3m": {
       "name": "3M ATM IV",
@@ -78,9 +78,9 @@
       "id": "vix",
       "tenorLabel": "30D",
       "name": "30-Day",
-      "value": 14.87,
+      "value": 14.21,
       "monthAgo": 15.13,
-      "asof": "2026-09-21",
+      "asof": "2026-09-22",
       "live": true
     },
     {
