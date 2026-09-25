@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-24T18:20:06.354Z",
+  "updated": "2026-09-25T18:20:48.134Z",
   "source": "live",
   "indicators": [
     {
@@ -133,7 +133,7 @@
         -1.23935
       ],
       "live": true,
-      "nextRelease": "2026-09-24"
+      "nextRelease": "2026-10-20"
     },
     {
       "id": "existing_home_sales",
@@ -197,13 +197,13 @@
       "id": "new_home_sales",
       "name": "New Home Sales",
       "desc": "US Census Bureau",
-      "date": "2026-09-24"
+      "date": "2026-10-27"
     },
     {
       "id": "building_permits",
       "name": "Building Permits",
       "desc": "US Census Bureau",
-      "date": "2026-09-24"
+      "date": "2026-10-20"
     },
     {
       "id": "trade_balance",
