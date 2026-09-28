@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-25T18:49:31.224Z",
+  "updated": "2026-09-28T20:41:27.766Z",
   "source": "live",
   "series": [
     {
@@ -10,7 +10,7 @@
       "unit": "%",
       "value": 4,
       "prior": 4,
-      "asof": "2026-09-25",
+      "asof": "2026-09-28",
       "live": true
     },
     {
@@ -21,7 +21,7 @@
       "unit": "%",
       "value": 3.75,
       "prior": 3.75,
-      "asof": "2026-09-25",
+      "asof": "2026-09-28",
       "live": true
     },
     {
@@ -32,7 +32,7 @@
       "unit": "%",
       "value": 3.88,
       "prior": 3.88,
-      "asof": "2026-09-24",
+      "asof": "2026-09-25",
       "live": true
     },
     {
@@ -41,9 +41,9 @@
       "seriesId": "SOFR",
       "name": "SOFR",
       "unit": "%",
-      "value": 3.88,
-      "prior": 3.87,
-      "asof": "2026-09-24",
+      "value": 3.9,
+      "prior": 3.88,
+      "asof": "2026-09-25",
       "live": true
     },
     {
@@ -54,7 +54,7 @@
       "unit": "%",
       "value": 3.9,
       "prior": 3.9,
-      "asof": "2026-09-25",
+      "asof": "2026-09-29",
       "live": true
     },
     {
@@ -102,11 +102,11 @@
       "seriesId": "RRPONTSYD",
       "name": "Overnight Reverse Repo",
       "unit": "$B",
-      "value": 0.576,
-      "prior": 0.63,
-      "asof": "2026-09-25",
+      "value": 0.851,
+      "prior": 0.576,
+      "asof": "2026-09-28",
       "live": true,
-      "change5d": 0,
+      "change5d": 0.269,
       "stressed": false
     },
     {
@@ -128,12 +128,12 @@
       "seriesId": "BAMLH0A0HYM2",
       "name": "High Yield OAS",
       "unit": "bps",
-      "value": 280,
-      "prior": 273,
-      "asof": "2026-09-24",
+      "value": 293,
+      "prior": 280,
+      "asof": "2026-09-25",
       "live": true,
       "trend": "up",
-      "trendChange": 10,
+      "trendChange": 25,
       "trendLabel": "5-day",
       "condition": "Very Tight",
       "conditionClass": "up"
@@ -144,12 +144,12 @@
       "seriesId": "BAMLC0A0CM",
       "name": "Investment Grade OAS",
       "unit": "bps",
-      "value": 79,
-      "prior": 77,
-      "asof": "2026-09-24",
+      "value": 81,
+      "prior": 79,
+      "asof": "2026-09-25",
       "live": true,
       "trend": "up",
-      "trendChange": 1,
+      "trendChange": 4,
       "trendLabel": "5-day",
       "condition": "Very Tight",
       "conditionClass": "up"
