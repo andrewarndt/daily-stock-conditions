@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-25T18:20:48.134Z",
+  "updated": "2026-09-28T20:26:08.041Z",
   "source": "live",
   "indicators": [
     {
@@ -191,7 +191,7 @@
       "id": "durable_goods",
       "name": "Durable Goods Orders",
       "desc": "US Census Bureau",
-      "date": "2026-09-25"
+      "date": "2026-10-02"
     },
     {
       "id": "new_home_sales",
@@ -215,7 +215,7 @@
       "id": "factory_orders",
       "name": "Factory Orders",
       "desc": "US Census Bureau",
-      "date": "2026-09-25"
+      "date": "2026-10-02"
     },
     {
       "id": "consumer_credit",
@@ -227,7 +227,7 @@
       "id": "consumer_sentiment",
       "name": "Consumer Sentiment",
       "desc": "University of Michigan",
-      "date": "2026-09-25"
+      "date": "2026-10-23"
     }
   ]
 }
