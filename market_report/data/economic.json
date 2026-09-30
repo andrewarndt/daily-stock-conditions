@@ -1,22 +1,22 @@
 {
-  "updated": "2026-09-29T19:12:42.744Z",
+  "updated": "2026-09-30T18:56:18.966Z",
   "source": "live",
   "indicators": [
     {
       "id": "gdp",
       "name": "Real GDP, QoQ Annualized",
       "desc": "Bureau of Economic Analysis",
-      "value": 1.5,
-      "prior": 2.1,
+      "value": 2.2,
+      "prior": 2.5,
       "asof": "2026-04-01",
       "unit": "%",
       "trend": [
-        -0.6,
-        3.8,
-        4.4,
-        0.5,
-        2.1,
-        1.5
+        0.1,
+        4,
+        3.9,
+        0.2,
+        2.5,
+        2.2
       ],
       "live": true,
       "nextRelease": "2026-09-30"
@@ -114,7 +114,7 @@
         7.079
       ],
       "live": true,
-      "nextRelease": "2026-09-29"
+      "nextRelease": "2026-11-03"
     },
     {
       "id": "housing_starts",
