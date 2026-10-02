@@ -61,7 +61,13 @@
     </div>
   </section>
 
-  <section>
+  <!-- Gamma Levels section hidden 2026-10-02: the local MenthorQ pull that
+       feeds data/menthorq-gamma.json was breaking (see
+       MENTHORQ-GAMMA-LEVELS-SETUP.txt CAVEATS) and the scheduled tasks on
+       both machines are paused until it's fixed. Remove style="display:none"
+       below to bring the card back once the pull is reliable again; no other
+       changes needed, loadGamma()/renderGamma() etc. are untouched. -->
+  <section style="display:none">
     <div class="section-head">
       <h2>Gamma Levels<span id="gamma-flag"></span></h2>
       <span class="section-note" id="gamma-note">SPY / IWM / QQQ dealer gamma positioning</span>
