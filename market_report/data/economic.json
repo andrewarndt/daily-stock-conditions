@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-02T19:03:39.724Z",
+  "updated": "2026-10-05T21:24:59.490Z",
   "source": "live",
   "indicators": [
     {
@@ -95,7 +95,7 @@
         4.2
       ],
       "live": true,
-      "nextRelease": "2026-10-02"
+      "nextRelease": "2026-11-06"
     },
     {
       "id": "jolts",
@@ -191,7 +191,7 @@
       "id": "durable_goods",
       "name": "Durable Goods Orders",
       "desc": "US Census Bureau",
-      "date": "2026-10-02"
+      "date": "2026-10-27"
     },
     {
       "id": "new_home_sales",
@@ -215,7 +215,7 @@
       "id": "factory_orders",
       "name": "Factory Orders",
       "desc": "US Census Bureau",
-      "date": "2026-10-02"
+      "date": "2026-10-27"
     },
     {
       "id": "consumer_credit",
