@@ -1,6 +1,6 @@
 // Shared helpers for loading the product catalog and building photo/contact
 // links. Mirrors the pattern in wildlife/assets/parks.js. Full-resolution
-// photos live one level up, in "Liquidation Flip Photos/<slug>/<file>",
+// photos live one level up, in "store-photos/<slug>/<file>",
 // outside the store/ web section itself; store/assets/web/<slug>/<file> is
 // the resized copy actually used on-page (see store/scripts/generate-web-images.py).
 
@@ -11,7 +11,7 @@ async function loadProducts() {
 }
 
 function photoUrl(product, filename) {
-  return "../Liquidation Flip Photos/" + encodeURIComponent(product.slug) + "/" + encodeURIComponent(filename);
+  return "../store-photos/" + encodeURIComponent(product.slug) + "/" + encodeURIComponent(filename);
 }
 
 function webPhotoUrl(product, filename) {

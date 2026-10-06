@@ -2,7 +2,7 @@
 """Generates fast-loading web copies of the store product photos.
 
 Mirrors wildlife/scripts/generate-web-images.py -- see that file for the
-full rationale. Originals in "Liquidation Flip Photos/<category>/<file>"
+full rationale. Originals in "store-photos/<category>/<file>"
 are straight-off-the-camera files (several MB, 6960x4640 on most of these)
 -- way more than a product-grid thumbnail needs. This script mirrors every
 photo into "store/assets/web/<category>/<file>" resized to a max of
@@ -23,7 +23,7 @@ from pathlib import Path
 from PIL import Image, ImageOps
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
-PHOTOS_DIR = REPO_ROOT / "Liquidation Flip Photos"
+PHOTOS_DIR = REPO_ROOT / "store-photos"
 WEB_DIR = REPO_ROOT / "store" / "assets" / "web"
 
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png"}
