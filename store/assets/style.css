@@ -226,17 +226,6 @@ img { max-width: 100%; display: block; }
   font-weight: 600;
   margin: 0 0 0.6rem;
 }
-.product-price {
-  display: inline-block;
-  align-self: flex-start;
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--accent);
-  background: var(--accent-soft);
-  padding: 0.2rem 0.6rem;
-  border-radius: 999px;
-  margin-bottom: 0.7rem;
-}
 .product-description {
   color: var(--ink);
   font-size: 0.92rem;

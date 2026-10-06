@@ -78,7 +78,6 @@ function productCardHtml(product) {
       <div class="product-body">
         <h2>${escapeHtml(product.name)}</h2>
         <p class="product-tagline">${escapeHtml(product.tagline)}</p>
-        <span class="product-price">${escapeHtml(product.price)}</span>
         <p class="product-description">${escapeHtml(product.description)}</p>
         <p class="product-note">${escapeHtml(product.note)}</p>
         <div class="product-actions">
