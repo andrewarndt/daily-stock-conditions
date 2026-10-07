@@ -1,0 +1,53 @@
+{
+  "vessels": [
+    {
+      "image": "vessel-fleur-de-lis.jpg",
+      "title": "Heirloom pattern",
+      "description": "Fleur-de-lis engraving with a QR marker and the line \"A Lifetime of Love\"."
+    },
+    {
+      "image": "vessel-floral.jpg",
+      "title": "Floral wreath",
+      "description": "Roses, doves and rings frame the QR marker, with a name or brand below."
+    },
+    {
+      "image": "vessel-pair-custom.jpg",
+      "title": "Fully custom pair",
+      "description": "Constellation and monogram designs, each engraved with names, a date and a QR marker."
+    },
+    {
+      "image": "vessel-minimal-white.jpg",
+      "title": "Minimal",
+      "description": "A clean, quiet vessel with only a QR marker and a name."
+    }
+  ],
+  "interfaces": [
+    {
+      "image": "interface-welcome.png",
+      "title": "Welcome page",
+      "description": "A personalized landing page introduces the couple and guides guests to the activities."
+    },
+    {
+      "image": "interface-album.png",
+      "title": "Shared album",
+      "description": "Guests add candid photos from their own phones to a private wedding album."
+    },
+    {
+      "image": "interface-guestbook.png",
+      "title": "Digital guestbook",
+      "description": "A message and optional photo, later organized into a printed or digital keepsake."
+    },
+    {
+      "image": "interface-poll.png",
+      "title": "Wedding party poll",
+      "description": "A playful prompt such as \"Most likely to start the dance floor\", revealed later."
+    }
+  ],
+  "colors": [
+    {
+      "image": "vessel-color-options.jpg",
+      "title": "Ceramic color options",
+      "description": "Charcoal, terracotta, ivory and blush. Colors may be mixed within the 10-vessel minimum."
+    }
+  ]
+}
