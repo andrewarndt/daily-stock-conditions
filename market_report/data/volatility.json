@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-06T01:48:57.766Z",
+  "updated": "2026-10-07T00:52:36.086Z",
   "source": "live",
   "labels": [
     "May",
@@ -31,10 +31,10 @@
         19.02,
         17.53,
         18.37,
-        18
+        17.64
       ],
       "live": true,
-      "asof": "2026-10-05"
+      "asof": "2026-10-06"
     },
     "vixeq": {
       "name": "Avg constituent IV",
@@ -69,9 +69,9 @@
       "id": "vix9d",
       "tenorLabel": "9D",
       "name": "9-Day",
-      "value": 12.85,
+      "value": 12.03,
       "monthAgo": 11.97,
-      "asof": "2026-10-05",
+      "asof": "2026-10-06",
       "live": true
     },
     {
@@ -87,27 +87,27 @@
       "id": "vix3m",
       "tenorLabel": "3M",
       "name": "3-Month",
-      "value": 18,
+      "value": 17.64,
       "monthAgo": 17.61,
-      "asof": "2026-10-05",
+      "asof": "2026-10-06",
       "live": true
     },
     {
       "id": "vix6m",
       "tenorLabel": "6M",
       "name": "6-Month",
-      "value": 20.07,
+      "value": 19.84,
       "monthAgo": 19.89,
-      "asof": "2026-10-05",
+      "asof": "2026-10-06",
       "live": true
     },
     {
       "id": "vix1y",
       "tenorLabel": "1Y",
       "name": "1-Year",
-      "value": 21.75,
+      "value": 21.65,
       "monthAgo": 21.49,
-      "asof": "2026-10-05",
+      "asof": "2026-10-06",
       "live": true
     }
   ]
