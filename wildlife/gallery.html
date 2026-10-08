@@ -82,9 +82,8 @@
     }
 
     gridEl.innerHTML = park.photos.map((filename) => {
-      const fullUrl = photoUrl(park, filename);
       const webUrl = webPhotoUrl(park, filename);
-      return `<a href="${fullUrl}" target="_blank" rel="noopener"><img src="${webUrl}" alt="${escapeHtml(park.name)} wildlife photo" loading="lazy"></a>`;
+      return `<img src="${webUrl}" alt="${escapeHtml(park.name)} wildlife photo" loading="lazy">`;
     }).join("");
   });
 </script>

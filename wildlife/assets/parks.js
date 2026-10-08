@@ -1,6 +1,7 @@
 // Shared helpers for loading the park manifest and building photo URLs.
-// Photos live one level up, in "Wildlife Photos/<folder>/<file>", outside
-// the wildlife/ web section itself. Path segments are percent-encoded
+// Only watermarked, reduced-resolution copies are published (see
+// wildlife/assets/web/). The full-resolution originals in "Wildlife Photos/"
+// are gitignored and never served. Path segments are percent-encoded
 // individually so spaces/commas in folder and file names resolve correctly.
 
 async function loadParks() {
@@ -9,13 +10,8 @@ async function loadParks() {
   return data.parks;
 }
 
-function photoUrl(park, filename) {
-  return "../Wildlife Photos/" + encodeURIComponent(park.folder) + "/" + encodeURIComponent(filename);
-}
-
-// Resized/compressed copy used for on-page display (see
-// wildlife/scripts/generate-web-images.py). photoUrl() above still points at
-// the full-resolution original -- that's what print/photo-request links use.
+// Resized, watermarked copy used for on-page display (see
+// wildlife/scripts/generate-web-images.py).
 function webPhotoUrl(park, filename) {
   return "assets/web/" + encodeURIComponent(park.folder) + "/" + encodeURIComponent(filename);
 }
@@ -61,7 +57,7 @@ function randomCoverPhoto(parks) {
 
 // Small print note shown on every wildlife page -- see webPhotoUrl() above.
 function photoQualityNoteHtml() {
-  return `<div class="notice-banner">📷 Photos on this site are shown at reduced resolution for faster loading. Full high-resolution files are available for prints — get in touch.</div>`;
+  return `<div class="notice-banner">📷 Photos on this site are watermarked and shown at reduced resolution. Full high-resolution files are available for prints — get in touch.</div>`;
 }
 
 // Updates <meta name="description">, the canonical link, and Open

@@ -6,9 +6,9 @@ files (several MB each, some 12+ MP) -- great for prints, way more than a
 browser needs to display in a grid. This script mirrors every photo into
 "wildlife/assets/web/<park>/<file>" resized to a max of WEB_MAX_DIMENSION px
 on the long edge and re-encoded at WEB_JPEG_QUALITY, which is what the site
-actually links to (see wildlife/assets/parks.js: webPhotoUrl). The originals
-are left untouched and are still linked from each photo for anyone who wants
-a print-quality file.
+actually links to (see wildlife/assets/parks.js: webPhotoUrl), with a
+watermark stamped on. The originals are left untouched, are gitignored, and
+are never published -- prints are fulfilled from them by request.
 
 Re-run any time photos are added; already-up-to-date web copies (destination
 newer than source) are skipped, so it's safe/cheap to run repeatedly. Pass
@@ -21,7 +21,7 @@ Requires Pillow: pip install Pillow
 import sys
 from pathlib import Path
 
-from PIL import Image, ImageOps
+from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 PHOTOS_DIR = REPO_ROOT / "Wildlife Photos"
@@ -34,6 +34,20 @@ SKIP_EXTENSIONS = {".gif", ".webp"}
 
 WEB_MAX_DIMENSION = 900  # px, long edge
 WEB_JPEG_QUALITY = 82
+
+# Watermark stamped onto every web copy: a tiled, diagonal, semi-transparent
+# line of text (hard to crop or clone out) plus a solid corner credit. The
+# originals in "Wildlife Photos/" are never modified. Changing any of these
+# means re-running with --force so existing web copies get regenerated.
+WATERMARK_TEXT = "© 4A Holdings Company"
+WATERMARK_TILE_OPACITY = 70   # 0-255, for the diagonal tiled text
+WATERMARK_CORNER_OPACITY = 200
+WATERMARK_ANGLE = 30
+WATERMARK_FONT_CANDIDATES = [
+    "C:/Windows/Fonts/arialbd.ttf",
+    "/Library/Fonts/Arial Bold.ttf",
+    "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+]
 
 # Every on-page use of this "web" tier is a grid thumbnail -- park-cover
 # (minmax(280px, 1fr)) and photo-grid (minmax(240px, 1fr)) in
@@ -59,11 +73,57 @@ def human_size(num_bytes):
     return f"{size:.1f}GB"
 
 
+def load_font(size):
+    for candidate in WATERMARK_FONT_CANDIDATES:
+        try:
+            return ImageFont.truetype(candidate, size)
+        except OSError:
+            continue
+    return ImageFont.load_default(size)
+
+
+def apply_watermark(img):
+    img = img.convert("RGBA")
+    w, h = img.size
+
+    # Diagonal tiles: draw a grid of text on an oversized transparent layer,
+    # rotate it, then crop back to the photo.
+    font = load_font(max(14, w // 22))
+    probe = ImageDraw.Draw(Image.new("RGBA", (1, 1)))
+    left, top, right, bottom = probe.textbbox((0, 0), WATERMARK_TEXT, font=font)
+    tw, th = right - left, bottom - top
+    side = int((w * w + h * h) ** 0.5) + 2 * tw
+    layer = Image.new("RGBA", (side, side), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(layer)
+    step_x, step_y = int(tw * 1.6), int(th * 5)
+    for row, y in enumerate(range(0, side, step_y)):
+        offset = (row % 2) * step_x // 2
+        for x in range(-step_x, side, step_x):
+            draw.text((x + offset, y), WATERMARK_TEXT, font=font,
+                      fill=(255, 255, 255, WATERMARK_TILE_OPACITY),
+                      stroke_width=1, stroke_fill=(0, 0, 0, WATERMARK_TILE_OPACITY))
+    layer = layer.rotate(WATERMARK_ANGLE, resample=Image.BICUBIC)
+    cx, cy = (side - w) // 2, (side - h) // 2
+    img = Image.alpha_composite(img, layer.crop((cx, cy, cx + w, cy + h)))
+
+    # Solid-ish corner credit.
+    corner_font = load_font(max(12, w // 38))
+    draw = ImageDraw.Draw(img)
+    l, t, r, b = draw.textbbox((0, 0), WATERMARK_TEXT, font=corner_font)
+    margin = max(8, w // 70)
+    pos = (w - (r - l) - margin - l, h - (b - t) - margin - t)
+    draw.text(pos, WATERMARK_TEXT, font=corner_font,
+              fill=(255, 255, 255, WATERMARK_CORNER_OPACITY),
+              stroke_width=2, stroke_fill=(0, 0, 0, WATERMARK_CORNER_OPACITY))
+    return img.convert("RGB")
+
+
 def resize_one(src_path, dest_path):
     with Image.open(src_path) as img:
         # Bake in the EXIF rotation now, since we're stripping metadata below.
         img = ImageOps.exif_transpose(img)
         img.thumbnail((WEB_MAX_DIMENSION, WEB_MAX_DIMENSION), Image.LANCZOS)
+        img = apply_watermark(img)
 
         dest_path.parent.mkdir(parents=True, exist_ok=True)
         if dest_path.suffix.lower() == ".png":
@@ -99,7 +159,7 @@ def main():
                 continue
 
             if ext in SKIP_EXTENSIONS:
-                # Can't safely shrink these -- keep the site working by
+                # Can't safely shrink or watermark these -- keep the site working by
                 # mirroring the original as-is rather than dropping the photo.
                 dest_path.parent.mkdir(parents=True, exist_ok=True)
                 dest_path.write_bytes(src_path.read_bytes())
