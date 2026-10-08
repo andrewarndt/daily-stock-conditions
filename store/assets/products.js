@@ -24,12 +24,10 @@ function escapeHtml(str) {
   }[c]));
 }
 
-// Contact address and Etsy storefront shown on every product -- edit here,
-// not per-product. This is the beginning of the store: no checkout here,
-// just a way for someone to reach out directly or buy through the existing
-// Etsy shop.
+// Contact address shown on every product -- edit here, not per-product.
+// This is the beginning of the store: no checkout here, just a way for
+// someone to reach out directly to buy.
 const CONTACT_EMAIL = "4aholdingscompany@gmail.com";
-const ETSY_SHOP_URL = "https://www.etsy.com/shop/MarkMasterDesign?ref=seller-platform-mcnav";
 
 function contactFooterHtml() {
   return `
@@ -44,8 +42,8 @@ function contactFooterHtml() {
     </footer>`;
 }
 
-function mailtoForProduct(product) {
-  const subject = encodeURIComponent("Interested in: " + product.name);
+function mailtoForProduct(product, prefix = "Interested in: ") {
+  const subject = encodeURIComponent(prefix + product.name);
   return `mailto:${CONTACT_EMAIL}?subject=${subject}`;
 }
 
@@ -81,7 +79,7 @@ function productCardHtml(product) {
         <p class="product-description">${escapeHtml(product.description)}</p>
         <p class="product-note">${escapeHtml(product.note)}</p>
         <div class="product-actions">
-          <a class="buy-button" href="${ETSY_SHOP_URL}" target="_blank" rel="noopener">Shop on Etsy &rarr;</a>
+          <a class="buy-button" href="${mailtoForProduct(product, "Want to buy: ")}">&#9993; Email to buy &rarr;</a>
           <a class="inquire-button" href="${mailtoForProduct(product)}">&#9993; Ask about this</a>
         </div>
       </div>
