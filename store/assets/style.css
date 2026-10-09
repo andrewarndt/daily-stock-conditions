@@ -273,6 +273,12 @@ a.inquire-button:hover {
   box-shadow: 0 6px 14px rgba(69, 88, 107, 0.2);
 }
 
+.shipping-note {
+  color: var(--ink-soft);
+  font-size: 0.75rem;
+  margin: 0.75rem 0 0;
+}
+
 .notice-banner {
   background: var(--steel-soft);
   border: 1px solid var(--line);

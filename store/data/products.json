@@ -5,32 +5,48 @@
       "name": "Handmade Damascus Steel Knives",
       "tagline": "Hand-forged blades, hardwood handles — no two alike",
       "description": "Full-tang fixed-blade knives with a hand-forged Damascus steel blade — that rippling, layered pattern is real folded steel, not an etched finish. Each one ships in a branded gift box with a genuine leather belt sheath. The handle scales are cut from dyed hardwood, so every knife has its own one-of-a-kind color pattern — the one you receive won't be identical to the ones pictured here. Works great as a kitchen or camp knife, or just as a display piece.",
-      "note": "Carbon steel blade — hand wash and oil lightly after use to keep it from rusting. Limited stock; once a handle pattern is gone, it's gone.",
-      "images": ["IMG_8320.JPG", "IMG_8405.JPG", "IMG_8450.JPG", "IMG_8570.JPG"]
+      "note": "Carbon steel blade — hand wash and oil lightly after use to keep it from rusting. Limited stock; once a handle pattern is gone, it's gone. Want a particular handle color? Email us before you order and we'll tell you what's in stock.",
+      "images": ["IMG_8320.JPG", "IMG_8405.JPG", "IMG_8450.JPG", "IMG_8570.JPG"],
+      "options": [
+        { "label": "Buy now", "price": 45.00, "url": "https://buy.stripe.com/8x2fZg9wT4Dw3HdcoP3Ru02" }
+      ]
     },
     {
       "slug": "pocket-knives",
       "name": "Compact Folding Pocket Knives",
       "tagline": "Everyday-carry folder with a keychain clip",
       "description": "Small folding pocket knives in matte black or brushed silver, with a built-in keychain clip and a finger-hole opening. Light enough to carry every day and sized for small jobs — opening boxes, cutting twine, that kind of thing.",
-      "note": "Sold individually — mention a color preference (black or silver) when you reach out.",
-      "images": ["IMG_8608.JPG", "IMG_8787.JPG"]
+      "note": "Sold individually — pick your color below.",
+      "images": ["IMG_8608.JPG", "IMG_8787.JPG"],
+      "options": [
+        { "label": "Matte Black", "price": 12.00, "url": "https://buy.stripe.com/eVqaEWdN9c5Y5PlbkL3Ru00" },
+        { "label": "Brushed Silver", "price": 12.00, "url": "https://buy.stripe.com/28E8wO7oL5HAfpV4Wn3Ru01" }
+      ]
     },
     {
       "slug": "reed-diffusers",
       "name": "NESTI CASA Reed Diffuser Sets",
       "tagline": "Brooklyn-made, 3 scents, new in box",
       "description": "Full-size NESTI CASA reed diffuser sets (Brooklyn, NY) — a scent bottle in a matte ceramic vessel with a full set of reed sticks, new and sealed in box. Available in Amber Sandalwood, Romantic Lavender, and Jasmine Maojin.",
-      "note": "Factory sealed. Mention a scent preference when you reach out; availability varies by scent.",
-      "images": ["IMG_8761.JPG", "IMG_8850.JPG"]
+      "note": "Factory sealed. Pick your scent below; availability varies by scent, so email us if you're unsure.",
+      "images": ["IMG_8761.JPG", "IMG_8850.JPG"],
+      "options": [
+        { "label": "Jasmine Maojin", "price": 30.00, "url": "https://buy.stripe.com/bJefZgdN9c5Y5Pl3Sj3Ru07" },
+        { "label": "Amber Sandalwood", "price": 30.00, "url": "https://buy.stripe.com/aFadR8bF12vocdJ1Kb3Ru08" },
+        { "label": "Romantic Lavender", "price": 30.00, "url": "https://buy.stripe.com/cNiaEW6kH2voa5BdsT3Ru09" }
+      ]
     },
     {
       "slug": "ceramic-vessels",
       "name": "Ceramic Diffuser Vessels — Blank or Custom Engraved",
       "tagline": "Same vessel, bare or laser-engraved to order",
       "description": "The same matte ceramic diffuser vessel as the NESTI CASA sets, sold on its own — no scent oil included, for refilling your own or just displaying reeds. I also do custom laser engraving on these; the floral pattern shown is an example of what's possible, not a standard finish.",
-      "note": "Want a custom design, initials, or a name engraved on one? Reach out and describe what you have in mind.",
-      "images": ["Custom.jpg", "Engrave Blank.jpg", "image_b8373429.jpg"]
+      "note": "Ordering an engraved one? After you check out, email us what you'd like engraved (a design, initials, or a name) and we'll confirm it before we start.",
+      "images": ["Custom.jpg", "Engrave Blank.jpg", "image_b8373429.jpg"],
+      "options": [
+        { "label": "Blank", "price": 19.75, "url": "https://buy.stripe.com/fZu4gy7oLc5Y5PldsT3Ru03" },
+        { "label": "Custom engraved", "price": 21.75, "url": "https://buy.stripe.com/14A8wO10n5HAcdJ74v3Ru04" }
+      ]
     },
     {
       "slug": "water-bottles",
@@ -38,7 +54,8 @@
       "tagline": "Glass bottle, protective sleeve, bamboo lid",
       "description": "Glass water bottles with a protective silicone sleeve and a bamboo lid.",
       "note": "Photos coming soon — reach out if you'd like one now.",
-      "images": []
+      "images": [],
+      "options": []
     }
   ]
 }

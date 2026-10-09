@@ -25,9 +25,18 @@ function escapeHtml(str) {
 }
 
 // Contact address shown on every product -- edit here, not per-product.
-// This is the beginning of the store: no checkout here, just a way for
-// someone to reach out directly to buy.
+// Products with "options" in data/products.json check out through Stripe
+// Payment Links; the email address is for questions, custom requests, and
+// anything that doesn't have a checkout link yet.
 const CONTACT_EMAIL = "4aholdingscompany@gmail.com";
+
+// Flat shipping charged by every Stripe link (set on the Stripe shipping rate).
+// Stripe can't block Alaska/Hawaii, so this notice is the only warning.
+const SHIPPING_NOTE = "$9 flat shipping &middot; contiguous U.S. only (Alaska and Hawaii: email us)";
+
+function formatPrice(amount) {
+  return "$" + amount.toFixed(2);
+}
 
 function contactFooterHtml() {
   return `
@@ -78,10 +87,27 @@ function productCardHtml(product) {
         <p class="product-tagline">${escapeHtml(product.tagline)}</p>
         <p class="product-description">${escapeHtml(product.description)}</p>
         <p class="product-note">${escapeHtml(product.note)}</p>
+        ${actionsHtml(product)}
+      </div>
+    </div>`;
+}
+
+// Stripe checkout buttons (one per option) when the product has them,
+// otherwise the original email-to-buy button.
+function actionsHtml(product) {
+  const options = product.options || [];
+  if (options.length === 0) {
+    return `
         <div class="product-actions">
           <a class="buy-button" href="${mailtoForProduct(product, "Want to buy: ")}">&#9993; Email to buy &rarr;</a>
           <a class="inquire-button" href="${mailtoForProduct(product)}">&#9993; Ask about this</a>
+        </div>`;
+  }
+  const buyButtons = options.map((opt) => `
+          <a class="buy-button" href="${opt.url}" rel="noopener">${escapeHtml(opt.label)} &middot; ${formatPrice(opt.price)} &rarr;</a>`).join("");
+  return `
+        <div class="product-actions">${buyButtons}
+          <a class="inquire-button" href="${mailtoForProduct(product)}">&#9993; Ask about this</a>
         </div>
-      </div>
-    </div>`;
+        <p class="shipping-note">${SHIPPING_NOTE}</p>`;
 }
