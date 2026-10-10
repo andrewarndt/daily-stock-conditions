@@ -22,9 +22,9 @@ Clicking one opens a real checkout — do not test by completing a payment.
 | `damascus-knives` | One link for all handle colors (see note 1) | $45.00 | https://buy.stripe.com/8x2fZg9wT4Dw3HdcoP3Ru02 |
 | `pocket-knives` | Matte Black | $12.00 | https://buy.stripe.com/eVqaEWdN9c5Y5PlbkL3Ru00 |
 | `pocket-knives` | Brushed Silver | $12.00 | https://buy.stripe.com/28E8wO7oL5HAfpV4Wn3Ru01 |
-| `reed-diffusers` | Jasmine Maojin | $30.00 | https://buy.stripe.com/bJefZgdN9c5Y5Pl3Sj3Ru07 |
-| `reed-diffusers` | Amber Sandalwood | $30.00 | https://buy.stripe.com/aFadR8bF12vocdJ1Kb3Ru08 |
-| `reed-diffusers` | Romantic Lavender | $30.00 | https://buy.stripe.com/cNiaEW6kH2voa5BdsT3Ru09 |
+| `reed-diffusers` | Jasmine Maojin | $30.00 | https://buy.stripe.com/aFaaEW9wT6LEdhN2Of3Ru0a |
+| `reed-diffusers` | Amber Sandalwood | $30.00 | https://buy.stripe.com/eVqaEWfVhb1U5PldsT3Ru0b |
+| `reed-diffusers` | Romantic Lavender | $30.00 | https://buy.stripe.com/3cIcN4gZlgme5Pl9cD3Ru0c |
 | `ceramic-vessels` | Diffuser No Options | $19.75 | https://buy.stripe.com/fZu4gy7oLc5Y5PldsT3Ru03 |
 | `ceramic-vessels` | Diffuser with Engraving | $21.75 | https://buy.stripe.com/14A8wO10n5HAcdJ74v3Ru04 |
 | `ceramic-vessels` | Diffuser with Oil | $29.75 | https://buy.stripe.com/9B65kC38v4Dw91x60r3Ru06 |
@@ -44,9 +44,9 @@ Clicking one opens a real checkout — do not test by completing a payment.
     { "label": "Brushed Silver", "price": 12.00, "url": "https://buy.stripe.com/28E8wO7oL5HAfpV4Wn3Ru01" }
   ],
   "reed-diffusers": [
-    { "label": "Jasmine Maojin", "price": 30.00, "url": "https://buy.stripe.com/bJefZgdN9c5Y5Pl3Sj3Ru07" },
-    { "label": "Amber Sandalwood", "price": 30.00, "url": "https://buy.stripe.com/aFadR8bF12vocdJ1Kb3Ru08" },
-    { "label": "Romantic Lavender", "price": 30.00, "url": "https://buy.stripe.com/cNiaEW6kH2voa5BdsT3Ru09" }
+    { "label": "Jasmine Maojin", "price": 30.00, "url": "https://buy.stripe.com/aFaaEW9wT6LEdhN2Of3Ru0a" },
+    { "label": "Amber Sandalwood", "price": 30.00, "url": "https://buy.stripe.com/eVqaEWfVhb1U5PldsT3Ru0b" },
+    { "label": "Romantic Lavender", "price": 30.00, "url": "https://buy.stripe.com/3cIcN4gZlgme5Pl9cD3Ru0c" }
   ],
   "ceramic-vessels": [
     { "label": "Diffuser, no options", "price": 19.75, "url": "https://buy.stripe.com/fZu4gy7oLc5Y5PldsT3Ru03" },
@@ -72,5 +72,9 @@ Clicking one opens a real checkout — do not test by completing a payment.
    applied to the Damascus knives; the pocket knives were already done as two links. Ask the owner if they want that merged to one.
 5. **No product photos on the new Stripe pocket-knife product.** The owner said they will upload those themselves
    (photos live in `store-photos/pocket-knives/`).
-6. Managing links: to change or remove a link, deactivate it in Stripe (Checkout > Payment links) and create a new one,
+6. **Reed diffuser links were replaced (2026-10-09)** so receipts show the scent: each scent is now its own Stripe product
+   ("Nesti Casa Reed Diffuser Set - <scent>"). The three old shared-product links (ending Ru07, Ru08, Ru09) should be
+   deactivated once the updated site is live. The ceramic vessel product was renamed "Ceramic Reed Diffuser Vessel" (shared by
+   Blank and Engraved, so the engraving is not in the receipt name).
+7. Managing links: to change or remove a link, deactivate it in Stripe (Checkout > Payment links) and create a new one,
    then update the URL here. Links cannot have their price swapped after creation.

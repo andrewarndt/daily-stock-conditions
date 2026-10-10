@@ -31,9 +31,9 @@
       "note": "Factory sealed. Pick your scent below; availability varies by scent, so email us if you're unsure.",
       "images": ["IMG_8761.JPG", "IMG_8850.JPG"],
       "options": [
-        { "label": "Jasmine Maojin", "price": 30.00, "url": "https://buy.stripe.com/bJefZgdN9c5Y5Pl3Sj3Ru07" },
-        { "label": "Amber Sandalwood", "price": 30.00, "url": "https://buy.stripe.com/aFadR8bF12vocdJ1Kb3Ru08" },
-        { "label": "Romantic Lavender", "price": 30.00, "url": "https://buy.stripe.com/cNiaEW6kH2voa5BdsT3Ru09" }
+        { "label": "Jasmine Maojin", "price": 30.00, "url": "https://buy.stripe.com/aFaaEW9wT6LEdhN2Of3Ru0a" },
+        { "label": "Amber Sandalwood", "price": 30.00, "url": "https://buy.stripe.com/eVqaEWfVhb1U5PldsT3Ru0b" },
+        { "label": "Romantic Lavender", "price": 30.00, "url": "https://buy.stripe.com/3cIcN4gZlgme5Pl9cD3Ru0c" }
       ]
     },
     {
