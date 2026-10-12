@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-09T19:20:52.621Z",
+  "updated": "2026-10-12T22:01:32.706Z",
   "source": "live",
   "indicators": [
     {
@@ -132,7 +132,7 @@
         -8.58939,
         -1.23935
       ],
-      "live": true,
+      "live": false,
       "nextRelease": "2026-10-20"
     },
     {
