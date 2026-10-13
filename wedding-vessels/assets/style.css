@@ -69,6 +69,7 @@ figure.tile { margin: 0; border: 1px solid var(--border); border-radius: 1rem; o
 figure.tile:hover { transform: translateY(-4px); box-shadow: 0 16px 38px rgba(120, 95, 55, 0.2); }
 figure.tile .img { aspect-ratio: 3 / 4; background: var(--bg2); }
 #interface-grid figure.tile .img { aspect-ratio: 4 / 5; }
+#gallery-grid figure.tile .img { aspect-ratio: 4 / 5; }
 figure.tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
 figcaption { padding: 1.1rem 1.25rem 1.3rem; }
 figcaption h3 { font-family: var(--serif); font-weight: 500; font-size: 1.4rem; margin: 0 0 0.25rem; }
@@ -79,8 +80,12 @@ td { border-top: 1px solid var(--border); padding: 1rem 1.25rem; vertical-align:
 tr:first-child td { border-top: 0; }
 td:first-child { font-family: var(--serif); font-size: 1.2rem; font-weight: 500; width: 12rem; color: var(--accent); }
 .note { color: var(--muted); font-size: 0.85rem; margin: 1.5rem auto 0; max-width: 40rem; font-style: italic; }
+.about-me { max-width: 46rem; margin-left: auto; margin-right: auto; }
+.about-me .sub { text-align: left; }
+.about-me .sub:last-child { margin-bottom: 0; }
 .contact { padding: 3rem 1.5rem; background: var(--bg2); border-radius: 1.25rem; border: 1px solid var(--border); }
 .contact .sub { margin-bottom: 0; }
+.headshot { width: 9rem; height: 9rem; border-radius: 50%; object-fit: cover; object-position: center 30%; border: 3px solid var(--accent); box-shadow: var(--shadow); margin: 0 auto 1.25rem; display: block; }
 .contact a { color: var(--accent); text-decoration: none; }
 .contact a:hover { text-decoration: underline; }
 

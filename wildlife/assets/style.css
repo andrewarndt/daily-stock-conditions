@@ -327,3 +327,19 @@ a.contact-button:hover {
   transform: translateY(-1px);
   box-shadow: 0 8px 18px rgba(63, 107, 74, 0.3);
 }
+
+/* ---------- about me ---------- */
+.about-me {
+  max-width: 44rem;
+  margin: 3rem auto 0;
+  padding: 1.75rem 1.75rem 1.5rem;
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--accent);
+  border-radius: 0.75rem;
+}
+.about-me h2 { margin: 0 0 0.75rem; font-family: var(--font-display); font-size: 1.5rem; }
+.about-me p { margin: 0 0 0.9rem; color: var(--ink-soft); }
+.about-me p:last-child { margin-bottom: 0; }
+.about-me .about-photo { float: left; width: 7rem; height: 7rem; margin: 0.25rem 1.25rem 0.75rem 0; border-radius: 50%; object-fit: cover; object-position: center 30%; border: 3px solid var(--accent); }
+.about-me::after { content: ""; display: block; clear: both; }

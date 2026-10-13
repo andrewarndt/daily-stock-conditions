@@ -49,5 +49,42 @@
       "title": "Ceramic color options",
       "description": "Charcoal, terracotta, ivory and blush. Colors may be mixed within the 10-vessel minimum."
     }
+  ],
+  "gallery": [
+    {
+      "image": "gallery/engraved-cherry-tree.jpg",
+      "title": "Engraved sample",
+      "description": "A real engraved vessel: a cherry-blossom scene wrapped around the ceramic. Photo, not a rendering."
+    },
+    {
+      "image": "gallery/blank-vessel-natural-light.jpg",
+      "title": "The blank vessel",
+      "description": "The matte ceramic in natural light, before any engraving. Photo, not a rendering."
+    },
+    {
+      "image": "gallery/sample-wedding-monogram.jpg",
+      "title": "Wedding monogram",
+      "description": "Concept rendering: a wreath, the couple's names and the date. Sample names."
+    },
+    {
+      "image": "gallery/sample-corporate-gala.jpg",
+      "title": "Corporate event",
+      "description": "Concept rendering: a company mark with the event name and date. Sample brand."
+    },
+    {
+      "image": "gallery/sample-hotel-branding.jpg",
+      "title": "Hotel and venue branding",
+      "description": "Concept rendering: a venue's own logo engraved for its rooms or guests. Sample brand."
+    },
+    {
+      "image": "gallery/sample-arch-logo.jpg",
+      "title": "Clean logo mark",
+      "description": "Concept rendering: a simple arch and wordmark. Sample brand."
+    },
+    {
+      "image": "gallery/sample-dragon-candle.jpg",
+      "title": "Beyond the vessel",
+      "description": "Concept rendering: the same engraving applied to a black candle jar with a bamboo lid."
+    }
   ]
 }

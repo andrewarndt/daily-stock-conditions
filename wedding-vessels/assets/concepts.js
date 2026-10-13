@@ -13,6 +13,7 @@ fetch("data/concepts.json").then((r) => r.json()).then((data) => {
   document.getElementById("vessel-grid").innerHTML = data.vessels.map(tileHtml).join("");
   document.getElementById("interface-grid").innerHTML = data.interfaces.map(tileHtml).join("");
   document.getElementById("color-grid").innerHTML = data.colors.map(tileHtml).join("");
+  document.getElementById("gallery-grid").innerHTML = data.gallery.map(tileHtml).join("");
   const box = document.getElementById("lightbox");
   document.addEventListener("click", (e) => {
     const tile = e.target.closest(".tile");
