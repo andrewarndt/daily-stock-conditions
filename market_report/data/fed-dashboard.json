@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-12T22:12:26.014Z",
+  "updated": "2026-10-13T20:18:52.490Z",
   "source": "live",
   "series": [
     {
@@ -10,7 +10,7 @@
       "unit": "%",
       "value": 4,
       "prior": 4,
-      "asof": "2026-10-12",
+      "asof": "2026-10-13",
       "live": true
     },
     {
@@ -21,7 +21,7 @@
       "unit": "%",
       "value": 3.75,
       "prior": 3.75,
-      "asof": "2026-10-12",
+      "asof": "2026-10-13",
       "live": true
     },
     {
@@ -32,7 +32,7 @@
       "unit": "%",
       "value": 3.88,
       "prior": 3.88,
-      "asof": "2026-10-08",
+      "asof": "2026-10-09",
       "live": true
     },
     {
@@ -42,8 +42,8 @@
       "name": "SOFR",
       "unit": "%",
       "value": 3.87,
-      "prior": 3.88,
-      "asof": "2026-10-08",
+      "prior": 3.87,
+      "asof": "2026-10-09",
       "live": true
     },
     {
@@ -102,11 +102,11 @@
       "seriesId": "RRPONTSYD",
       "name": "Overnight Reverse Repo",
       "unit": "$B",
-      "value": 0.3,
-      "prior": 0.335,
-      "asof": "2026-10-09",
+      "value": 0.275,
+      "prior": 0.3,
+      "asof": "2026-10-13",
       "live": true,
-      "change5d": -1.2009999999999998,
+      "change5d": -0.729,
       "stressed": false
     },
     {
@@ -128,12 +128,12 @@
       "seriesId": "BAMLH0A0HYM2",
       "name": "High Yield OAS",
       "unit": "bps",
-      "value": 315,
-      "prior": 309,
-      "asof": "2026-10-08",
+      "value": 311,
+      "prior": 311,
+      "asof": "2026-10-12",
       "live": true,
       "trend": "down",
-      "trendChange": -9,
+      "trendChange": -1,
       "trendLabel": "5-day",
       "condition": "Tight",
       "conditionClass": "up"
@@ -144,12 +144,12 @@
       "seriesId": "BAMLC0A0CM",
       "name": "Investment Grade OAS",
       "unit": "bps",
-      "value": 82,
-      "prior": 82,
-      "asof": "2026-10-08",
+      "value": 83,
+      "prior": 83,
+      "asof": "2026-10-12",
       "live": true,
       "trend": "down",
-      "trendChange": -4,
+      "trendChange": -1,
       "trendLabel": "5-day",
       "condition": "Very Tight",
       "conditionClass": "up"
