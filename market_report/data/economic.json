@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-12T22:01:32.706Z",
+  "updated": "2026-10-13T20:07:52.800Z",
   "source": "live",
   "indicators": [
     {
@@ -132,24 +132,24 @@
         -8.58939,
         -1.23935
       ],
-      "live": false,
+      "live": true,
       "nextRelease": "2026-10-20"
     },
     {
       "id": "existing_home_sales",
       "name": "Existing Home Sales",
       "desc": "National Association of Realtors",
-      "value": 3.98,
-      "prior": 4.06,
-      "asof": "2026-08-01",
+      "value": 3.99,
+      "prior": 3.93,
+      "asof": "2026-09-01",
       "unit": "M",
       "trend": [
-        4.01,
         4.04,
         4.19,
         4.13,
         4.06,
-        3.98
+        3.93,
+        3.99
       ],
       "live": true,
       "nextRelease": "2026-10-13"
