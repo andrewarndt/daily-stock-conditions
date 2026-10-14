@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-13T20:18:52.490Z",
+  "updated": "2026-10-14T18:48:48.605Z",
   "source": "live",
   "series": [
     {
@@ -10,7 +10,7 @@
       "unit": "%",
       "value": 4,
       "prior": 4,
-      "asof": "2026-10-13",
+      "asof": "2026-10-14",
       "live": true
     },
     {
@@ -21,7 +21,7 @@
       "unit": "%",
       "value": 3.75,
       "prior": 3.75,
-      "asof": "2026-10-13",
+      "asof": "2026-10-14",
       "live": true
     },
     {
@@ -32,7 +32,7 @@
       "unit": "%",
       "value": 3.88,
       "prior": 3.88,
-      "asof": "2026-10-09",
+      "asof": "2026-10-13",
       "live": true
     },
     {
@@ -41,9 +41,9 @@
       "seriesId": "SOFR",
       "name": "SOFR",
       "unit": "%",
-      "value": 3.87,
+      "value": 3.89,
       "prior": 3.87,
-      "asof": "2026-10-09",
+      "asof": "2026-10-13",
       "live": true
     },
     {
@@ -54,7 +54,7 @@
       "unit": "%",
       "value": 3.9,
       "prior": 3.9,
-      "asof": "2026-10-13",
+      "asof": "2026-10-14",
       "live": true
     },
     {
@@ -102,11 +102,11 @@
       "seriesId": "RRPONTSYD",
       "name": "Overnight Reverse Repo",
       "unit": "$B",
-      "value": 0.275,
-      "prior": 0.3,
-      "asof": "2026-10-13",
+      "value": 0.201,
+      "prior": 0.275,
+      "asof": "2026-10-14",
       "live": true,
-      "change5d": -0.729,
+      "change5d": -0.21299999999999997,
       "stressed": false
     },
     {
@@ -128,12 +128,12 @@
       "seriesId": "BAMLH0A0HYM2",
       "name": "High Yield OAS",
       "unit": "bps",
-      "value": 311,
+      "value": 316,
       "prior": 311,
-      "asof": "2026-10-12",
+      "asof": "2026-10-13",
       "live": true,
-      "trend": "down",
-      "trendChange": -1,
+      "trend": "up",
+      "trendChange": 13,
       "trendLabel": "5-day",
       "condition": "Tight",
       "conditionClass": "up"
@@ -146,10 +146,10 @@
       "unit": "bps",
       "value": 83,
       "prior": 83,
-      "asof": "2026-10-12",
+      "asof": "2026-10-13",
       "live": true,
-      "trend": "down",
-      "trendChange": -1,
+      "trend": "flat",
+      "trendChange": 0,
       "trendLabel": "5-day",
       "condition": "Very Tight",
       "conditionClass": "up"
