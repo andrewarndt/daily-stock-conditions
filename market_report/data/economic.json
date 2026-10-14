@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-13T20:07:52.800Z",
+  "updated": "2026-10-14T18:23:49.982Z",
   "source": "live",
   "indicators": [
     {
@@ -25,17 +25,17 @@
       "id": "cpi",
       "name": "CPI, Year-over-Year",
       "desc": "Bureau of Labor Statistics",
-      "value": 3.35302,
-      "prior": 3.30386,
-      "asof": "2026-08-01",
+      "value": 3.71725,
+      "prior": 3.35302,
+      "asof": "2026-09-01",
       "unit": "%",
       "trend": [
-        3.28596,
         3.77925,
         4.16661,
         3.46353,
         3.30386,
-        3.35302
+        3.35302,
+        3.71725
       ],
       "live": true,
       "nextRelease": "2026-10-14"
@@ -152,7 +152,7 @@
         3.99
       ],
       "live": true,
-      "nextRelease": "2026-10-13"
+      "nextRelease": "2026-11-12"
     },
     {
       "id": "industrial_production",
