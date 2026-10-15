@@ -38,7 +38,7 @@ jobs:
           git add market_report/data/credit.json
           git diff --cached --quiet || git commit -m "Refresh credit (HYG) data"
           for attempt in 1 2 3 4 5; do
-            git push && exit 0
+            git push origin HEAD:main && exit 0
             echo "Push rejected (attempt $attempt), rebasing onto latest main..."
             git fetch origin main
             git rebase origin/main
