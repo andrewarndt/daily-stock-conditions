@@ -1,55 +1,55 @@
 {
-  "updated": "2026-10-15T00:00:18.890Z",
+  "updated": "2026-10-15T23:44:37.267Z",
   "source": "live",
   "series": [
     {
       "id": "1mo",
       "name": "1-Month",
       "label": "1M",
-      "value": 4.1,
-      "prior": 4.13,
-      "monthAgo": 3.93,
-      "asof": "2026-10-13",
+      "value": 4.11,
+      "prior": 4.1,
+      "monthAgo": 3.94,
+      "asof": "2026-10-14",
       "live": true
     },
     {
       "id": "3mo",
       "name": "3-Month",
       "label": "3M",
-      "value": 4.26,
-      "prior": 4.25,
-      "monthAgo": 4.07,
-      "asof": "2026-10-13",
+      "value": 4.28,
+      "prior": 4.26,
+      "monthAgo": 4.11,
+      "asof": "2026-10-14",
       "live": true
     },
     {
       "id": "6mo",
       "name": "6-Month",
       "label": "6M",
-      "value": 4.32,
-      "prior": 4.3,
-      "monthAgo": 4.01,
-      "asof": "2026-10-09",
-      "live": false
+      "value": 4.37,
+      "prior": 4.34,
+      "monthAgo": 4.18,
+      "asof": "2026-10-14",
+      "live": true
     },
     {
       "id": "1y",
       "name": "1-Year",
       "label": "1Y",
-      "value": 4.48,
-      "prior": 4.47,
-      "monthAgo": 4.35,
-      "asof": "2026-10-13",
+      "value": 4.53,
+      "prior": 4.48,
+      "monthAgo": 4.37,
+      "asof": "2026-10-14",
       "live": true
     },
     {
       "id": "2y",
       "name": "2-Year",
       "label": "2Y",
-      "value": 4.79,
-      "prior": 4.8,
-      "monthAgo": 4.63,
-      "asof": "2026-10-13",
+      "value": 4.82,
+      "prior": 4.79,
+      "monthAgo": 4.65,
+      "asof": "2026-10-14",
       "live": true
     },
     {
@@ -57,29 +57,29 @@
       "name": "5-Year",
       "label": "5Y",
       "value": 5,
-      "prior": 5.02,
-      "monthAgo": 4.78,
-      "asof": "2026-10-13",
+      "prior": 5,
+      "monthAgo": 4.8,
+      "asof": "2026-10-14",
       "live": true
     },
     {
       "id": "10y",
       "name": "10-Year",
       "label": "10Y",
-      "value": 5.21,
-      "prior": 5.24,
-      "monthAgo": 4.96,
-      "asof": "2026-10-13",
+      "value": 5.19,
+      "prior": 5.21,
+      "monthAgo": 4.97,
+      "asof": "2026-10-14",
       "live": true
     },
     {
       "id": "30y",
       "name": "30-Year",
       "label": "30Y",
-      "value": 5.56,
-      "prior": 5.6,
-      "monthAgo": 5.35,
-      "asof": "2026-10-13",
+      "value": 5.52,
+      "prior": 5.56,
+      "monthAgo": 5.34,
+      "asof": "2026-10-14",
       "live": true
     }
   ]
