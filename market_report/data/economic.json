@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-15T18:06:07.680Z",
+  "updated": "2026-10-16T17:52:35.510Z",
   "source": "live",
   "indicators": [
     {
@@ -44,36 +44,36 @@
       "id": "ppi",
       "name": "PPI, Year-over-Year",
       "desc": "Bureau of Labor Statistics",
-      "value": 9.85006,
-      "prior": 8.69918,
-      "asof": "2026-08-01",
+      "value": 12.84239,
+      "prior": 9.77643,
+      "asof": "2026-09-01",
       "unit": "%",
       "trend": [
-        6.80166,
         9.41593,
-        12.18581,
-        9.80149,
-        8.69918,
-        9.85006
+        12.21712,
+        9.80686,
+        8.6199,
+        9.77643,
+        12.84239
       ],
       "live": true,
-      "nextRelease": "2026-10-15"
+      "nextRelease": "2026-11-13"
     },
     {
       "id": "lei",
       "name": "OECD Leading Indicator (US)",
       "desc": "OECD, amplitude-adjusted, 100 = trend",
-      "value": 100.956249604339,
-      "prior": 100.892338715244,
-      "asof": "2026-08-01",
+      "value": 100.99927524851,
+      "prior": 100.946376539403,
+      "asof": "2026-09-01",
       "unit": "idx",
       "trend": [
-        100.510507932406,
-        100.614058459105,
-        100.706441284074,
-        100.80314970678,
-        100.892338715244,
-        100.956249604339
+        100.544395082793,
+        100.649990341572,
+        100.762965580541,
+        100.869147271701,
+        100.946376539403,
+        100.99927524851
       ],
       "live": true,
       "nextRelease": null
@@ -158,17 +158,17 @@
       "id": "industrial_production",
       "name": "Industrial Production, Year-over-Year",
       "desc": "Federal Reserve Board",
-      "value": 1.42042,
-      "prior": 1.13,
-      "asof": "2026-08-01",
+      "value": 2.24515,
+      "prior": 1.61545,
+      "asof": "2026-09-01",
       "unit": "%",
       "trend": [
-        0.68606,
-        1.43422,
-        1.65809,
-        1.34363,
-        1.13,
-        1.42042
+        1.43274,
+        1.74089,
+        1.4609,
+        1.28231,
+        1.61545,
+        2.24515
       ],
       "live": true,
       "nextRelease": "2026-10-16"
@@ -185,7 +185,7 @@
       "id": "retail_sales",
       "name": "Retail Sales",
       "desc": "US Census Bureau",
-      "date": "2026-10-15"
+      "date": "2026-11-17"
     },
     {
       "id": "durable_goods",
