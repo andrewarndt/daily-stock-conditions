@@ -32,6 +32,8 @@ const STATIC_PAGES = [
   ["/market_report/bonds.html", "daily", "0.7"],
   ["/wildlife/index.html", "weekly", "0.9"],
   ["/store/index.html", "weekly", "0.8"],
+  ["/wedding-vessels/", "monthly", "0.5"],
+  ["/vending/", "monthly", "0.7"],
 ];
 
 function loadParkSlugs() {

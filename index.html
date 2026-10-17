@@ -13,11 +13,11 @@
   gtag('config', 'G-SS82YDJ0GN');
 </script>
 <title>4A Holdings Company</title>
-<meta name="description" content="4A Holdings Company: a live daily market conditions dashboard, wildlife photography galleries from national parks around the world, and a small store of handmade and home goods.">
+<meta name="description" content="4A Holdings Company: a live daily market conditions dashboard, a small store and event items, and vending machine services in the Columbus and Cincinnati area.">
 <link rel="canonical" href="https://4aholdingscompany.com/">
 <meta property="og:type" content="website">
 <meta property="og:title" content="4A Holdings Company">
-<meta property="og:description" content="A live daily market conditions dashboard, wildlife photography galleries from national parks around the world, and a small store of handmade and home goods.">
+<meta property="og:description" content="A live daily market conditions dashboard, a small store and event items, and vending machine services in the Columbus and Cincinnati area.">
 <meta property="og:url" content="https://4aholdingscompany.com/">
 <meta property="og:image" content="https://4aholdingscompany.com/favicon.png">
 <meta name="twitter:card" content="summary">
@@ -82,6 +82,14 @@
   a.card:hover {
     border-color: var(--accent);
   }
+  .group { margin-top: 2.5rem; text-align: left; }
+  .group-title {
+    font-size: 1.3rem;
+    margin: 0 0 0.9rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .group .sections { margin-top: 0; }
   a.card .eyebrow {
     display: block;
     font-size: 0.75rem;
@@ -90,7 +98,7 @@
     color: var(--muted);
     margin-bottom: 0.4rem;
   }
-  a.card h2 {
+  a.card h3 {
     margin: 0 0 0.4rem;
     font-size: 1.15rem;
   }
@@ -98,7 +106,7 @@
     margin: 0;
     font-size: 0.9rem;
   }
-  a.card:hover h2 {
+  a.card:hover h3 {
     color: var(--accent);
   }
 </style>
@@ -106,29 +114,51 @@
 <body>
 <main>
   <h1>4A Holdings Company</h1>
-  <p>A few things live here for now.</p>
-  <div class="sections">
-    <a class="card" href="market_report/">
-      <span class="eyebrow">Finance</span>
-      <h2>Market Report →</h2>
-      <p>Daily market overview, sentiment, and economic data.</p>
-    </a>
-    <a class="card" href="wildlife/">
-      <span class="eyebrow">Photography</span>
-      <h2>Wildlife Photography →</h2>
-      <p>Galleries from national parks, organized by location.</p>
-    </a>
-    <a class="card" href="store/">
-      <span class="eyebrow">Store</span>
-      <h2>Store →</h2>
-      <p>Small store: Damascus knives, pocket knives, reed diffusers, and more.</p>
-    </a>
-    <a class="card" href="wedding-vessels/">
-      <span class="eyebrow">Interactive Event Decor</span>
-      <h2>Interactive Engravable Event Center Pieces →</h2>
-      <p>Engraved reed diffusers with a QR guest experience, for boutiques and planners.</p>
-    </a>
-  </div>
+  <p>Finance tools, a small store, and local services.</p>
+
+  <section class="group">
+    <h2 class="group-title">Financial Services</h2>
+    <div class="sections">
+      <a class="card" href="market_report/">
+        <span class="eyebrow">Dashboard</span>
+        <h3>Market Report →</h3>
+        <p>Daily market overview, sentiment, and economic data.</p>
+      </a>
+    </div>
+  </section>
+
+  <section class="group">
+    <h2 class="group-title">Store and Event Items</h2>
+    <div class="sections">
+      <a class="card" href="store/">
+        <span class="eyebrow">Store</span>
+        <h3>Store →</h3>
+        <p>Small store: Damascus knives, pocket knives, reed diffusers, and more.</p>
+      </a>
+      <a class="card" href="wildlife/">
+        <span class="eyebrow">Photography</span>
+        <h3>Wildlife Photography →</h3>
+        <p>Galleries from national parks, organized by location.</p>
+      </a>
+      <a class="card" href="wedding-vessels/">
+        <span class="eyebrow">Interactive Event Decor</span>
+        <h3>Interactive Engravable Event Center Pieces →</h3>
+        <p>Engraved reed diffusers with a QR guest experience, for boutiques and planners.</p>
+      </a>
+    </div>
+  </section>
+
+  <section class="group">
+    <h2 class="group-title">Services and Equipment</h2>
+    <div class="sections">
+      <a class="card" href="vending/">
+        <span class="eyebrow">Services</span>
+        <h3>Vending Machine Services →</h3>
+        <p>Drink, food, and vapor/tobacco-free vending for Columbus and Cincinnati area facilities.</p>
+      </a>
+    </div>
+  </section>
+
 </main>
 </body>
 </html>
