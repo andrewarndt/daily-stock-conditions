@@ -28,6 +28,11 @@
   }
 }
 
+/* Scale the whole page with the window: 16px root up to 1600px wide,
+   then 1vw (capped), so every rem-based size grows on large monitors
+   instead of leaving the page in a narrow strip. Same rule as Market Desk. */
+html { font-size: clamp(16px, 1vw, 36px); }
+
 * { box-sizing: border-box; }
 html, body { margin: 0; background: var(--paper); }
 body {
@@ -49,7 +54,7 @@ img { max-width: 100%; display: block; }
   background: var(--paper);
 }
 .topbar-inner {
-  max-width: 1080px;
+  max-width: 67.5rem;
   margin: 0 auto;
   padding: 1.1rem 1.5rem 0.9rem;
   display: flex;
@@ -76,7 +81,7 @@ img { max-width: 100%; display: block; }
   letter-spacing: 0.01em;
   white-space: nowrap;
 }
-.brand-icon { width: 40px; height: auto; display: block; }
+.brand-icon { width: 2.5rem; height: auto; display: block; }
 .brand span { color: var(--accent); }
 .home-link {
   color: var(--ink-soft);
@@ -85,7 +90,7 @@ img { max-width: 100%; display: block; }
 .home-link:hover { color: var(--accent); }
 
 .page {
-  max-width: 1080px;
+  max-width: 67.5rem;
   margin: 0 auto;
   padding: 2rem 1.5rem 4rem;
 }
@@ -132,7 +137,7 @@ img { max-width: 100%; display: block; }
 }
 .hero-inner {
   position: relative;
-  max-width: 1080px;
+  max-width: 67.5rem;
   margin: 0 auto;
   padding: 3rem 1.5rem 2.5rem;
   color: #f4f6f2;
@@ -165,7 +170,7 @@ img { max-width: 100%; display: block; }
 
 .park-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(17.5rem, 1fr));
   gap: 1.5rem;
 }
 .park-card {
@@ -243,7 +248,7 @@ img { max-width: 100%; display: block; }
 
 .photo-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
   gap: 1rem;
 }
 .photo-grid a {

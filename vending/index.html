@@ -68,6 +68,10 @@
     }
   }
   * { box-sizing: border-box; }
+  /* Scale the whole page with the window: 16px root up to 1600px wide,
+     then 1vw (capped), so every rem-based size grows on large monitors
+     instead of leaving the page in a narrow strip. Same rule as Market Desk. */
+  html { font-size: clamp(16px, 1vw, 36px); }
   html { scroll-behavior: smooth; }
   body {
     margin: 0;
@@ -575,6 +579,6 @@
     });
   })();
 </script>
-<script src="/assets/site-links.js" defer></script>
+<script src="/assets/site-links.js?v=2" defer></script>
 </body>
 </html>
