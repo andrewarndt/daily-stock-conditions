@@ -67,7 +67,8 @@
     var yLo = opts.yMin !== undefined ? opts.yMin : Math.min.apply(null, allY);
     var yHi = opts.yMax !== undefined ? opts.yMax : Math.max.apply(null, allY);
     if (yLo === yHi) { yLo -= 1; yHi += 1; }
-    var pad = (yHi - yLo) * 0.12;
+    // opts.exactRange keeps a fixed scale such as 0-100% instead of padding it.
+    var pad = opts.exactRange ? 0 : (yHi - yLo) * 0.12;
     yLo -= pad; yHi += pad;
     var x = scale([0, xLabels.length - 1], [padL, padL + innerW]);
     var y = scale([yLo, yHi], [padT + innerH, padT]);

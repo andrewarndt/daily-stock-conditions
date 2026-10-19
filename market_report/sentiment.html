@@ -531,6 +531,7 @@
       series: [{ name: "COT Index", color: MC.css("--blue"), area: true, data: history.map(function (h) { return h.index; }) }],
       yMin: 0,
       yMax: 100,
+      exactRange: true,
       referenceLine: { value: 70, label: "crowded long" },
       referenceLine2: { value: 30, label: "crowded short" },
       yFmt: function (v) { return v.toFixed(0); },
