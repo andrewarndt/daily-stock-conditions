@@ -22,7 +22,10 @@
 <meta property="og:image" content="https://4aholdingscompany.com/images/logo-mark.png">
 <meta name="twitter:card" content="summary">
 <link rel="icon" type="image/png" href="/favicon.png">
-<link rel="stylesheet" href="assets/style.css?v=3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="assets/style.css?v=4">
 </head>
 <body>
 
@@ -56,7 +59,7 @@
     <div class="stress-banner-body" id="stress-banner-body"></div>
   </div>
 
-  <section>
+  <section class="span-7 stretch">
     <div class="section-head">
       <h2>Treasury &amp; Bond ETF Snapshot</h2>
       <span class="section-note">Intraday, spot as of last print</span>
@@ -66,12 +69,12 @@
     </div>
   </section>
 
-  <section>
+  <section class="span-5 stretch">
     <div class="section-head">
       <h2>Treasury Yields</h2>
       <span class="section-note">2s10s spread: <strong id="spread-value" style="color:var(--up)">+29 bps</strong> <span id="spread-trend">(steepening)</span></span>
     </div>
-    <div class="metric-grid">
+    <div class="metric-grid cols-3">
       <div class="metric-card">
         <div class="metric-name">2-Year<span id="yield-2y-flag"></span></div>
         <div class="metric-value" id="yield-2y-value">3.92%</div>
@@ -106,7 +109,7 @@
     </div>
   </section>
 
-  <section>
+  <section class="span-6 stretch">
     <div class="section-head">
       <h2>Tier 1 — Policy &amp; Rate Path</h2>
       <span class="section-note" id="tier1-note">Being built out line by line — check back soon</span>
@@ -123,7 +126,7 @@
     </div>
   </section>
 
-  <section>
+  <section class="span-6 stretch">
     <div class="section-head">
       <h2>Tier 2 — Liquidity Plumbing</h2>
       <span class="section-note" id="tier2-note">Being built out line by line — check back soon</span>
@@ -155,7 +158,7 @@
         </tbody>
       </table>
     </div>
-    <div class="chart-row" style="margin-top:1.5rem">
+    <div class="chart-row breadth-chart">
       <div class="chart-card">
         <h3>HYG (High Yield Corporate Bond ETF)<span id="credit-flag"></span></h3>
         <p class="chart-sub" id="credit-asof">Daily close, dashed line is the 10-day moving average</p>
@@ -178,7 +181,7 @@
   </footer>
 </div>
 
-<script src="assets/charts.js?v=3"></script>
+<script src="assets/charts.js?v=4"></script>
 <script>
 (function () {
   "use strict";
@@ -693,6 +696,7 @@
     });
 })();
 </script>
+<script src="assets/desk.js?v=1" defer></script>
 <script src="/assets/site-links.js" defer></script>
 </body>
 </html>

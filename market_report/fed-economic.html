@@ -22,7 +22,10 @@
 <meta property="og:image" content="https://4aholdingscompany.com/images/logo-mark.png">
 <meta name="twitter:card" content="summary">
 <link rel="icon" type="image/png" href="/favicon.png">
-<link rel="stylesheet" href="assets/style.css?v=3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="assets/style.css?v=4">
 </head>
 <body>
 
@@ -51,15 +54,7 @@
     <p>The data the Fed is watching and what the market thinks the Fed does next.</p>
   </div>
 
-  <section class="upcoming-releases">
-    <div class="section-head">
-      <h2>Upcoming Releases</h2>
-      <span class="section-note">Next 7 days</span>
-    </div>
-    <div id="next-release-list" class="release-list">Loading&hellip;</div>
-  </section>
-
-  <section>
+  <section class="span-8">
     <div class="section-head">
       <h2>Economic Indicators</h2>
       <span class="section-note">Last 6 releases</span>
@@ -74,20 +69,30 @@
     </div>
   </section>
 
-  <section>
-    <div class="section-head">
-      <h2>Fed Watch<span id="fedwatch-flag"></span></h2>
-      <span class="section-note" id="fedwatch-note">Implied rate-path odds, fed funds futures</span>
-    </div>
-    <div class="legend">
-      <span class="legend-item"><span class="legend-swatch" style="background:var(--up)"></span>Cut 50+ bp</span>
-      <span class="legend-item"><span class="legend-swatch" style="background:var(--blue)"></span>Cut 25 bp</span>
-      <span class="legend-item"><span class="legend-swatch" style="background:var(--ink-soft)"></span>Hold</span>
-      <span class="legend-item"><span class="legend-swatch" style="background:var(--accent)"></span>Hike 25 bp</span>
-      <span class="legend-item"><span class="legend-swatch" style="background:var(--down)"></span>Hike 50+ bp</span>
-    </div>
-    <div id="fedwatch-meetings"></div>
-  </section>
+  <div class="desk-col span-4">
+    <section class="upcoming-releases">
+      <div class="section-head">
+        <h2>Upcoming Releases</h2>
+        <span class="section-note">Next 7 days</span>
+      </div>
+      <div id="next-release-list" class="release-list">Loading&hellip;</div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>Fed Watch<span id="fedwatch-flag"></span></h2>
+        <span class="section-note" id="fedwatch-note">Implied rate-path odds, fed funds futures</span>
+      </div>
+      <div class="legend">
+        <span class="legend-item"><span class="legend-swatch" style="background:var(--up)"></span>Cut 50+ bp</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:var(--blue)"></span>Cut 25 bp</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:var(--ink-soft)"></span>Hold</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:var(--accent)"></span>Hike 25 bp</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:var(--down)"></span>Hike 50+ bp</span>
+      </div>
+      <div id="fedwatch-meetings"></div>
+    </section>
+  </div>
 
   <footer>
     <p id="fedwatch-status-note">Loading Fed Watch odds&hellip;</p>
@@ -97,7 +102,7 @@
   </footer>
 </div>
 
-<script src="assets/charts.js?v=3"></script>
+<script src="assets/charts.js?v=4"></script>
 <script>
 (function () {
   "use strict";
@@ -401,6 +406,7 @@
     });
 })();
 </script>
+<script src="assets/desk.js?v=1" defer></script>
 <script src="/assets/site-links.js" defer></script>
 </body>
 </html>

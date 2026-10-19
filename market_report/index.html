@@ -22,7 +22,10 @@
 <meta property="og:image" content="https://4aholdingscompany.com/images/logo-mark.png">
 <meta name="twitter:card" content="summary">
 <link rel="icon" type="image/png" href="/favicon.png">
-<link rel="stylesheet" href="assets/style.css?v=3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="assets/style.css?v=4">
 </head>
 <body>
 
@@ -51,22 +54,32 @@
     <p>Where the market stands right now — index levels, market breadth, the dollar and key commodities, and the latest economic prints, all in one glance.</p>
   </div>
 
-  <section>
+  <section class="span-5 stretch">
     <div class="section-head">
       <h2>Major Indices</h2>
       <span class="section-note" id="indices-asof">As of market close</span>
     </div>
-    <div class="metric-grid" id="indices-grid">
+    <div class="metric-grid cols-2" id="indices-grid">
       <!-- populated from data/indices.json; see script at bottom of page -->
     </div>
   </section>
 
-  <section id="breadth-section">
+  <section class="span-7 stretch">
+    <div class="section-head">
+      <h2>Dollar &amp; Commodities</h2>
+      <span class="section-note">Intermarket snapshot, spot as of last print</span>
+    </div>
+    <div class="metric-grid cols-3" id="commodities-grid">
+      <!-- populated from data/overview.json; see script at bottom of page -->
+    </div>
+  </section>
+
+  <section id="breadth-section" class="span-8 stretch">
     <div class="section-head">
       <h2>Market Breadth</h2>
       <span class="section-note" id="breadth-asof">Share of S&amp;P 500 stocks above their own moving average</span>
     </div>
-    <div class="metric-grid" id="breadth-grid">
+    <div class="metric-grid cols-4" id="breadth-grid">
       <!-- populated from data/breadth.json; see script at bottom of page -->
     </div>
     <div class="chart-card breadth-chart">
@@ -82,20 +95,10 @@
     </div>
   </section>
 
-  <section>
-    <div class="section-head">
-      <h2>Dollar &amp; Commodities</h2>
-      <span class="section-note">Intermarket snapshot, spot as of last print</span>
-    </div>
-    <div class="metric-grid" id="commodities-grid">
-      <!-- populated from data/overview.json; see script at bottom of page -->
-    </div>
-  </section>
-
-  <section>
+  <section class="span-4 stretch">
     <div class="section-head">
       <h2>Economic Snapshot</h2>
-      <span class="section-note" id="econ-asof">GDP · CPI · PPI · Leading Index · Unemployment · Housing · Industrial Production</span>
+      <span class="section-note" id="econ-asof">Latest FRED prints</span>
     </div>
     <div class="table-wrap">
       <table>
@@ -125,7 +128,7 @@
   </footer>
 </div>
 
-<script src="assets/charts.js?v=3"></script>
+<script src="assets/charts.js?v=4"></script>
 
 <script>
 (function () {
@@ -389,6 +392,7 @@
   });
 })();
 </script>
+<script src="assets/desk.js?v=1" defer></script>
 <script src="/assets/site-links.js" defer></script>
 </body>
 </html>

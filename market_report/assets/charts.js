@@ -14,7 +14,10 @@
   global.addEventListener("resize", function () {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(function () {
-      fluidCharts.forEach(function (svg) { if (svg.isConnected) lineChart(svg, svg._mcOpts); });
+      fluidCharts.forEach(function (svg) {
+        if (!svg.isConnected) return;
+        if (svg._mcRedraw) svg._mcRedraw(); else lineChart(svg, svg._mcOpts);
+      });
     }, 150);
   });
 
@@ -93,12 +96,21 @@
       el("text", { x: padL + innerW, y: ry2 - 4, class: "ref-label", "text-anchor": "end" }, svg).textContent = opts.referenceLine2.label;
     }
 
-    var step = Math.max(1, Math.ceil(xLabels.length / (opts.maxXLabels || 7)));
+    // Fewer x labels on narrow charts so they never run together; the last
+    // one is right-aligned so it stays inside the plot.
+    var maxX = Math.max(2, Math.min(opts.maxXLabels || 7, Math.floor(innerW / 85)));
+    var step = Math.max(1, Math.ceil(xLabels.length / maxX));
+    var lastX = xLabels.length - 1;
     xLabels.forEach(function (lab, i) {
-      if (i % step !== 0 && i !== xLabels.length - 1) return;
-      el("text", { x: x(i), y: height - 8, class: "axis-label", "text-anchor": "middle" }, svg).textContent = lab;
+      if (i === lastX) {
+        el("text", { x: x(i), y: height - 8, class: "axis-label", "text-anchor": "end" }, svg).textContent = lab;
+        return;
+      }
+      if (i % step !== 0 || x(lastX) - x(i) < 70) return;
+      el("text", { x: x(i), y: height - 8, class: "axis-label", "text-anchor": i === 0 ? "start" : "middle" }, svg).textContent = lab;
     });
 
+    var endLabels = [];
     series.forEach(function (s) {
       var pts = s.data.map(function (v, i) { return x(i) + "," + y(v); }).join(" ");
       if (s.area) {
@@ -122,8 +134,18 @@
       if (opts.endLabels !== false && s.endLabel !== false) {
         var anchor = (cx > padL + innerW - 60) ? "end" : "start";
         var lx = anchor === "end" ? cx - 8 : cx + 8;
-        el("text", { x: lx, y: cy - 8, class: "end-label", "text-anchor": anchor }, svg).textContent = s.name + " " + yFmt(s.data[lastI]);
+        endLabels.push({ x: lx, y: cy - 8, anchor: anchor, text: s.name + " " + yFmt(s.data[lastI]) });
       }
+    });
+
+    // Push end labels apart when lines finish close together, so two
+    // labels never print on top of each other.
+    endLabels.sort(function (a, b) { return a.y - b.y; });
+    for (var k = 1; k < endLabels.length; k++) {
+      if (endLabels[k].y - endLabels[k - 1].y < 13) endLabels[k].y = endLabels[k - 1].y + 13;
+    }
+    endLabels.forEach(function (l) {
+      el("text", { x: l.x, y: Math.max(11, l.y), class: "end-label", "text-anchor": l.anchor }, svg).textContent = l.text;
     });
   }
 
@@ -137,6 +159,18 @@
     opts = opts || {};
     svg.innerHTML = "";
     var width = +svg.getAttribute("width"), height = +svg.getAttribute("height");
+    // opts.fluid draws at the tile's laid-out width (like lineChart) and
+    // redraws on resize; leave it off inside table cells, which size to content.
+    if (opts.fluid) {
+      svg.style.display = "block";
+      svg.style.width = "100%";
+      var laidOut = Math.round(svg.getBoundingClientRect().width);
+      if (laidOut > 0) width = laidOut;
+      svg.setAttribute("width", width);
+      svg.setAttribute("viewBox", "0 0 " + width + " " + height);
+      if (!svg._mcRedraw) fluidCharts.push(svg);
+      svg._mcRedraw = function () { sparkline(svg, data, color, opts); };
+    }
     var padY = 4;
     var allVals = data.slice();
     if (opts.ma) allVals = allVals.concat(opts.ma.filter(function (v) { return v != null; }));
@@ -177,6 +211,9 @@
   /** Fear/greed style semicircular gauge, value 0-100. */
   function gauge(svg, value) {
     svg.innerHTML = "";
+    // Wider than the dial so the "Extreme Fear/Greed" labels are not clipped.
+    svg.setAttribute("width", 420);
+    svg.setAttribute("viewBox", "-50 0 420 190");
     var cx = 160, cy = 160, r = 120, thickness = 22;
     function pt(radius, angleDeg) {
       var a = angleDeg * Math.PI / 180;
@@ -201,8 +238,11 @@
       el("path", { d: path, fill: "none", stroke: z.color, "stroke-width": thickness, "stroke-linecap": "butt", opacity: z.opacity }, svg);
     });
     [["Extreme Fear", 10], ["Fear", 30], ["Neutral", 50], ["Greed", 70], ["Extreme Greed", 90]].forEach(function (zl) {
-      var p = pt(r + 26, angleFor(zl[1]));
-      el("text", { x: p[0], y: p[1] + 3, class: "axis-label", "text-anchor": "middle" }, svg).textContent = zl[0];
+      // Labels sit outside the dial and read away from it, so the long
+      // "Extreme" ones never print over the colored arc.
+      var p = pt(r + 18, angleFor(zl[1]));
+      var anchor = zl[1] < 50 ? "end" : zl[1] > 50 ? "start" : "middle";
+      el("text", { x: p[0], y: p[1] + 3, class: "axis-label", "text-anchor": anchor }, svg).textContent = zl[0];
     });
     var na = angleFor(value);
     var tip = pt(r - 30, na);

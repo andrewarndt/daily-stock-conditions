@@ -22,7 +22,10 @@
 <meta property="og:image" content="https://4aholdingscompany.com/images/logo-mark.png">
 <meta name="twitter:card" content="summary">
 <link rel="icon" type="image/png" href="/favicon.png">
-<link rel="stylesheet" href="assets/style.css?v=3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="assets/style.css?v=4">
 </head>
 <body>
 
@@ -60,7 +63,7 @@
       <button type="button" class="weight-toggle-btn active" data-mode="cap">Cap-Weight</button>
       <button type="button" class="weight-toggle-btn" data-mode="equal">Equal-Weight</button>
     </div>
-    <p class="chart-sub" id="weight-toggle-note" style="margin:-0.5rem 0 1rem">Cap-weight: each sector ETF against SPY -- a sector's biggest names dominate the ratio, same as the index itself.</p>
+    <p class="chart-sub" id="weight-toggle-note">Cap-weight: each sector ETF against SPY -- a sector's biggest names dominate the ratio, same as the index itself.</p>
     <div class="legend">
       <span class="legend-item"><span class="legend-swatch dashed" style="background:var(--ink-soft)"></span>10-day moving average</span>
       <span class="legend-item"><span class="legend-swatch" style="background:var(--up)"></span>Ratio above its 10-day MA</span>
@@ -69,7 +72,7 @@
     <div class="sector-grid" id="sector-grid"></div>
   </section>
 
-  <section>
+  <section class="span-6 stretch">
     <div class="section-head">
       <h2>Constituent Volatility<span id="constituent-vol-flag"></span></h2>
       <span class="section-note" id="constituent-vol-asof">Avg. single-name IV vs. index IV</span>
@@ -85,41 +88,7 @@
     </div>
   </section>
 
-  <section>
-    <div class="section-head">
-      <h2>SPX Volatility Term Structure<span id="termstructure-flag"></span></h2>
-      <span class="section-note">VIX3M/VIX: <strong id="vol-ratio-value" style="color:var(--up)">1.22</strong> <span id="vol-ratio-zone">(contango)</span> &middot; 3M&ndash;30D spread: <strong id="vol-spread-value" style="color:var(--up)">+3.37 pts</strong> <span id="vol-spread-trend">(contango)</span></span>
-    </div>
-    <div class="chart-card">
-      <h3>VIX3M / VIX Ratio</h3>
-      <p class="chart-sub">Below 1.0 is backwardation (stress); above 1.2 is steep contango</p>
-      <svg id="chart-vol-ratio" width="900" height="200"></svg>
-    </div>
-    <div class="chart-card">
-      <h3>Front month vs. back month implied vol &mdash; today vs. 1 month ago</h3>
-      <p class="chart-sub">Implied vol (%) by tenor, 9-day through 1-year</p>
-      <div class="legend">
-        <span class="legend-item"><span class="legend-swatch" style="background:var(--accent)"></span>Today</span>
-        <span class="legend-item"><span class="legend-swatch dashed" style="background:var(--ink-soft)"></span>1 month ago</span>
-      </div>
-      <svg id="chart-term-structure" width="900" height="240"></svg>
-    </div>
-  </section>
-
-  <div class="chart-row" style="margin-bottom:2.75rem">
-    <div class="chart-card">
-      <h3>Core 3M<span id="core3m-flag"></span></h3>
-      <p class="chart-sub">3-month at-the-money implied volatility, SPX</p>
-      <svg id="chart-core3m" width="420" height="200"></svg>
-    </div>
-    <div class="chart-card">
-      <h3>Dispersion Index<span id="dispersion-flag"></span></h3>
-      <p class="chart-sub">Constituent vs. index vol spread, index units</p>
-      <svg id="chart-dispersion" width="420" height="200"></svg>
-    </div>
-  </div>
-
-  <section>
+  <section class="span-6 stretch">
     <div class="section-head">
       <h2>Skew Structure<span id="skew-flag"></span></h2>
       <span class="section-note" id="skew-note">SPX options, by strike</span>
@@ -135,6 +104,42 @@
     </div>
   </section>
 
+  <section>
+    <div class="section-head">
+      <h2>SPX Volatility Term Structure<span id="termstructure-flag"></span></h2>
+      <span class="section-note">VIX3M/VIX: <strong id="vol-ratio-value" style="color:var(--up)">1.22</strong> <span id="vol-ratio-zone">(contango)</span> &middot; 3M&ndash;30D spread: <strong id="vol-spread-value" style="color:var(--up)">+3.37 pts</strong> <span id="vol-spread-trend">(contango)</span></span>
+    </div>
+    <div class="panel-cols">
+    <div class="chart-card">
+      <h3>VIX3M / VIX Ratio</h3>
+      <p class="chart-sub">Below 1.0 is backwardation (stress); above 1.2 is steep contango</p>
+      <svg id="chart-vol-ratio" width="900" height="200"></svg>
+    </div>
+    <div class="chart-card">
+      <h3>Front month vs. back month implied vol &mdash; today vs. 1 month ago</h3>
+      <p class="chart-sub">Implied vol (%) by tenor, 9-day through 1-year</p>
+      <div class="legend">
+        <span class="legend-item"><span class="legend-swatch" style="background:var(--accent)"></span>Today</span>
+        <span class="legend-item"><span class="legend-swatch dashed" style="background:var(--ink-soft)"></span>1 month ago</span>
+      </div>
+      <svg id="chart-term-structure" width="900" height="240"></svg>
+    </div>
+    </div>
+  </section>
+
+  <div class="chart-row even">
+    <div class="chart-card">
+      <h3>Core 3M<span id="core3m-flag"></span></h3>
+      <p class="chart-sub">3-month at-the-money implied volatility, SPX</p>
+      <svg id="chart-core3m" width="420" height="200"></svg>
+    </div>
+    <div class="chart-card">
+      <h3>Dispersion Index<span id="dispersion-flag"></span></h3>
+      <p class="chart-sub">Constituent vs. index vol spread, index units</p>
+      <svg id="chart-dispersion" width="420" height="200"></svg>
+    </div>
+  </div>
+
   <footer>
     <p>Sector/SPY ratios are live daily closes from Yahoo Finance, refreshed once per weekday after market close -- both weightings: cap-weight from the SPDR sector ETFs against SPY, equal-weight from Invesco's RSP-family sector ETFs against RSP. Constituent Volatility, Volatility Term Structure, Core 3M, and Dispersion Index are live Cboe index data (VIX9D, VIX, VIX3M, VIX6M, VIX1Y, VIXEQ, DSPX), refreshed on the same schedule. <span id="skew-status-note">Skew Structure below is still an illustrative placeholder.</span></p>
     <p>Badges mark each sector's ratio move over the trailing month: green outperforming SPY, red underperforming. The line color is a separate, shorter-term signal: green when the ratio is currently above its own 10-day moving average (dashed line), red when below.</p>
@@ -143,7 +148,7 @@
   </footer>
 </div>
 
-<script src="assets/charts.js?v=3"></script>
+<script src="assets/charts.js?v=4"></script>
 <script>
 (function () {
   "use strict";
@@ -255,7 +260,7 @@
       var maLast = ma[n - 1];
       var aboveMa = maLast == null || current >= maLast;
       var color = aboveMa ? MC.css("--up") : MC.css("--down");
-      MC.sparkline(document.getElementById("sector-spark-" + id), ratio, color, { ma: ma });
+      MC.sparkline(document.getElementById("sector-spark-" + id), ratio, color, { ma: ma, fluid: true });
     });
 
     document.getElementById("sector-asof").textContent = "All 11 GICS sectors, " + n + "-day trend, updated after close";
@@ -483,6 +488,7 @@
     });
 })();
 </script>
+<script src="assets/desk.js?v=1" defer></script>
 <script src="/assets/site-links.js" defer></script>
 </body>
 </html>

@@ -22,7 +22,10 @@
 <meta property="og:image" content="https://4aholdingscompany.com/images/logo-mark.png">
 <meta name="twitter:card" content="summary">
 <link rel="icon" type="image/png" href="/favicon.png">
-<link rel="stylesheet" href="assets/style.css?v=3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="assets/style.css?v=4">
 </head>
 <body>
 
@@ -53,7 +56,7 @@
 
   <div class="group-label">Volatility &amp; Options</div>
 
-  <section>
+  <section class="span-4 stretch">
     <div class="section-head">
       <h2>Market Sentiment<span id="gauge-flag"></span></h2>
       <span class="section-note">CNN Fear &amp; Greed Index, 0–100</span>
@@ -67,7 +70,7 @@
     </div>
   </section>
 
-  <section>
+  <section class="span-8 stretch">
     <div class="section-head">
       <h2>Put/Call Ratio<span id="putcall-flag"></span></h2>
       <span class="section-note">CBOE, total (all products)</span>
@@ -111,7 +114,7 @@
 
   <div class="group-label">Positioning</div>
 
-  <section>
+  <section class="span-6 stretch">
     <div class="section-head">
       <h2>AAII Investor Sentiment<span id="aaii-flag"></span></h2>
       <span class="section-note" id="aaii-asof">Weekly survey, dates to 1987</span>
@@ -132,7 +135,7 @@
     </div>
   </section>
 
-  <section>
+  <section class="span-6 stretch">
     <div class="section-head">
       <h2>COT Index &mdash; Leveraged Funds, S&amp;P 500<span id="cot-flag"></span></h2>
       <span class="section-note" id="cot-asof">CFTC, weekly, trailing 3-yr percentile</span>
@@ -177,7 +180,7 @@
   </footer>
 </div>
 
-<script src="assets/charts.js?v=3"></script>
+<script src="assets/charts.js?v=4"></script>
 <script>
 (function () {
   "use strict";
@@ -615,6 +618,7 @@
     });
 })();
 </script>
+<script src="assets/desk.js?v=1" defer></script>
 <script src="/assets/site-links.js" defer></script>
 </body>
 </html>
