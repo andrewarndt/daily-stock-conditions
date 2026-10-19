@@ -121,25 +121,50 @@ img { max-width: 100%; display: block; }
 
 .hero {
   position: relative;
-  min-height: 62vh;
-  display: flex;
-  align-items: flex-end;
-  background: var(--accent-soft);
-  background-size: cover;
-  background-position: center;
+  background: #0d120e;
   border-bottom: 3px solid var(--ink);
 }
-.hero::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(10, 16, 11, 0.15) 0%, rgba(10, 16, 11, 0.75) 100%);
+
+/* Photo reel across the top of the hero (built by wildlife/index.html).
+   Every photo shows whole at one height; capped in px because the web
+   copies are 900px on the long side and would blur if stretched further. */
+.hero-reel {
+  height: clamp(15rem, 50vh, 640px);
+  overflow: hidden;
+}
+.hero-reel[hidden] { display: none; }
+.hero-reel-track {
+  display: flex;
+  height: 100%;
+  width: max-content;
+  animation: hero-reel var(--reel-duration, 120s) linear infinite;
+}
+.hero-reel:hover .hero-reel-track,
+.hero-reel:focus-within .hero-reel-track { animation-play-state: paused; }
+/* Spacing as each item's own margin (not flex gap) so two copies are
+   exactly twice one copy and the -50% loop lands seamlessly. */
+.hero-reel-item { flex: none; height: 100%; margin-right: 0.4rem; }
+.hero-reel-item img {
+  height: 100%;
+  width: auto;
+  display: block;
+  max-width: none;
+  transition: opacity 0.2s ease;
+}
+.hero-reel-item:hover img { opacity: 0.85; }
+@keyframes hero-reel {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-reel { overflow-x: auto; }
+  .hero-reel-track { animation: none; }
 }
 .hero-inner {
   position: relative;
   max-width: 67.5rem;
   margin: 0 auto;
-  padding: 3rem 1.5rem 2.5rem;
+  padding: 2rem 1.5rem 2.25rem;
   color: #f4f6f2;
 }
 .hero-eyebrow {

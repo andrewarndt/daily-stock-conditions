@@ -55,14 +55,6 @@ function contactFooterHtml() {
     </footer>`;
 }
 
-// Picks one photo at random across all parks that have any, for use as a
-// hero background. Returns null if no park has photos yet.
-function randomCoverPhoto(parks) {
-  const candidates = parks.flatMap((park) => park.photos.map((filename) => webPhotoUrl(park, filename)));
-  if (candidates.length === 0) return null;
-  return candidates[Math.floor(Math.random() * candidates.length)];
-}
-
 // Small print note shown on every wildlife page -- see webPhotoUrl() above.
 function photoQualityNoteHtml() {
   return `<div class="notice-banner">📷 Photos on this site are watermarked and shown at reduced resolution. Prints are made from the full high-resolution files, starting at $27 for 8 × 10 in. Get in touch to order.</div>`;
