@@ -848,7 +848,7 @@ section > .legend + .fedwatch-meeting,
 
 .sector-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
   border-top: 1px solid var(--line);
 }
 
@@ -856,25 +856,39 @@ section > .legend + .fedwatch-meeting,
    last row (11 sectors rarely divide evenly) shows as blank, not grey. */
 .sector-card {
   background: var(--paper-raised);
-  padding: 0.6rem 0.75rem 0.55rem;
+  padding: 0.85rem 0.9rem 0.6rem;
   box-shadow: 1px 0 0 var(--line), 0 1px 0 var(--line);
+  min-width: 0;
 }
 
-.sector-head { display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem; }
+.sector-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.75rem; }
 
-.sector-name { font-weight: 600; font-size: 0.78rem; }
-.sector-ticker { font-family: var(--font-mono); color: var(--accent); font-size: 0.7rem; font-weight: 600; }
+.sector-name { font-weight: 600; font-size: 1rem; color: var(--ink-strong); line-height: 1.25; }
+.sector-ticker { font-family: var(--font-mono); color: var(--accent); font-size: 0.74rem; font-weight: 600; margin-top: 0.15rem; }
 
-.sector-value-row { display: flex; align-items: baseline; gap: 0.5rem; margin-top: 0.1rem; }
+.sector-perf { text-align: right; flex: none; }
+.sector-perf-value { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 1.15rem; font-weight: 700; line-height: 1.2; }
+.sector-perf-label { font-family: var(--font-mono); font-size: 0.64rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); }
+.sector-perf.up .sector-perf-value { color: var(--up); }
+.sector-perf.down .sector-perf-value { color: var(--down); }
 
-.sector-value { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 1rem; color: var(--ink-strong); }
+.sector-value-row { display: flex; align-items: baseline; justify-content: space-between; gap: 0.5rem; margin: 0.55rem 0 0.3rem; }
 
-.sector-badge { font-family: var(--font-mono); font-size: 0.7rem; font-weight: 600; }
+.sector-value { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 1.6rem; font-weight: 500; line-height: 1.1; color: var(--ink-strong); }
 
-.sector-badge.up { color: var(--up); }
-.sector-badge.down { color: var(--down); }
+.sector-trend {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.1rem 0.4rem;
+  border: 1px solid currentColor;
+}
+.sector-trend.up { color: var(--up); background: var(--up-bg); }
+.sector-trend.down { color: var(--down); background: var(--down-bg); }
 
-.sector-card svg { display: block; margin-top: 0.4rem; }
+.sector-card svg { display: block; }
 
 /* ---------- sentiment gauge ---------- */
 

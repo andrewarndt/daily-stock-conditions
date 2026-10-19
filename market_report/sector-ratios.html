@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=7">
+<link rel="stylesheet" href="assets/style.css?v=8">
 </head>
 <body>
 
@@ -143,7 +143,7 @@
 
   <footer>
     <p>Sector/SPY ratios are live daily closes from Yahoo Finance, refreshed once per weekday after market close -- both weightings: cap-weight from the SPDR sector ETFs against SPY, equal-weight from Invesco's RSP-family sector ETFs against RSP. Constituent Volatility, Volatility Term Structure, Core 3M, and Dispersion Index are live Cboe index data (VIX9D, VIX, VIX3M, VIX6M, VIX1Y, VIXEQ, DSPX), refreshed on the same schedule. <span id="skew-status-note">Skew Structure below is still an illustrative placeholder.</span></p>
-    <p>Badges mark each sector's ratio move over the trailing month: green outperforming SPY, red underperforming. The line color is a separate, shorter-term signal: green when the ratio is currently above its own 10-day moving average (dashed line), red when below.</p>
+    <p>The figure at the top right of each card is the ratio's move over the trailing month: green outperforming SPY, red underperforming. The line color and the Above/Below tag is a separate, shorter-term signal: green when the ratio is currently above its own 10-day moving average (dashed line), red when below.</p>
     <p>Credit (HYG) has moved to the <a href="bonds.html">Bonds</a> tab, Tier 3 — Financial Conditions &amp; Credit.</p>
     <p class="disclaimer">For informational purposes only, not investment advice. Data comes from the third-party sources named on each tab and may be delayed or contain errors.</p>
   </footer>
@@ -244,24 +244,52 @@
       var up = chg >= 0;
       var live = secLive && spyLive;
 
-      var card = document.createElement("div");
-      card.className = "sector-card";
-      var staticFlag = live ? "" : '<span class="placeholder-flag">static</span>';
-      card.innerHTML =
-        '<div class="sector-head"><span class="sector-name">' + sec.name + staticFlag + '</span><span class="sector-ticker">' + ticker + '/' + denomTicker + '</span></div>' +
-        '<div class="sector-value-row"><span class="sector-value">' + current.toFixed(3) + '</span>' +
-        '<span class="sector-badge ' + (up ? "up" : "down") + '">' + (up ? "▲" : "▼") + ' ' + Math.abs(chg).toFixed(1) + '%</span></div>' +
-        '<svg id="sector-spark-' + id + '" width="196" height="46"></svg>';
-      grid.appendChild(card);
-
-      // Chart color is a separate signal from the badge: green when the
-      // ratio is currently above its own 10-day MA, red when below --
-      // independent of the trailing-month % change the badge shows.
+      // Line color is a separate signal from the 1-month change: green when
+      // the ratio is currently above its own 10-day MA, red when below.
       var ma = MC.movingAverage(ratio, MA_WINDOW);
       var maLast = ma[n - 1];
       var aboveMa = maLast == null || current >= maLast;
       var color = aboveMa ? MC.css("--up") : MC.css("--down");
-      MC.sparkline(document.getElementById("sector-spark-" + id), ratio, color, { ma: ma, fluid: true });
+
+      var card = document.createElement("div");
+      card.className = "sector-card";
+      var staticFlag = live ? "" : '<span class="placeholder-flag">static</span>';
+      card.innerHTML =
+        '<div class="sector-head">' +
+          '<div><div class="sector-name">' + sec.name + staticFlag + '</div>' +
+          '<div class="sector-ticker">' + ticker + ' / ' + denomTicker + '</div></div>' +
+          '<div class="sector-perf ' + (up ? "up" : "down") + '">' +
+            '<div class="sector-perf-value">' + (up ? "▲ +" : "▼ −") + Math.abs(chg).toFixed(1) + '%</div>' +
+            '<div class="sector-perf-label">1 mo vs ' + denomTicker + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="sector-value-row">' +
+          '<span class="sector-value">' + current.toFixed(3) + '</span>' +
+          '<span class="sector-trend ' + (aboveMa ? "up" : "down") + '">' + (aboveMa ? "Above" : "Below") + ' 10-day MA</span>' +
+        '</div>' +
+        '<svg id="sector-spark-' + id + '" width="320" height="130" role="img" aria-label="' + sec.name + ' ratio to ' + denomTicker + '"></svg>';
+      grid.appendChild(card);
+
+      // Start the chart where the 10-day MA has its first value, so both
+      // lines cover the same days.
+      var start = Math.min(MA_WINDOW - 1, n - 1);
+      var digits = current < 0.1 ? 4 : 3;
+      MC.lineChart(document.getElementById("sector-spark-" + id), {
+        xLabels: data.dates.slice(start).map(function (d) {
+          return new Date(d + "T00:00:00Z").toLocaleString("en-US", { month: "short", timeZone: "UTC" });
+        }),
+        series: [
+          { name: "Ratio", color: color, area: true, data: ratio.slice(start) },
+          { name: "10-day MA", color: MC.css("--ink-soft"), dashed: true, data: ma.slice(start) }
+        ],
+        yTicks: 2,
+        yFmt: function (v) { return v.toFixed(digits); },
+        endLabels: false,
+        maxXLabels: 4,
+        padL: digits === 4 ? 46 : 40,
+        padT: 8,
+        padB: 22
+      });
     });
 
     document.getElementById("sector-asof").textContent = "All 11 GICS sectors, " + n + "-day trend, updated after close";
