@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=6">
+<link rel="stylesheet" href="assets/style.css?v=7">
 </head>
 <body>
 
@@ -80,19 +80,9 @@
       <h2>Market Breadth</h2>
       <span class="section-note" id="breadth-asof">Share of S&amp;P 500 stocks above their own moving average</span>
     </div>
-    <div class="metric-grid cols-4" id="breadth-grid">
-      <!-- populated from data/breadth.json; see script at bottom of page -->
-    </div>
-    <div class="chart-card breadth-chart">
-      <h3>Last 12 months</h3>
-      <p class="chart-sub">Percent of point-in-time S&amp;P 500 members trading above their own 20, 50, 100 and 200-day simple moving average. Dashed lines mark 20% and 80%.</p>
-      <div class="legend">
-        <span class="legend-item"><span class="legend-swatch" style="background:var(--blue)"></span>20-day</span>
-        <span class="legend-item"><span class="legend-swatch" style="background:var(--accent)"></span>50-day</span>
-        <span class="legend-item"><span class="legend-swatch" style="background:var(--up)"></span>100-day</span>
-        <span class="legend-item"><span class="legend-swatch" style="background:var(--ink)"></span>200-day</span>
-      </div>
-      <svg id="chart-breadth" width="900" height="260" viewBox="0 0 900 260" role="img" aria-label="S&amp;P 500 breadth, last 12 months"></svg>
+    <p class="chart-sub breadth-note">Share of point-in-time S&amp;P 500 members trading above their own simple moving average, last 12 months. Dashed lines mark 20% (washed out) and 80% (stretched).</p>
+    <div class="breadth-panels" id="breadth-panels">
+      <!-- one panel per moving average, populated from data/breadth.json; see script at bottom of page -->
     </div>
   </section>
 
@@ -314,28 +304,16 @@
 
   function fmtPct(v) { return v == null ? "--" : v.toFixed(1) + "%"; }
 
+  function fmtBreadthDate(d, opts) {
+    return new Date(d + "T00:00:00Z").toLocaleString("en-US", Object.assign({ timeZone: "UTC" }, opts));
+  }
+
   function renderBreadth(data) {
     if (data.updated === lastRenderedBreadth) return;
     lastRenderedBreadth = data.updated;
 
-    var grid = document.getElementById("breadth-grid");
-    grid.innerHTML = "";
-    data.readings.forEach(function (r) {
-      var chg = r.prior == null ? null : r.value - r.prior;
-      var cls = chg == null || Math.abs(chg) < 0.05 ? "flat" : chg > 0 ? "up" : "down";
-      var chgText = chg == null ? "--" : (chg >= 0 ? "▲ " : "▼ ") + Math.abs(chg).toFixed(1) + " pts";
-      var card = document.createElement("div");
-      card.className = "metric-card";
-      card.innerHTML =
-        '<div class="metric-name">' + r.name + '</div>' +
-        '<div class="metric-value">' + fmtPct(r.value) + '</div>' +
-        '<div class="metric-change ' + cls + '">' + chgText + '</div>' +
-        '<div class="metric-sub">1 wk ' + fmtPct(r.week) + ' · 1 mo ' + fmtPct(r.month) + '</div>';
-      grid.appendChild(card);
-    });
-
     var asof = new Date(data.asof + "T00:00:00Z");
-    var asofText = isNaN(asof) ? data.asof : asof.toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
+    var asofText = isNaN(asof) ? data.asof : fmtBreadthDate(data.asof, { month: "short", day: "numeric", year: "numeric" });
     var ageDays = (Date.now() - asof.getTime()) / 864e5;
     document.getElementById("breadth-asof").innerHTML =
       "Close of " + asofText + " · change vs prior session" +
@@ -347,21 +325,42 @@
       return data.readings.every(function (r) { return h[r.id][i] != null; });
     });
     function kept(arr) { return arr.filter(function (_, i) { return keep[i]; }); }
-    MC.lineChart(document.getElementById("chart-breadth"), {
-      xLabels: kept(h.dates).map(function (d) {
-        return new Date(d + "T00:00:00Z").toLocaleString("en-US", { month: "short", day: "numeric", year: "2-digit", timeZone: "UTC" });
-      }),
-      series: data.readings.map(function (r) {
-        return { name: r.window + "d", color: MC.css(BREADTH_COLORS[r.id]), data: kept(h[r.id]) };
-      }),
-      yMin: 0,
-      yMax: 100,
-      exactRange: true,
-      yFmt: function (v) { return v.toFixed(0) + "%"; },
-      referenceLine: { value: 80, label: "80%" },
-      referenceLine2: { value: 20, label: "20%" },
-      endLabels: false,
-      maxXLabels: 7
+    var xLabels = kept(h.dates).map(function (d) { return fmtBreadthDate(d, { month: "short", year: "2-digit" }); });
+
+    // One panel per moving average: the reading on top, its own 12-month chart below.
+    var wrap = document.getElementById("breadth-panels");
+    wrap.innerHTML = "";
+    data.readings.forEach(function (r) {
+      var chg = r.prior == null ? null : r.value - r.prior;
+      var cls = chg == null || Math.abs(chg) < 0.05 ? "flat" : chg > 0 ? "up" : "down";
+      var chgText = chg == null ? "--" : (chg >= 0 ? "▲ " : "▼ ") + Math.abs(chg).toFixed(1) + " pts";
+      var panel = document.createElement("div");
+      panel.className = "breadth-panel";
+      panel.innerHTML =
+        '<div class="metric-card">' +
+          '<div class="metric-name">' + r.name + '</div>' +
+          '<div class="breadth-readout">' +
+            '<span class="metric-value">' + fmtPct(r.value) + '</span>' +
+            '<span class="metric-change ' + cls + '">' + chgText + '</span>' +
+          '</div>' +
+          '<div class="metric-sub">1 wk ' + fmtPct(r.week) + ' · 1 mo ' + fmtPct(r.month) + '</div>' +
+        '</div>' +
+        '<svg id="chart-breadth-' + r.id + '" width="420" height="170" role="img" aria-label="' + r.name + ', last 12 months"></svg>';
+      wrap.appendChild(panel);
+      MC.lineChart(panel.querySelector("svg"), {
+        xLabels: xLabels,
+        series: [{ name: r.window + "d", color: MC.css(BREADTH_COLORS[r.id]), area: true, data: kept(h[r.id]) }],
+        yMin: 0,
+        yMax: 100,
+        exactRange: true,
+        yTicks: 2,
+        yFmt: function (v) { return v.toFixed(0) + "%"; },
+        referenceLine: { value: 80, label: "80%" },
+        referenceLine2: { value: 20, label: "20%" },
+        endLabels: false,
+        maxXLabels: 5,
+        padT: 10
+      });
     });
   }
 
@@ -372,7 +371,7 @@
       .catch(function (err) {
         console.warn("Could not load data/breadth.json:", err);
         if (lastRenderedBreadth) return; // keep the last good render on a transient failure
-        document.getElementById("breadth-grid").innerHTML =
+        document.getElementById("breadth-panels").innerHTML =
           '<div class="metric-card"><div class="metric-name">Breadth data not available right now</div></div>';
       });
   }

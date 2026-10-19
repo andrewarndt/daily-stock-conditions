@@ -521,8 +521,33 @@ section > .legend:last-child { margin-bottom: 0.6rem; }
   margin-top: 0.3rem;
 }
 
-/* breadth chart sits directly under its tile row */
+/* chart rows that sit directly under a table or tile row */
 .breadth-chart { border-top: 1px solid var(--line); }
+
+/* Market Breadth: one panel per moving average, 2 x 2. */
+.breadth-note { margin-top: 0.5rem; }
+
+.breadth-panels {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-top: 1px solid var(--line);
+}
+
+.breadth-panel {
+  min-width: 0;
+  padding-bottom: 0.4rem;
+  box-shadow: 1px 0 0 var(--line), 0 1px 0 var(--line);
+}
+
+.breadth-panel .metric-card { box-shadow: none; padding-bottom: 0.3rem; }
+
+.breadth-readout { display: flex; align-items: baseline; gap: 0.6rem; flex-wrap: wrap; }
+
+.breadth-panel svg { display: block; }
+
+@media (max-width: 560px) {
+  .breadth-panels { grid-template-columns: 1fr; }
+}
 
 .stress-banner {
   display: flex;
