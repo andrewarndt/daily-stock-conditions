@@ -63,6 +63,35 @@
     setInterval(tick, 1000);
   }
 
+  // ---------- light / dark switch ----------
+  // The choice is remembered per browser; with no choice the page follows
+  // the system setting (an inline script in each page's <head> applies a
+  // saved choice before first paint, so there is no flash).
+
+  if (meta) {
+    var root = document.documentElement;
+    var lightQuery = window.matchMedia("(prefers-color-scheme: light)");
+    var current = function () {
+      return root.getAttribute("data-theme") || (lightQuery.matches ? "light" : "dark");
+    };
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "theme-toggle";
+    var label = function () {
+      var next = current() === "light" ? "dark" : "light";
+      btn.textContent = next === "light" ? "Light" : "Dark";
+      btn.setAttribute("aria-label", "Switch to " + next + " theme");
+    };
+    btn.addEventListener("click", function () {
+      var next = current() === "light" ? "dark" : "light";
+      if (window.MC && MC.setTheme) MC.setTheme(next); else root.setAttribute("data-theme", next);
+      try { localStorage.setItem("md-theme", next); } catch (e) { /* private mode: not remembered */ }
+      label();
+    });
+    label();
+    meta.appendChild(btn);
+  }
+
   // ---------- quote tape ----------
 
   var topbar = document.querySelector(".topbar");

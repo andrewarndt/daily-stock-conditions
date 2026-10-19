@@ -21,6 +21,10 @@
     }, 150);
   });
 
+  // Every chart drawn, so a theme switch can redraw them in the new colors.
+  var allCharts = [];
+  function track(svg) { if (allCharts.indexOf(svg) < 0) allCharts.push(svg); }
+
   function css(name) {
     return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   }
@@ -61,6 +65,7 @@
     svg.setAttribute("viewBox", "0 0 " + width + " " + height);
     if (!svg._mcOpts) fluidCharts.push(svg);
     svg._mcOpts = opts;
+    track(svg);
     var padL = opts.padL || 42, padR = opts.padR || 14, padT = opts.padT || 16, padB = opts.padB || 26;
     var innerW = width - padL - padR, innerH = height - padT - padB;
     var series = opts.series;
@@ -69,6 +74,14 @@
     series.forEach(function (s) { allY = allY.concat(s.data); });
     var yLo = opts.yMin !== undefined ? opts.yMin : Math.min.apply(null, allY);
     var yHi = opts.yMax !== undefined ? opts.yMax : Math.max.apply(null, allY);
+    // Fit an auto-scaled axis to its reference lines too, so a threshold the
+    // data hasn't reached (e.g. put/call 0.7 and 1.0 bands) still shows on
+    // the plot instead of being drawn over the axis labels.
+    [opts.referenceLine, opts.referenceLine2].forEach(function (ref) {
+      if (!ref || !isFinite(ref.value)) return;
+      if (opts.yMin === undefined) yLo = Math.min(yLo, ref.value);
+      if (opts.yMax === undefined) yHi = Math.max(yHi, ref.value);
+    });
     if (yLo === yHi) { yLo -= 1; yHi += 1; }
     // opts.exactRange keeps a fixed scale such as 0-100% instead of padding it.
     var pad = opts.exactRange ? 0 : (yHi - yLo) * 0.12;
@@ -159,6 +172,8 @@
     opts = opts || {};
     svg.innerHTML = "";
     var width = +svg.getAttribute("width"), height = +svg.getAttribute("height");
+    svg._mcSpark = { data: data, color: color, opts: opts };
+    track(svg);
     // opts.fluid draws at the tile's laid-out width (like lineChart) and
     // redraws on resize; leave it off inside table cells, which size to content.
     if (opts.fluid) {
@@ -169,7 +184,7 @@
       svg.setAttribute("width", width);
       svg.setAttribute("viewBox", "0 0 " + width + " " + height);
       if (!svg._mcRedraw) fluidCharts.push(svg);
-      svg._mcRedraw = function () { sparkline(svg, data, color, opts); };
+      svg._mcRedraw = function () { var a = svg._mcSpark; sparkline(svg, a.data, a.color, a.opts); };
     }
     var padY = 4;
     var allVals = data.slice();
@@ -211,6 +226,8 @@
   /** Fear/greed style semicircular gauge, value 0-100. */
   function gauge(svg, value) {
     svg.innerHTML = "";
+    svg._mcGauge = value;
+    track(svg);
     // Wider than the dial so the "Extreme Fear/Greed" labels are not clipped.
     svg.setAttribute("width", 420);
     svg.setAttribute("viewBox", "-50 0 420 190");
@@ -250,7 +267,43 @@
     el("circle", { cx: cx, cy: cy, r: 7, fill: css("--ink") }, svg);
   }
 
+  var THEME_TOKENS = ["--ink", "--ink-soft", "--paper-raised", "--line", "--accent", "--up", "--down", "--blue"];
+
+  function tokenValues() {
+    var out = {};
+    THEME_TOKENS.forEach(function (t) { out[t] = css(t).toLowerCase(); });
+    return out;
+  }
+
+  /**
+   * Switch the page to "light" or "dark" and redraw every chart. Page
+   * scripts pass resolved colors (MC.css("--blue")), so each stored color
+   * is mapped from its old theme value to the same token's new value.
+   */
+  function setTheme(theme) {
+    var before = tokenValues();
+    document.documentElement.setAttribute("data-theme", theme);
+    var after = tokenValues();
+    var map = {};
+    THEME_TOKENS.forEach(function (t) { map[before[t]] = after[t]; });
+    function swap(c) { return (typeof c === "string" && map[c.toLowerCase()]) || c; }
+    allCharts.forEach(function (svg) {
+      if (!svg.isConnected) return;
+      if (svg._mcSpark) {
+        var a = svg._mcSpark;
+        if (a.opts && a.opts.maColor) a.opts.maColor = swap(a.opts.maColor);
+        sparkline(svg, a.data, swap(a.color), a.opts);
+      } else if (svg._mcGauge !== undefined) {
+        gauge(svg, svg._mcGauge);
+      } else if (svg._mcOpts) {
+        svg._mcOpts.series.forEach(function (s) { s.color = swap(s.color); });
+        lineChart(svg, svg._mcOpts);
+      }
+    });
+  }
+
   global.MC = {
+    setTheme: setTheme,
     css: css, el: el, scale: scale, lineChart: lineChart, sparkline: sparkline, gauge: gauge,
     movingAverage: movingAverage
   };

@@ -20,11 +20,65 @@
   --down: #ff5b5b;
   --down-bg: rgba(255, 91, 91, 0.12);
   --blue: #4ea8ff;
+  --ink-strong: #ffffff;
+  --on-accent: #000000;
+  --row-alt: rgba(255, 255, 255, 0.018);
+  --row-hover: rgba(255, 173, 31, 0.06);
   --font-body: "IBM Plex Sans", -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", "Cascadia Mono", Consolas, monospace;
   --font-display: var(--font-body);
   --gap: 6px;
   color-scheme: dark;
+}
+
+/* Light desk: used when the visitor picks it with the theme button, or
+   when their system is set to light and they have not picked either. */
+:root[data-theme="light"] {
+  --ink: #1a2229;
+  --ink-soft: #56636e;
+  --ink-faint: #85919b;
+  --ink-strong: #0a0f14;
+  --paper: #e6eaee;
+  --paper-raised: #ffffff;
+  --panel-head: #f2f4f6;
+  --line: #dbe1e6;
+  --line-strong: #c2cbd2;
+  --accent: #a35f00;
+  --accent-soft: #fbefd9;
+  --on-accent: #ffffff;
+  --up: #08884a;
+  --up-bg: rgba(8, 136, 74, 0.1);
+  --down: #cf2e2e;
+  --down-bg: rgba(207, 46, 46, 0.08);
+  --blue: #1f6bc9;
+  --row-alt: rgba(0, 0, 0, 0.022);
+  --row-hover: rgba(163, 95, 0, 0.07);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --ink: #1a2229;
+    --ink-soft: #56636e;
+    --ink-faint: #85919b;
+    --ink-strong: #0a0f14;
+    --paper: #e6eaee;
+    --paper-raised: #ffffff;
+    --panel-head: #f2f4f6;
+    --line: #dbe1e6;
+    --line-strong: #c2cbd2;
+    --accent: #a35f00;
+    --accent-soft: #fbefd9;
+    --on-accent: #ffffff;
+    --up: #08884a;
+    --up-bg: rgba(8, 136, 74, 0.1);
+    --down: #cf2e2e;
+    --down-bg: rgba(207, 46, 46, 0.08);
+    --blue: #1f6bc9;
+    --row-alt: rgba(0, 0, 0, 0.022);
+    --row-hover: rgba(163, 95, 0, 0.07);
+    color-scheme: light;
+  }
 }
 
 * { box-sizing: border-box; }
@@ -42,7 +96,7 @@ body {
 a { color: var(--blue); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
-::selection { background: var(--accent); color: #000; }
+::selection { background: var(--accent); color: var(--on-accent); }
 
 /* ---------- top bar + nav ---------- */
 
@@ -119,7 +173,7 @@ a:hover { text-decoration: underline; }
 .tab:hover:not(.active) { color: var(--ink); background: var(--paper-raised); text-decoration: none; }
 
 .tab.active {
-  color: #000;
+  color: var(--on-accent);
   background: var(--accent);
   font-weight: 700;
 }
@@ -192,6 +246,21 @@ a:hover { text-decoration: underline; }
 .mkt-state.open { color: var(--up); }
 .mkt-state.ext { color: var(--accent); }
 .mkt-state.closed { color: var(--down); }
+
+/* Light/dark switch (added by desk.js). */
+.theme-toggle {
+  font: inherit;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  padding: 0.1rem 0.45rem;
+  cursor: pointer;
+}
+
+.theme-toggle:hover { color: var(--ink); border-color: var(--ink-soft); }
 
 /* Scrolling quote tape under the top bar (added by desk.js). */
 .tape {
@@ -423,7 +492,7 @@ section > .legend:last-child { margin-bottom: 0.6rem; }
   font-weight: 500;
   line-height: 1.2;
   margin-top: 0.25rem;
-  color: #fff;
+  color: var(--ink-strong);
 }
 
 .metric-change {
@@ -522,11 +591,11 @@ th {
   border-bottom-color: var(--line-strong);
 }
 
-tbody tr:nth-child(even) td { background: rgba(255, 255, 255, 0.018); }
-tbody tr:hover td { background: rgba(255, 173, 31, 0.06); }
+tbody tr:nth-child(even) td { background: var(--row-alt); }
+tbody tr:hover td { background: var(--row-hover); }
 tbody tr:last-child td { border-bottom: none; }
 
-td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; text-align: right; color: #fff; }
+td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; text-align: right; color: var(--ink-strong); }
 
 /* th.num pairs with td.num so numeric-column headers line up over their
    right-aligned values instead of sitting flush-left over an empty column. */
@@ -663,7 +732,7 @@ section > .legend + .fedwatch-meeting,
 .fw-fill.hike25 { background: var(--accent); }
 .fw-fill.hike50 { background: var(--down); }
 
-.fw-pct { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 0.76rem; text-align: right; color: #fff; }
+.fw-pct { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 0.76rem; text-align: right; color: var(--ink-strong); }
 
 /* ---------- upcoming releases ---------- */
 
@@ -703,7 +772,7 @@ section > .legend + .fedwatch-meeting,
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
   font-size: 0.78rem;
-  color: #fff;
+  color: var(--ink-strong);
 }
 
 .release-empty {
@@ -745,7 +814,7 @@ section > .legend + .fedwatch-meeting,
 
 .weight-toggle-btn + .weight-toggle-btn { border-left: 1px solid var(--line-strong); }
 .weight-toggle-btn:hover { color: var(--ink); }
-.weight-toggle-btn.active { background: var(--accent); color: #000; }
+.weight-toggle-btn.active { background: var(--accent); color: var(--on-accent); }
 
 /* ---------- sector grid ---------- */
 
@@ -770,7 +839,7 @@ section > .legend + .fedwatch-meeting,
 
 .sector-value-row { display: flex; align-items: baseline; gap: 0.5rem; margin-top: 0.1rem; }
 
-.sector-value { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 1rem; color: #fff; }
+.sector-value { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 1rem; color: var(--ink-strong); }
 
 .sector-badge { font-family: var(--font-mono); font-size: 0.7rem; font-weight: 600; }
 
@@ -794,7 +863,7 @@ section > .legend + .fedwatch-meeting,
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   margin-top: -0.6rem;
-  color: #fff;
+  color: var(--ink-strong);
 }
 
 .gauge-zone {
@@ -823,7 +892,7 @@ section > .legend + .fedwatch-meeting,
   font-weight: 500;
   line-height: 1.15;
   margin-top: 0.25rem;
-  color: #fff;
+  color: var(--ink-strong);
 }
 
 .stat-delta { font-family: var(--font-mono); font-size: 0.76rem; font-weight: 600; margin-top: 0.2rem; }
@@ -861,7 +930,7 @@ section > .legend + .fedwatch-meeting,
   font-size: 1.02rem;
   font-weight: 600;
   margin: 0 0 0.5rem;
-  color: #fff;
+  color: var(--ink-strong);
 }
 
 .report-body {
