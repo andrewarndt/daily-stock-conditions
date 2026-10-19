@@ -8,22 +8,39 @@
 
   var NS = "http://www.w3.org/2000/svg";
 
-  // Line charts redraw from their last options when the window is resized.
-  var fluidCharts = [];
+  // Every chart drawn, so a resize or theme switch can redraw them all.
+  var allCharts = [];
+  function track(svg) { if (allCharts.indexOf(svg) < 0) allCharts.push(svg); }
+
+  function redraw(svg) {
+    if (svg._mcSpark) { var a = svg._mcSpark; sparkline(svg, a.data, a.color, a.opts); }
+    else if (svg._mcGauge !== undefined) gauge(svg, svg._mcGauge);
+    else if (svg._mcOpts) lineChart(svg, svg._mcOpts);
+  }
+
   var resizeTimer = null;
   global.addEventListener("resize", function () {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(function () {
-      fluidCharts.forEach(function (svg) {
-        if (!svg.isConnected) return;
-        if (svg._mcRedraw) svg._mcRedraw(); else lineChart(svg, svg._mcOpts);
-      });
+      allCharts.forEach(function (svg) { if (svg.isConnected) redraw(svg); });
     }, 150);
   });
 
-  // Every chart drawn, so a theme switch can redraw them in the new colors.
-  var allCharts = [];
-  function track(svg) { if (allCharts.indexOf(svg) < 0) allCharts.push(svg); }
+  /**
+   * Chart size factor. style.css grows the root font with the window past
+   * 1600px wide (see the html rule there); charts grow by the same ratio so
+   * their heights, padding and line weights keep pace with the text.
+   */
+  function sizeFactor() {
+    var px = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+    return Math.max(1, px / 16);
+  }
+
+  /** The svg's own width/height attributes, read once, before any scaling. */
+  function baseSize(svg) {
+    if (!svg._mcBase) svg._mcBase = { w: +svg.getAttribute("width"), h: +svg.getAttribute("height") };
+    return svg._mcBase;
+  }
 
   function css(name) {
     return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
@@ -56,17 +73,20 @@
     // Draw at the width the card actually gives the chart (CSS sets the svg
     // to 100% of its card), so text stays the same size at every screen
     // width; the width attribute is only the fallback when it isn't laid out.
+    // Height and spacing follow the window's size factor.
+    var k = sizeFactor();
+    var base = baseSize(svg);
     svg.style.display = "block";
     svg.style.width = "100%";
     var laidOut = Math.round(svg.getBoundingClientRect().width);
-    var width = laidOut > 0 ? laidOut : +svg.getAttribute("width");
-    var height = +svg.getAttribute("height");
+    var width = laidOut > 0 ? laidOut : Math.round(base.w * k);
+    var height = Math.round(base.h * k);
     svg.setAttribute("width", width);
+    svg.setAttribute("height", height);
     svg.setAttribute("viewBox", "0 0 " + width + " " + height);
-    if (!svg._mcOpts) fluidCharts.push(svg);
     svg._mcOpts = opts;
     track(svg);
-    var padL = opts.padL || 42, padR = opts.padR || 14, padT = opts.padT || 16, padB = opts.padB || 26;
+    var padL = (opts.padL || 42) * k, padR = (opts.padR || 14) * k, padT = (opts.padT || 16) * k, padB = (opts.padB || 26) * k;
     var innerW = width - padL - padR, innerH = height - padT - padB;
     var series = opts.series;
     var xLabels = opts.xLabels;
@@ -95,32 +115,28 @@
       var v = yLo + (yHi - yLo) * i / yTicks;
       var gy = y(v);
       el("line", { x1: padL, x2: padL + innerW, y1: gy, y2: gy, class: "gridline" }, svg);
-      el("text", { x: padL - 8, y: gy + 3, class: "axis-label", "text-anchor": "end" }, svg).textContent = yFmt(v);
+      el("text", { x: padL - 8 * k, y: gy + 3 * k, class: "axis-label", "text-anchor": "end" }, svg).textContent = yFmt(v);
     }
 
-    if (opts.referenceLine) {
-      var ry = y(opts.referenceLine.value);
+    [opts.referenceLine, opts.referenceLine2].forEach(function (ref) {
+      if (!ref) return;
+      var ry = y(ref.value);
       el("line", { x1: padL, x2: padL + innerW, y1: ry, y2: ry, class: "ref-line" }, svg);
-      el("text", { x: padL + innerW, y: ry - 4, class: "ref-label", "text-anchor": "end" }, svg).textContent = opts.referenceLine.label;
-    }
-    if (opts.referenceLine2) {
-      var ry2 = y(opts.referenceLine2.value);
-      el("line", { x1: padL, x2: padL + innerW, y1: ry2, y2: ry2, class: "ref-line" }, svg);
-      el("text", { x: padL + innerW, y: ry2 - 4, class: "ref-label", "text-anchor": "end" }, svg).textContent = opts.referenceLine2.label;
-    }
+      el("text", { x: padL + innerW, y: ry - 4 * k, class: "ref-label", "text-anchor": "end" }, svg).textContent = ref.label;
+    });
 
     // Fewer x labels on narrow charts so they never run together; the last
     // one is right-aligned so it stays inside the plot.
-    var maxX = Math.max(2, Math.min(opts.maxXLabels || 7, Math.floor(innerW / 85)));
+    var maxX = Math.max(2, Math.min(opts.maxXLabels || 7, Math.floor(innerW / (85 * k))));
     var step = Math.max(1, Math.ceil(xLabels.length / maxX));
     var lastX = xLabels.length - 1;
     xLabels.forEach(function (lab, i) {
       if (i === lastX) {
-        el("text", { x: x(i), y: height - 8, class: "axis-label", "text-anchor": "end" }, svg).textContent = lab;
+        el("text", { x: x(i), y: height - 8 * k, class: "axis-label", "text-anchor": "end" }, svg).textContent = lab;
         return;
       }
-      if (i % step !== 0 || x(lastX) - x(i) < 70) return;
-      el("text", { x: x(i), y: height - 8, class: "axis-label", "text-anchor": i === 0 ? "start" : "middle" }, svg).textContent = lab;
+      if (i % step !== 0 || x(lastX) - x(i) < 70 * k) return;
+      el("text", { x: x(i), y: height - 8 * k, class: "axis-label", "text-anchor": i === 0 ? "start" : "middle" }, svg).textContent = lab;
     });
 
     var endLabels = [];
@@ -131,34 +147,34 @@
         el("polygon", { points: areaPts, fill: s.color, opacity: 0.1, stroke: "none" }, svg);
       }
       el("polyline", {
-        points: pts, fill: "none", stroke: s.color, "stroke-width": 2,
+        points: pts, fill: "none", stroke: s.color, "stroke-width": 2 * k,
         "stroke-linejoin": "round", "stroke-linecap": "round",
-        "stroke-dasharray": s.dashed ? "5,4" : "none"
+        "stroke-dasharray": s.dashed ? (5 * k) + "," + (4 * k) : "none"
       }, svg);
 
       s.data.forEach(function (v, i) {
-        var hit = el("circle", { cx: x(i), cy: y(v), r: 6, fill: "transparent" }, svg);
+        var hit = el("circle", { cx: x(i), cy: y(v), r: 6 * k, fill: "transparent" }, svg);
         el("title", {}, hit).textContent = xLabels[i] + " — " + s.name + ": " + yFmt(v);
       });
 
       var lastI = s.data.length - 1;
       var cx = x(lastI), cy = y(s.data[lastI]);
-      el("circle", { cx: cx, cy: cy, r: 4, fill: s.color, stroke: css("--paper-raised"), "stroke-width": 2 }, svg);
+      el("circle", { cx: cx, cy: cy, r: 4 * k, fill: s.color, stroke: css("--paper-raised"), "stroke-width": 2 * k }, svg);
       if (opts.endLabels !== false && s.endLabel !== false) {
-        var anchor = (cx > padL + innerW - 60) ? "end" : "start";
-        var lx = anchor === "end" ? cx - 8 : cx + 8;
-        endLabels.push({ x: lx, y: cy - 8, anchor: anchor, text: s.name + " " + yFmt(s.data[lastI]) });
+        var anchor = (cx > padL + innerW - 60 * k) ? "end" : "start";
+        var lx = anchor === "end" ? cx - 8 * k : cx + 8 * k;
+        endLabels.push({ x: lx, y: cy - 8 * k, anchor: anchor, text: s.name + " " + yFmt(s.data[lastI]) });
       }
     });
 
     // Push end labels apart when lines finish close together, so two
     // labels never print on top of each other.
     endLabels.sort(function (a, b) { return a.y - b.y; });
-    for (var k = 1; k < endLabels.length; k++) {
-      if (endLabels[k].y - endLabels[k - 1].y < 13) endLabels[k].y = endLabels[k - 1].y + 13;
+    for (var j = 1; j < endLabels.length; j++) {
+      if (endLabels[j].y - endLabels[j - 1].y < 13 * k) endLabels[j].y = endLabels[j - 1].y + 13 * k;
     }
     endLabels.forEach(function (l) {
-      el("text", { x: l.x, y: Math.max(11, l.y), class: "end-label", "text-anchor": l.anchor }, svg).textContent = l.text;
+      el("text", { x: l.x, y: Math.max(11 * k, l.y), class: "end-label", "text-anchor": l.anchor }, svg).textContent = l.text;
     });
   }
 
@@ -171,32 +187,33 @@
   function sparkline(svg, data, color, opts) {
     opts = opts || {};
     svg.innerHTML = "";
-    var width = +svg.getAttribute("width"), height = +svg.getAttribute("height");
+    var k = sizeFactor();
+    var base = baseSize(svg);
+    var width = Math.round(base.w * k), height = Math.round(base.h * k);
     svg._mcSpark = { data: data, color: color, opts: opts };
     track(svg);
-    // opts.fluid draws at the tile's laid-out width (like lineChart) and
-    // redraws on resize; leave it off inside table cells, which size to content.
+    // opts.fluid draws at the tile's laid-out width (like lineChart); leave
+    // it off inside table cells, which size to content.
     if (opts.fluid) {
       svg.style.display = "block";
       svg.style.width = "100%";
       var laidOut = Math.round(svg.getBoundingClientRect().width);
       if (laidOut > 0) width = laidOut;
-      svg.setAttribute("width", width);
-      svg.setAttribute("viewBox", "0 0 " + width + " " + height);
-      if (!svg._mcRedraw) fluidCharts.push(svg);
-      svg._mcRedraw = function () { var a = svg._mcSpark; sparkline(svg, a.data, a.color, a.opts); };
     }
-    var padY = 4;
+    svg.setAttribute("width", width);
+    svg.setAttribute("height", height);
+    svg.setAttribute("viewBox", "0 0 " + width + " " + height);
+    var padY = 4 * k;
     var allVals = data.slice();
     if (opts.ma) allVals = allVals.concat(opts.ma.filter(function (v) { return v != null; }));
     var lo = Math.min.apply(null, allVals), hi = Math.max.apply(null, allVals);
     if (lo === hi) { lo -= 1; hi += 1; }
-    var x = scale([0, data.length - 1], [2, width - 2]);
+    var x = scale([0, data.length - 1], [2 * k, width - 2 * k]);
     var y = scale([lo, hi], [height - padY, padY]);
     var pts = data.map(function (v, i) { return x(i) + "," + y(v); }).join(" ");
     var areaPts = x(0) + "," + (height - padY) + " " + pts + " " + x(data.length - 1) + "," + (height - padY);
     el("polygon", { points: areaPts, fill: color, opacity: 0.12, stroke: "none" }, svg);
-    el("polyline", { points: pts, fill: "none", stroke: color, "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round" }, svg);
+    el("polyline", { points: pts, fill: "none", stroke: color, "stroke-width": 2 * k, "stroke-linejoin": "round", "stroke-linecap": "round" }, svg);
 
     if (opts.ma) {
       var maPts = [];
@@ -204,13 +221,13 @@
       if (maPts.length > 1) {
         el("polyline", {
           points: maPts.join(" "), fill: "none", stroke: opts.maColor || css("--ink-soft"),
-          "stroke-width": 1.5, "stroke-dasharray": "3,2", "stroke-linejoin": "round", "stroke-linecap": "round"
+          "stroke-width": 1.5 * k, "stroke-dasharray": (3 * k) + "," + (2 * k), "stroke-linejoin": "round", "stroke-linecap": "round"
         }, svg);
       }
     }
 
     var lastI = data.length - 1;
-    el("circle", { cx: x(lastI), cy: y(data[lastI]), r: 3.5, fill: color, stroke: css("--paper-raised"), "stroke-width": 1.5 }, svg);
+    el("circle", { cx: x(lastI), cy: y(data[lastI]), r: 3.5 * k, fill: color, stroke: css("--paper-raised"), "stroke-width": 1.5 * k }, svg);
   }
 
   /** Simple moving average; returns an array the same length as `data`, with `null` for the warm-up window. */
@@ -229,7 +246,11 @@
     svg._mcGauge = value;
     track(svg);
     // Wider than the dial so the "Extreme Fear/Greed" labels are not clipped.
-    svg.setAttribute("width", 420);
+    // The viewBox scales the whole dial with the window, so its labels use a
+    // fixed size in dial units instead of the page's growing rem.
+    var k = sizeFactor();
+    svg.setAttribute("width", Math.round(420 * k));
+    svg.setAttribute("height", Math.round(190 * k));
     svg.setAttribute("viewBox", "-50 0 420 190");
     var cx = 160, cy = 160, r = 120, thickness = 22;
     function pt(radius, angleDeg) {
@@ -259,7 +280,7 @@
       // "Extreme" ones never print over the colored arc.
       var p = pt(r + 18, angleFor(zl[1]));
       var anchor = zl[1] < 50 ? "end" : zl[1] > 50 ? "start" : "middle";
-      el("text", { x: p[0], y: p[1] + 3, class: "axis-label", "text-anchor": anchor }, svg).textContent = zl[0];
+      el("text", { x: p[0], y: p[1] + 3, class: "axis-label", "text-anchor": anchor, style: "font-size:10px" }, svg).textContent = zl[0];
     });
     var na = angleFor(value);
     var tip = pt(r - 30, na);
@@ -291,14 +312,12 @@
       if (!svg.isConnected) return;
       if (svg._mcSpark) {
         var a = svg._mcSpark;
+        a.color = swap(a.color);
         if (a.opts && a.opts.maColor) a.opts.maColor = swap(a.opts.maColor);
-        sparkline(svg, a.data, swap(a.color), a.opts);
-      } else if (svg._mcGauge !== undefined) {
-        gauge(svg, svg._mcGauge);
       } else if (svg._mcOpts) {
         svg._mcOpts.series.forEach(function (s) { s.color = swap(s.color); });
-        lineChart(svg, svg._mcOpts);
       }
+      redraw(svg);
     });
   }
 
