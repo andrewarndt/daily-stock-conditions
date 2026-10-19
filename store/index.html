@@ -19,7 +19,8 @@
 <meta property="og:title" content="Store — 4A Holdings Company">
 <meta property="og:description" content="Handmade Damascus knives, pocket knives, and reed diffusers -- buy online with secure checkout.">
 <meta property="og:url" content="https://4aholdingscompany.com/store/">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://4aholdingscompany.com/store/assets/web/damascus-knives/IMG_8320.JPG">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="stylesheet" href="assets/style.css">
 <!-- Warm up the connection to Stripe checkout so Buy buttons open faster -->
@@ -54,6 +55,12 @@
     <!-- populated from data/products.json -->
   </div>
 
+  <section class="about-me policies">
+    <h2>Shipping and returns</h2>
+    <p><strong>Shipping:</strong> $9 flat rate per order, contiguous U.S. only. Alaska and Hawaii orders: email first.</p>
+    <p><strong>Returns:</strong> Returns are accepted on every item except custom-engraved pieces, since those are made to order. To start a return, email <a href="mailto:4aholdingscompany@gmail.com?subject=Return%20request">4aholdingscompany@gmail.com</a> with your order details.</p>
+  </section>
+
   <section class="about-me">
     <img class="about-photo" src="assets/images/andrew-arndt.jpg" alt="Andrew Arndt" width="400" height="400">
     <h2>About me</h2>
@@ -81,6 +88,13 @@
     grid.innerHTML = products.map(productCardHtml).join("");
 
     document.getElementById("footer-slot").outerHTML = contactFooterHtml();
+
+    // Product structured data for search results, built from the same
+    // catalog. Only products with a checkout price get an Offer.
+    const ld = document.createElement("script");
+    ld.type = "application/ld+json";
+    ld.textContent = JSON.stringify(productsJsonLd(products));
+    document.head.appendChild(ld);
   }).catch((err) => {
     console.error("Could not load data/products.json:", err);
     document.getElementById("product-grid").innerHTML =
@@ -88,5 +102,6 @@
   });
 </script>
 
+<script src="/assets/site-links.js" defer></script>
 </body>
 </html>

@@ -32,7 +32,7 @@ const CONTACT_EMAIL = "4aholdingscompany@gmail.com";
 
 // Flat shipping charged by every Stripe link (set on the Stripe shipping rate).
 // Stripe can't block Alaska/Hawaii, so this notice is the only warning.
-const SHIPPING_NOTE = "$9 flat shipping &middot; contiguous U.S. only (Alaska and Hawaii: email us)";
+const SHIPPING_NOTE = "$9 flat shipping &middot; contiguous U.S. only (Alaska and Hawaii: email us) &middot; returns accepted except custom engravings";
 
 function formatPrice(amount) {
   return "$" + amount.toFixed(2);
@@ -84,12 +84,56 @@ function productCardHtml(product) {
       ${thumbs}
       <div class="product-body">
         <h2>${escapeHtml(product.name)}</h2>
+        ${priceHtml(product)}
         <p class="product-tagline">${escapeHtml(product.tagline)}</p>
-        <p class="product-description">${escapeHtml(product.description)}</p>
+        <details class="product-more">
+          <summary>Details</summary>
+          <p class="product-description">${escapeHtml(product.description)}</p>
+        </details>
         <p class="product-note">${escapeHtml(product.note)}</p>
         ${actionsHtml(product)}
       </div>
     </div>`;
+}
+
+// "$12.00", or "From $19.75" when options are priced differently. Products
+// without checkout options get no price line (they're email-to-buy).
+function priceHtml(product) {
+  const prices = (product.options || []).map((opt) => opt.price);
+  if (prices.length === 0) return "";
+  const low = Math.min(...prices);
+  const label = prices.some((p) => p !== low) ? `From ${formatPrice(low)}` : formatPrice(low);
+  return `<p class="product-price">${label}</p>`;
+}
+
+// schema.org ItemList of Products for store/index.html's JSON-LD block.
+function productsJsonLd(products) {
+  const base = "https://4aholdingscompany.com/store/";
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    itemListElement: products.map((p, i) => {
+      const prices = (p.options || []).map((opt) => opt.price);
+      const item = {
+        "@type": "Product",
+        name: p.name,
+        description: p.description,
+        brand: { "@type": "Brand", name: "4A Holdings Company" },
+        image: p.images.map((f) => base + webPhotoUrl(p, f)),
+      };
+      if (prices.length) {
+        item.offers = {
+          "@type": "AggregateOffer",
+          priceCurrency: "USD",
+          lowPrice: Math.min(...prices).toFixed(2),
+          highPrice: Math.max(...prices).toFixed(2),
+          offerCount: prices.length,
+          availability: "https://schema.org/InStock",
+        };
+      }
+      return { "@type": "ListItem", position: i + 1, item };
+    }),
+  };
 }
 
 // Stripe checkout buttons (one per option) when the product has them,

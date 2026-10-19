@@ -6,7 +6,7 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://4aholdingscompany.com/market_report/</loc>
+    <loc>https://4aholdingscompany.com/market_report/index.html</loc>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -31,29 +31,14 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://4aholdingscompany.com/wildlife/</loc>
+    <loc>https://4aholdingscompany.com/wildlife/index.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://4aholdingscompany.com/store/</loc>
+    <loc>https://4aholdingscompany.com/store/index.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://4aholdingscompany.com/wildlife/gallery.html?park=everglades-national-park-florida</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://4aholdingscompany.com/wildlife/gallery.html?park=kumuna-national-park-sri-lanka</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://4aholdingscompany.com/wildlife/gallery.html?park=smokey-mountains-tenessee</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://4aholdingscompany.com/wedding-vessels/</loc>
@@ -64,5 +49,20 @@
     <loc>https://4aholdingscompany.com/vending/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://4aholdingscompany.com/wildlife/gallery.html?park=everglades-national-park-florida</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://4aholdingscompany.com/wildlife/gallery.html?park=great-smoky-mountains-national-park-tennessee</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://4aholdingscompany.com/wildlife/gallery.html?park=kumana-national-park-sri-lanka</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
 </urlset>

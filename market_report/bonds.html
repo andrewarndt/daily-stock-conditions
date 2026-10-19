@@ -19,7 +19,7 @@
 <meta property="og:title" content="Bonds — Market Desk">
 <meta property="og:description" content="Treasury yields and the curve, credit spreads and conditions, and the policy &amp; liquidity plumbing behind them — the bond market in one place.">
 <meta property="og:url" content="https://4aholdingscompany.com/market_report/bonds.html">
-<meta property="og:image" content="https://4aholdingscompany.com/favicon.png">
+<meta property="og:image" content="https://4aholdingscompany.com/images/logo-mark.png">
 <meta name="twitter:card" content="summary">
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="stylesheet" href="assets/style.css">
@@ -31,7 +31,7 @@
     <div class="brand-row">
       <a class="brand" href="index.html">Market <span>Desk</span></a>
       <div class="top-meta">
-        <span class="notice" id="live-notice">Illustrative sample data — not live market feeds</span>
+        <span class="notice" id="live-notice">Loading live data&hellip;</span>
         <span class="refresh-stamp"><span class="dot"></span>Last refresh: <span id="refresh-time">Aug 7, 2026, 4:15&nbsp;PM ET</span></span>
       </div>
     </div>
@@ -174,6 +174,7 @@
   <footer>
     <p>Sourced from FRED (St. Louis Fed) unless noted otherwise. Treasury Yields, the Yield Curve, and derived metrics (Net Liquidity, SOFR&ndash;IORB spread, 10Y&ndash;3M spread, 2s10s spread) are computed client-side from the live series above rather than fetched separately. Two exceptions: HYG in Tier 3 is a live daily close from Yahoo Finance, refreshed once per weekday after market close; the Treasury &amp; Bond ETF Snapshot cards above are live intraday quotes from Twelve Data, refreshed every 30 min on weekdays.</p>
     <p>Context only. Not wired into Regime Classifier or Exposure Model. Gate 1 of the Macro Permission Hierarchy still runs on Regime Classifier v2.</p>
+    <p class="disclaimer">For informational purposes only, not investment advice. Data comes from the third-party sources named on each tab and may be delayed or contain errors.</p>
   </footer>
 </div>
 
@@ -692,5 +693,6 @@
     });
 })();
 </script>
+<script src="/assets/site-links.js" defer></script>
 </body>
 </html>

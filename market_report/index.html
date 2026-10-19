@@ -19,7 +19,7 @@
 <meta property="og:title" content="Overview — Market Desk">
 <meta property="og:description" content="Where the market stands right now — major indices, the dollar and key commodities, and the latest economic prints, all in one glance.">
 <meta property="og:url" content="https://4aholdingscompany.com/market_report/">
-<meta property="og:image" content="https://4aholdingscompany.com/favicon.png">
+<meta property="og:image" content="https://4aholdingscompany.com/images/logo-mark.png">
 <meta name="twitter:card" content="summary">
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="stylesheet" href="assets/style.css">
@@ -31,7 +31,7 @@
     <div class="brand-row">
       <a class="brand" href="index.html">Market <span>Desk</span></a>
       <div class="top-meta">
-        <span class="notice" id="live-notice">Illustrative sample data — not live market feeds</span>
+        <span class="notice" id="live-notice">Loading live data&hellip;</span>
         <span class="refresh-stamp"><span class="dot"></span>Last refresh: <span id="refresh-time">Aug 7, 2026, 4:15&nbsp;PM ET</span></span>
       </div>
     </div>
@@ -58,23 +58,6 @@
     </div>
     <div class="metric-grid" id="indices-grid">
       <!-- populated from data/indices.json; see script at bottom of page -->
-    </div>
-  </section>
-
-  <!-- Gamma Levels section hidden 2026-10-02: the local MenthorQ pull that
-       feeds data/menthorq-gamma.json was breaking (see
-       MENTHORQ-GAMMA-LEVELS-SETUP.txt CAVEATS) and the scheduled tasks on
-       both machines are paused until it's fixed. Remove style="display:none"
-       below to bring the card back once the pull is reliable again; no other
-       changes needed, loadGamma()/renderGamma() etc. are untouched. -->
-  <section style="display:none">
-    <div class="section-head">
-      <h2>Gamma Levels<span id="gamma-flag"></span></h2>
-      <span class="section-note" id="gamma-note">SPY / IWM / QQQ dealer gamma positioning</span>
-    </div>
-    <div class="gamma-pull-status" id="gamma-pull-status"></div>
-    <div class="gamma-row" id="gamma-row">
-      <!-- populated from data/menthorq-gamma.json + data/overview.json; see script at bottom of page -->
     </div>
   </section>
 
@@ -117,6 +100,7 @@
   <footer>
     <p id="overview-status-note">Checking feed status&hellip;</p>
     <p>For the full detail behind each economic print and the Fed's rate path, see <a href="fed-economic.html">Fed &amp; Economic</a>.</p>
+    <p class="disclaimer">For informational purposes only, not investment advice. Data comes from the third-party sources named on each tab and may be delayed or contain errors.</p>
   </footer>
 </div>
 
@@ -253,15 +237,6 @@
   }
 
   function render(data) {
-    // Gamma alert freshness depends on wall-clock time (the 9:00 PM ET
-    // reset), not just on whether overview.json's content changed -- so
-    // this runs on every poll tick, ahead of the dedupe return below,
-    // even on a tick where nothing actually refreshed. See
-    // isGammaRangeCurrent().
-    latestDayRange = data.gammaDayRange || null;
-    latestDayRangeUpdated = data.updated || null;
-    tryRenderGamma();
-
     if (data.updated === lastRenderedUpdate) return; // nothing new since last poll — skip re-render
     lastRenderedUpdate = data.updated;
 
@@ -303,264 +278,12 @@
       });
   }
 
-  // Gamma Levels -- SPY/IWM/QQQ dealer positioning (Call Resistance, HVL,
-  // Put Support, and their 0DTE counterparts) pulled from MenthorQ each
-  // weekday morning before the open. See scheduled task
-  // ~/.claude/scheduled-tasks/menthorq-gamma-levels (local, requires the
-  // user's Chrome to be signed into dashboard.menthorq.io) -- it writes
-  // data/menthorq-gamma.json, which stays fixed for the rest of the day.
-  //
-  // "Touched" alert: a level counts as touched today if it falls within
-  // [low, high] of that ticker's session range -- gammaDayRange, in
-  // data/overview.json, from the same live Alpaca feed as the Major
-  // Indices cards above (refreshed every 30 min on weekdays). A level
-  // between the day's low and high must have been crossed at some point,
-  // since price moves continuously, so no separate intraday polling/alert
-  // history is needed -- the day's own high/low already proves the touch.
-  var GAMMA_TICKERS = ["SPY", "IWM", "QQQ"];
-
-  var GAMMA_FALLBACK = {
-    updated: "2026-08-07T20:15:00Z",
-    source: "seed",
-    live: false,
-    asof: "2026-08-07",
-    levels: {
-      SPY: { callResistance: 800, putSupport: 765, hvl: 766, callResistance0DTE: 770, putSupport0DTE: 764, hvl0DTE: 765, gammaWall0DTE: 770 },
-      IWM: { callResistance: 305, putSupport: 295, hvl: 300, callResistance0DTE: 300, putSupport0DTE: 298, hvl0DTE: 299, gammaWall0DTE: 300 },
-      QQQ: { callResistance: 730, putSupport: 700, hvl: 710, callResistance0DTE: 716, putSupport0DTE: 705, hvl0DTE: 713, gammaWall0DTE: 716 }
-    }
-  };
-  // Illustrative session range so the "touched" alert has something to
-  // show even when data/overview.json can't be loaded (e.g. file://).
-  // `last` also drives the gamma-regime label (positive/negative vs. that
-  // ticker's HVL) -- picked here to show one of each across the demo.
-  var GAMMA_DAYRANGE_FALLBACK = {
-    SPY: { high: 775.10, low: 761.40, last: 763.20, live: false },
-    IWM: { high: 303.20, low: 296.80, last: 301.50, live: false },
-    QQQ: { high: 718.60, low: 703.10, last: 707.40, live: false }
-  };
-
-  function fmtGammaPrice(v) {
-    return Number.isFinite(v) ? "$" + v.toFixed(2) : "—";
-  }
-
-  function fmtGammaAsOf(dateStr) {
-    var d = new Date(dateStr + "T00:00:00Z");
-    if (isNaN(d)) return dateStr;
-    return d.toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
-  }
-
-  function gammaPos(v, lo, hi) {
-    var pct = (v - lo) / (hi - lo) * 100;
-    return Math.max(0, Math.min(100, pct)).toFixed(2) + "%";
-  }
-
-  function isTouched(level, range, alertsActive) {
-    return !!alertsActive && Number.isFinite(level) && !!range && Number.isFinite(range.high) && Number.isFinite(range.low)
-      && level >= range.low && level <= range.high;
-  }
-
-  function renderGammaCard(ticker, d, asofLabel, live, range, alertsActive) {
-    var core = [d.putSupport, d.hvl, d.callResistance, d.putSupport0DTE, d.hvl0DTE, d.callResistance0DTE, d.gammaWall0DTE]
-      .filter(Number.isFinite);
-    var lo = Math.min.apply(null, core), hi = Math.max.apply(null, core);
-    var pad = (hi - lo) * 0.08 || 1;
-    lo -= pad; hi += pad;
-
-    var touchedCount = core.filter(function (v) { return isTouched(v, range, alertsActive); }).length;
-
-    // HMI convention: gray at rest, blue only once a level is actually
-    // touched -- no per-level "touched" tag repeated at the bottom, the
-    // color change on the value itself (and the header count) is the
-    // whole signal. See .gamma-stat / .gamma-dot / .gamma-tick in
-    // style.css.
-    function stat(label, value) {
-      var touched = isTouched(value, range, alertsActive);
-      return '<span class="gamma-stat' + (touched ? " touched" : "") + '"' +
-        (touched ? ' title="Touched today\'s range (' + fmtGammaPrice(range.low) + '-' + fmtGammaPrice(range.high) + ')"' : '') +
-        '>' + label + ' <strong>' + fmtGammaPrice(value) + '</strong></span>';
-    }
-
-    function dot(value, label) {
-      if (!Number.isFinite(value)) return "";
-      var touched = isTouched(value, range, alertsActive);
-      return '<span class="gamma-dot' + (touched ? " touched" : "") + '" style="left:' + gammaPos(value, lo, hi) + '" title="' + label + ': ' + fmtGammaPrice(value) + (touched ? " (touched today)" : "") + '"></span>';
-    }
-
-    function tick(value, label) {
-      if (!Number.isFinite(value)) return "";
-      var touched = isTouched(value, range, alertsActive);
-      return '<span class="gamma-tick' + (touched ? " touched" : "") + '" style="left:' + gammaPos(value, lo, hi) + '" title="' + label + ': ' + fmtGammaPrice(value) + (touched ? " (touched today)" : "") + '"></span>';
-    }
-
-    var staticFlag = live ? "" : '<span class="placeholder-flag">static</span>';
-    var alertFlag = touchedCount > 0 ? '<span class="alert-flag">⚠ ' + touchedCount + ' touched</span>' : "";
-
-    // Gamma regime: spot (range.last) vs. this ticker's HVL -- above is
-    // positive gamma (dealers dampen moves), below is negative (dealers
-    // amplify moves). Only the negative state gets colored -- that's the
-    // one worth a second look -- positive stays neutral gray.
-    var last = range && Number.isFinite(range.last) ? range.last : null;
-    var regime = (Number.isFinite(last) && Number.isFinite(d.hvl)) ? (last < d.hvl ? "negative" : "positive") : null;
-    var regimeLabel = regime
-      ? '<div class="gamma-regime' + (regime === "negative" ? " negative" : "") + '">' + (regime === "negative" ? "Negative Gamma" : "Positive Gamma") + '</div>'
-      : "";
-
-    var keyPop = '<div class="gamma-key-pop">' +
-        '<div class="key-row"><span class="key-swatch key-dot"></span> EOD level (Call / HVL / Put)</div>' +
-        '<div class="key-row"><span class="key-swatch key-tick"></span> 0DTE level</div>' +
-        '<div class="key-row"><span class="key-swatch key-dot blue"></span> Touched today\'s range</div>' +
-      '</div>';
-
-    return '<div class="gamma-card">' +
-      '<div class="gamma-card-head"><div>' + regimeLabel + '<span class="gamma-ticker">' + ticker + staticFlag + alertFlag + '</span></div><span class="gamma-asof">' + asofLabel + '</span></div>' +
-      '<div class="gamma-range-track">' +
-        tick(d.putSupport0DTE, "Put Support 0DTE") +
-        tick(d.hvl0DTE, "HVL 0DTE") +
-        tick(d.gammaWall0DTE, "Gamma Wall 0DTE") +
-        tick(d.callResistance0DTE, "Call Resistance 0DTE") +
-        dot(d.putSupport, "Put Support") +
-        dot(d.hvl, "HVL") +
-        dot(d.callResistance, "Call Resistance") +
-        keyPop +
-      '</div>' +
-      '<div class="gamma-legend-row">' +
-        stat("Put", d.putSupport) +
-        stat("HVL", d.hvl) +
-        stat("Call", d.callResistance) +
-      '</div>' +
-      '<div class="gamma-substats">' +
-        '<div>0DTE &mdash; ' + stat("Put", d.putSupport0DTE) + ' &middot; ' + stat("HVL", d.hvl0DTE) + ' &middot; ' + stat("Call", d.callResistance0DTE) + ' &middot; ' + stat("Wall", d.gammaWall0DTE) + '</div>' +
-      '</div>' +
-    '</div>';
-  }
-
-  var latestGammaLevels = null;
-  var latestDayRange = null;
-  var latestDayRangeUpdated = null;
-
-  function renderGamma(data) {
-    latestGammaLevels = data;
-    tryRenderGamma();
-  }
-
-  // Today's date in America/New_York as YYYY-MM-DD, to compare against
-  // menthorq-gamma.json's `asof` -- en-CA renders ISO order directly.
-  function todayET() {
-    return new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" });
-  }
-  function isWeekendET() {
-    var day = new Date().toLocaleString("en-US", { timeZone: "America/New_York", weekday: "short" });
-    return day === "Sat" || day === "Sun";
-  }
-  // Same conversion as todayET(), but for an arbitrary ISO timestamp --
-  // used to read the ET calendar date out of menthorq-gamma.json's
-  // `updated` field (when the pull actually ran/committed).
-  function dateET(iso) {
-    var d = new Date(iso);
-    return isNaN(d) ? null : d.toLocaleDateString("en-CA", { timeZone: "America/New_York" });
-  }
-  // The scheduled MenthorQ pull fires weekdays at 8:50 AM ET and normally
-  // finishes in a couple minutes. Give it a comfortable buffer (until
-  // 9:15 AM ET) before treating a same-day `updated` stamp as missing --
-  // otherwise every check before that time would wrongly read as a failed
-  // run just because today's pull hasn't fired yet.
-  function gammaPullOverdueET() {
-    var hm = new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false, hour: "2-digit", minute: "2-digit" });
-    var parts = hm.split(":");
-    var minutesET = (Number(parts[0]) % 24) * 60 + Number(parts[1]);
-    return minutesET >= 9 * 60 + 15;
-  }
-
-  // Gate for the "touched" alert (⚠ N touched / blue dots-stats), not for
-  // the levels or the regime label -- those keep showing on whatever the
-  // last successful pull was. Alerts must be OFF, not just eventually
-  // correct, in two situations:
-  //   1. Right after a new gamma pull lands (~8:50 AM ET) but before the
-  //      first fresh overview.json refresh of the day (~9:00 AM ET) --
-  //      until then data/overview.json's gammaDayRange is still dated
-  //      yesterday, so it must not be used to flag "touched" against
-  //      today's brand-new levels. Caught by the dateET() mismatch below.
-  //   2. Every night at 9:00 PM ET -- there's no post-close overview.json
-  //      refresh to naturally roll gammaDayRange over, so without an
-  //      explicit cutoff a same-day-but-hours-stale range would keep
-  //      lighting up alerts all evening. Caught by the minutesET check.
-  // Together these mean alerts are only ever live during the window they
-  // were actually computed for: today's date, before the nightly reset.
-  function isGammaRangeCurrent(updatedIso) {
-    if (dateET(updatedIso) !== todayET()) return false;
-    var hm = new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false, hour: "2-digit", minute: "2-digit" });
-    var minutesET = Number(hm.split(":")[0]) * 60 + Number(hm.split(":")[1]);
-    return minutesET < 21 * 60; // before 9:00 PM ET
-  }
-
-  function tryRenderGamma() {
-    var data = latestGammaLevels;
-    if (!data) return;
-    var range = latestDayRange || GAMMA_DAYRANGE_FALLBACK;
-    // Fallback/demo range (no live overview.json) always shows alerts, so
-    // the feature is visible offline -- see GAMMA_DAYRANGE_FALLBACK above.
-    // Real range data is gated through isGammaRangeCurrent() so a stale or
-    // yesterday-dated pull can't light up "touched" against fresh levels.
-    var alertsActive = latestDayRange ? isGammaRangeCurrent(latestDayRangeUpdated) : true;
-
-    var flagEl = document.getElementById("gamma-flag");
-    var noteEl = document.getElementById("gamma-note");
-    var pullEl = document.getElementById("gamma-pull-status");
-    var row = document.getElementById("gamma-row");
-    var levels = data.levels || {};
-    var isLive = data.live === true;
-    var asofLabel = data.asof ? fmtGammaAsOf(data.asof) : "—";
-
-    flagEl.innerHTML = isLive ? "" : '<span class="placeholder-flag">static</span>';
-
-    // `asof` is MenthorQ's own EOD print date -- normally the prior
-    // session's close (dealer positioning for today is computed from
-    // yesterday's close), so it lagging "today" by one session is
-    // expected, not a sign anything is broken. Just show it plainly.
-    noteEl.textContent = isLive
-      ? "SPY / IWM / QQQ dealer gamma positioning, as of " + asofLabel
-      : "SPY / IWM / QQQ dealer gamma positioning";
-
-    // Whether *today's* scheduled pull actually ran is a separate
-    // question from `asof` -- answered by `updated` (the pull/commit
-    // timestamp), so a real failed/missed run can be told apart from a
-    // normal one-session-behind EOD print.
-    if (pullEl) {
-      var pulledStamp = data.updated
-        ? new Date(data.updated).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit", timeZone: "America/New_York" }) + " ET"
-        : "unknown";
-      var missedPull = !!data.updated && !isWeekendET() && gammaPullOverdueET() && dateET(data.updated) !== todayET();
-      pullEl.innerHTML = missedPull
-        ? '<span class="gamma-pull-warn">⚠ No successful gamma pull today &mdash; last pull ' + pulledStamp + '. Verify before trading on these levels.</span>'
-        : "Pulled " + pulledStamp;
-    }
-
-    row.innerHTML = GAMMA_TICKERS.map(function (t) {
-      var d = levels[t];
-      return d ? renderGammaCard(t, d, asofLabel, isLive, range[t], alertsActive) : "";
-    }).join("");
-  }
-
-  function loadGamma() {
-    fetch("data/menthorq-gamma.json?t=" + Date.now(), { cache: "no-store" })
-      .then(function (res) { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); })
-      .then(renderGamma)
-      .catch(function (err) {
-        console.warn("Could not load data/menthorq-gamma.json, showing fallback values:", err);
-        renderGamma(GAMMA_FALLBACK);
-      });
-  }
-
   loadIndices();
   loadEconomic();
-  loadGamma();
 
   // Poll for fresh data while the tab is open and visible, so numbers
   // update on their own with no manual refresh at all. Paused while the
-  // tab is hidden/backgrounded to avoid pointless requests. Gamma levels
-  // themselves only change once a day, but the day-range touched check
-  // depends on loadIndices()'s gammaDayRange, so re-render on every poll.
+  // tab is hidden/backgrounded to avoid pointless requests.
   var POLL_MS = 60000;
   var pollTimer = setInterval(function () {
     if (document.visibilityState === "visible") { loadIndices(); loadEconomic(); }
@@ -570,5 +293,6 @@
   });
 })();
 </script>
+<script src="/assets/site-links.js" defer></script>
 </body>
 </html>

@@ -19,8 +19,25 @@
 <meta property="og:title" content="Vending Machine Services — 4A Holdings Company">
 <meta property="og:description" content="Drink, food, and vapor/tobacco-free vending machines for Columbus and Cincinnati area facilities.">
 <meta property="og:url" content="https://4aholdingscompany.com/vending/">
+<meta property="og:image" content="https://4aholdingscompany.com/images/logo-mark.png">
 <meta name="twitter:card" content="summary">
 <link rel="icon" type="image/png" href="/favicon.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "4A Holdings Company — Vending Machine Services",
+  "url": "https://4aholdingscompany.com/vending/",
+  "image": "https://4aholdingscompany.com/images/logo-mark.png",
+  "email": "4aholdingscompany@gmail.com",
+  "telephone": "+1-724-757-2421",
+  "description": "Drink, food, and vapor/tobacco-free vending machine placement, stocking, and service for facilities in the Columbus and Cincinnati, Ohio areas.",
+  "areaServed": [
+    { "@type": "City", "name": "Columbus, OH" },
+    { "@type": "City", "name": "Cincinnati, OH" }
+  ]
+}
+</script>
 <style>
   :root {
     color-scheme: light dark;
@@ -260,6 +277,39 @@
   .contact .who a { color: #e3c08a; text-decoration: none; }
   .contact .who a:hover { text-decoration: underline; }
 
+  /* service areas */
+  .areas { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+  .area { padding: 1.4rem 1.6rem; background: var(--surface); border: 1px solid var(--rule); border-radius: 1.1rem; }
+  .area h3 { margin: 0 0 0.4rem; font-family: var(--serif); font-weight: 400; font-size: 1.25rem; }
+  .area p { margin: 0; color: var(--muted); font-size: 0.93rem; }
+
+  /* request form */
+  .request {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.9rem;
+    max-width: 34rem;
+    margin: 0 auto;
+    text-align: left;
+  }
+  .request label { display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.82rem; color: rgba(255, 255, 255, 0.8); }
+  .request .full { grid-column: 1 / -1; }
+  .request input, .request select, .request textarea {
+    width: 100%;
+    padding: 0.7rem 0.85rem;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 0.6rem;
+    background: rgba(255, 255, 255, 0.07);
+    color: #fff;
+    font: inherit;
+    font-size: 0.95rem;
+  }
+  .request select option { color: #1b1b1a; }
+  .request input:focus, .request select:focus, .request textarea:focus { outline: 2px solid #c79a58; outline-offset: 1px; border-color: transparent; }
+  .request textarea { min-height: 5.5rem; resize: vertical; }
+  .request button { grid-column: 1 / -1; justify-self: center; border: 0; cursor: pointer; font-family: inherit; }
+  .request-status { grid-column: 1 / -1; margin: 0; text-align: center; font-size: 0.88rem; color: #e3c08a; min-height: 1.2em; }
+
   footer { padding: 3rem 0; text-align: center; color: var(--muted); font-size: 0.8rem; letter-spacing: 0.04em; }
   footer a { text-decoration: none; }
   footer a:hover { color: var(--gold); }
@@ -270,6 +320,7 @@
     .steps { grid-template-columns: repeat(2, 1fr); gap: 2rem 1.5rem; }
   }
   @media (max-width: 36rem) {
+    .areas, .request { grid-template-columns: 1fr; }
     .facts { grid-template-columns: 1fr; }
     .fact + .fact { border-left: 0; border-top: 1px solid var(--rule); }
     .steps { grid-template-columns: 1fr; }
@@ -293,7 +344,7 @@
         <h1>Vending Machine Services</h1>
         <p class="lead">Serving the Columbus and Cincinnati, Ohio area. If you manage a facility and are thinking about adding a vending machine, this page explains what is available and how it works. I place, stock, and service the machines, so there is nothing for you to run or maintain.</p>
         <div class="btns">
-          <a class="btn primary" href="mailto:4aholdingscompany@gmail.com?subject=Vending%20machine%20services">Ask about a machine</a>
+          <a class="btn primary" href="#contact">Ask about a machine</a>
           <a class="btn ghost" href="#machines">See machine types</a>
         </div>
       </div>
@@ -356,7 +407,7 @@
   <div class="facts">
     <div class="fact"><b>Columbus &amp; Cincinnati</b><span>Serving facilities across both areas</span></div>
     <div class="fact"><b>Placed, stocked, serviced</b><span>Nothing for you to run or maintain</span></div>
-    <div class="fact"><b>No obligation</b><span>Happy to answer questions first</span></div>
+    <div class="fact"><b>Terms set per site</b><span>Placement terms are negotiated with each facility, with no obligation to ask</span></div>
   </div>
 
   <section id="machines">
@@ -395,7 +446,7 @@
     <p class="sub">From first message to a stocked machine, with ongoing service after.</p>
     <div class="steps">
       <div class="step"><span class="n">01</span><h3>Reach out</h3><p>Tell me about your facility and which kind of machine you are interested in.</p></div>
-      <div class="step"><span class="n">02</span><h3>Site visit</h3><p>We look at the space, foot traffic, and where a machine would fit best.</p></div>
+      <div class="step"><span class="n">02</span><h3>Site visit and terms</h3><p>We look at the space, foot traffic, and where a machine would fit best, then agree on placement terms that work for your facility.</p></div>
       <div class="step"><span class="n">03</span><h3>Placement</h3><p>I install the machine and stock it with products suited to your location.</p></div>
       <div class="step"><span class="n">04</span><h3>Ongoing service</h3><p>Regular restocking and maintenance, with a contact if anything needs attention.</p></div>
     </div>
@@ -411,18 +462,58 @@
     <p class="note" style="margin-top:0">If you have a break room, lobby, or common area with steady traffic, it is worth a conversation.</p>
   </section>
 
-  <div class="contact">
+  <section>
+    <span class="eyebrow">Service area</span>
+    <h2>Columbus and Cincinnati, Ohio</h2>
+    <p class="sub">Machines are placed and serviced across both metro areas and their surrounding communities. Not sure if you are in range? Ask.</p>
+    <div class="areas">
+      <div class="area"><h3>Columbus area</h3><p>Columbus and nearby communities such as Dublin, Westerville, Hilliard, Grove City, Gahanna, and Reynoldsburg.</p></div>
+      <div class="area"><h3>Cincinnati area</h3><p>Cincinnati and nearby communities such as Mason, West Chester, Blue Ash, and Fairfield.</p></div>
+    </div>
+  </section>
+
+  <div class="contact" id="contact">
     <span class="eyebrow">Get in touch</span>
     <h2>Interested in a machine at your facility?</h2>
-    <p>Send a short note with your facility type, location, and the machine type you are considering. There is no obligation, and I am happy to answer questions.</p>
-    <div class="btns">
-      <a class="btn primary" href="mailto:4aholdingscompany@gmail.com?subject=Vending%20machine%20services">Ask about a vending machine</a>
-    </div>
-    <p class="who">Andrew Arndt &middot; <a href="mailto:4aholdingscompany@gmail.com?subject=Vending%20machine%20services">4aholdingscompany@gmail.com</a></p>
+    <p>Tell me a little about your facility. There is no obligation, and I am happy to answer questions.</p>
+    <form class="request" id="request-form" novalidate>
+      <label>Facility type
+        <select name="facility" required>
+          <option value="">Choose one</option>
+          <option>Office</option><option>Apartment community</option><option>Gym</option><option>Shop</option>
+          <option>Warehouse</option><option>School</option><option>Event venue</option><option>Other</option>
+        </select>
+      </label>
+      <label>City
+        <input name="city" type="text" autocomplete="address-level2" placeholder="e.g. Dublin" required>
+      </label>
+      <label>Machine type
+        <select name="machine">
+          <option>Not sure yet</option><option>Drink</option><option>Food</option><option>Vapor / tobacco-free</option>
+        </select>
+      </label>
+      <label>People on site per day (rough)
+        <select name="traffic">
+          <option>Not sure</option><option>Under 25</option><option>25 to 75</option><option>75 to 200</option><option>200+</option>
+        </select>
+      </label>
+      <label>Your name
+        <input name="name" type="text" autocomplete="name" required>
+      </label>
+      <label>Your email or phone
+        <input name="contact" type="text" autocomplete="email" required>
+      </label>
+      <label class="full">Anything else (optional)
+        <textarea name="notes" placeholder="Where the machine would go, hours, questions..."></textarea>
+      </label>
+      <button class="btn primary" type="submit">Send request</button>
+      <p class="request-status" id="request-status" role="status"></p>
+    </form>
+    <p class="who">Prefer to reach out directly? Andrew Arndt &middot; <a href="mailto:4aholdingscompany@gmail.com?subject=Vending%20machine%20services">4aholdingscompany@gmail.com</a> &middot; <a href="tel:+17247572421">724-757-2421</a></p>
   </div>
 </main>
 
-<footer><a href="../">&larr; Back to 4A Holdings Company</a></footer>
+
 
 <script>
   if (matchMedia('(hover: hover)').matches) {
@@ -435,5 +526,55 @@
     });
   }
 </script>
+<script>
+  // Vending request form. With FORM_ENDPOINT set (e.g. a Formspree form URL),
+  // requests post straight to that inbox. Left empty, the form opens the
+  // visitor's email app with the details pre-filled instead.
+  (function () {
+    var FORM_ENDPOINT = "";
+    var EMAIL = "4aholdingscompany@gmail.com";
+    var form = document.getElementById("request-form");
+    var status = document.getElementById("request-status");
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var missing = Array.prototype.filter.call(form.querySelectorAll("[required]"), function (el) { return !el.value.trim(); });
+      if (missing.length) {
+        status.textContent = "Please fill in facility type, city, your name, and how to reach you.";
+        missing[0].focus();
+        return;
+      }
+      var d = new FormData(form);
+      var lines = [
+        "Facility type: " + d.get("facility"),
+        "City: " + d.get("city"),
+        "Machine type: " + d.get("machine"),
+        "People on site per day: " + d.get("traffic"),
+        "Name: " + d.get("name"),
+        "Contact: " + d.get("contact"),
+        "Notes: " + (d.get("notes") || "-")
+      ];
+
+      if (!FORM_ENDPOINT) {
+        location.href = "mailto:" + EMAIL +
+          "?subject=" + encodeURIComponent("Vending request: " + d.get("facility") + " in " + d.get("city")) +
+          "&body=" + encodeURIComponent(lines.join("\n"));
+        status.textContent = "Your email app should open with the details filled in. If it doesn't, email " + EMAIL + ".";
+        return;
+      }
+      status.textContent = "Sending...";
+      fetch(FORM_ENDPOINT, { method: "POST", body: d, headers: { Accept: "application/json" } })
+        .then(function (res) {
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          form.reset();
+          status.textContent = "Thanks, your request was sent. I'll be in touch soon.";
+        })
+        .catch(function () {
+          status.textContent = "That didn't go through. Please email " + EMAIL + " instead.";
+        });
+    });
+  })();
+</script>
+<script src="/assets/site-links.js" defer></script>
 </body>
 </html>

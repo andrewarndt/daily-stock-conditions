@@ -16,8 +16,16 @@ function webPhotoUrl(park, filename) {
   return "assets/web/" + encodeURIComponent(park.folder) + "/" + encodeURIComponent(filename);
 }
 
+// Old slugs from before the park folders were renamed (spelling fixes), so
+// links shared or indexed under the old URLs still open the right gallery.
+const LEGACY_SLUGS = {
+  "kumuna-national-park-sri-lanka": "kumana-national-park-sri-lanka",
+  "smokey-mountains-tenessee": "great-smoky-mountains-national-park-tennessee",
+};
+
 function parkBySlug(parks, slug) {
-  return parks.find((p) => p.slug === slug);
+  const current = LEGACY_SLUGS[slug] || slug;
+  return parks.find((p) => p.slug === current);
 }
 
 function escapeHtml(str) {
@@ -32,7 +40,7 @@ function locationHtml(park) {
 }
 
 // Contact address shown on every page in this section — edit here, not per-page.
-const CONTACT_EMAIL = "vasudeshanjala@gmail.com";
+const CONTACT_EMAIL = "4aholdingscompany@gmail.com";
 
 function contactFooterHtml() {
   return `
@@ -40,7 +48,7 @@ function contactFooterHtml() {
       <div class="contact-card">
         <div>
           <h2>Interested in a print?</h2>
-          <p>Every photo here is from a real trip. If one catches your eye or you'd like to license or order a print, get in touch.</p>
+          <p>Every photo here is from a real trip. Prints start at <strong>$27 for an 8 × 10 in</strong> print, with larger sizes available. If one catches your eye or you'd like to license a photo, get in touch.</p>
         </div>
         <a class="contact-button" href="mailto:${CONTACT_EMAIL}">✉ ${CONTACT_EMAIL}</a>
       </div>
@@ -57,7 +65,7 @@ function randomCoverPhoto(parks) {
 
 // Small print note shown on every wildlife page -- see webPhotoUrl() above.
 function photoQualityNoteHtml() {
-  return `<div class="notice-banner">📷 Photos on this site are watermarked and shown at reduced resolution. Full high-resolution files are available for prints — get in touch.</div>`;
+  return `<div class="notice-banner">📷 Photos on this site are watermarked and shown at reduced resolution. Prints are made from the full high-resolution files, starting at $27 for 8 × 10 in. Get in touch to order.</div>`;
 }
 
 // Updates <meta name="description">, the canonical link, and Open

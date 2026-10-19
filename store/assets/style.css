@@ -1,7 +1,7 @@
 /* Store section styles. Structurally mirrors wildlife/assets/style.css
    (topbar / hero / page / contact-card patterns) so the site feels like one
-   system, but with its own accent palette (forge rust + steel blue) instead
-   of wildlife's green, so each section still reads as its own place. */
+   system. The accent is the 4A brand gold (matching the homepage and vending
+   page), darkened in light mode so white button text stays readable. */
 
 :root {
   color-scheme: light dark;
@@ -10,11 +10,12 @@
   --paper: #f7f2ec;
   --paper-raised: #ffffff;
   --line: #e4d9cb;
-  --accent: #a8431f;
-  --accent-soft: #f5e2d6;
+  --accent: #8a6330;
+  --accent-soft: #f3e9da;
+  --on-accent: #ffffff;
   --steel: #45586b;
   --steel-soft: #e3e9ee;
-  --grain: rgba(168, 67, 31, 0.05);
+  --grain: rgba(138, 99, 48, 0.05);
   --font-display: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
   --font-body: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
@@ -26,8 +27,9 @@
     --paper: #18140f;
     --paper-raised: #211b15;
     --line: #342b22;
-    --accent: #e3804f;
-    --accent-soft: #352218;
+    --accent: #c79a58;
+    --accent-soft: #2e2416;
+    --on-accent: #1a1205;
     --steel: #9db1c4;
     --steel-soft: #1e2a35;
     --grain: rgba(227, 128, 79, 0.06);
@@ -257,11 +259,11 @@ a.buy-button, a.inquire-button {
 }
 a.buy-button {
   background: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
 }
 a.buy-button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 8px 18px rgba(168, 67, 31, 0.3);
+  box-shadow: 0 8px 18px rgba(138, 99, 48, 0.3);
 }
 a.inquire-button {
   background: var(--steel-soft);
@@ -334,7 +336,7 @@ a.contact-button {
 }
 a.contact-button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 8px 18px rgba(168, 67, 31, 0.3);
+  box-shadow: 0 8px 18px rgba(138, 99, 48, 0.3);
 }
 
 .back-link {
@@ -361,3 +363,27 @@ a.contact-button:hover {
 .about-me p:last-child { margin-bottom: 0; }
 .about-me .about-photo { float: left; width: 7rem; height: 7rem; margin: 0.25rem 1.25rem 0.75rem 0; border-radius: 50%; object-fit: cover; object-position: center 30%; border: 3px solid var(--accent); }
 .about-me::after { content: ""; display: block; clear: both; }
+
+/* Price sits right under the product name; the long description folds into
+   a "Details" toggle so the buy buttons aren't pushed far down the card. */
+.product-price {
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin: 0 0 0.35rem;
+}
+.product-more {
+  margin: 0 0 0.6rem;
+  font-size: 0.92rem;
+}
+.product-more summary {
+  cursor: pointer;
+  color: var(--steel);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+.product-more summary:hover { color: var(--accent); }
+.product-more .product-description { margin: 0.5rem 0 0; }
+
+/* Shipping and returns block reuses the About card look. */
+.about-me.policies a { color: var(--accent); }

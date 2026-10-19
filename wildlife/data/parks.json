@@ -14,10 +14,20 @@
       ]
     },
     {
-      "slug": "kumuna-national-park-sri-lanka",
-      "name": "Kumuna National Park",
+      "slug": "great-smoky-mountains-national-park-tennessee",
+      "name": "Great Smoky Mountains National Park",
+      "location": "Tennessee",
+      "folder": "Great Smoky Mountains National Park, Tennessee",
+      "photos": [
+        "IMG_09662.JPG",
+        "unnamed.jpg"
+      ]
+    },
+    {
+      "slug": "kumana-national-park-sri-lanka",
+      "name": "Kumana National Park",
       "location": "Sri Lanka",
-      "folder": "Kumuna National Park, Sri Lanka",
+      "folder": "Kumana National Park, Sri Lanka",
       "photos": [
         "577DCBD7-418E-48E7-8A0B-60B8A4D47CF5.JPG",
         "604051B0-AF38-4774-803A-4C737BE6BC4F.JPG",
@@ -32,16 +42,6 @@
         "IMG_0487.JPG",
         "IMG_6003.JPG",
         "IMG_6554.JPG"
-      ]
-    },
-    {
-      "slug": "smokey-mountains-tenessee",
-      "name": "Smokey Mountains",
-      "location": "Tenessee",
-      "folder": "Smokey Mountains, Tenessee",
-      "photos": [
-        "IMG_09662.JPG",
-        "unnamed.jpg"
       ]
     }
   ]

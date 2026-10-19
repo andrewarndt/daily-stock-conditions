@@ -40,7 +40,7 @@ WEB_JPEG_QUALITY = 82
 # originals in "Wildlife Photos/" are never modified. Changing any of these
 # means re-running with --force so existing web copies get regenerated.
 WATERMARK_TEXT = "© 4A Holdings Company"
-WATERMARK_TILE_OPACITY = 70   # 0-255, for the diagonal tiled text
+WATERMARK_TILE_OPACITY = 30   # 0-255, for the diagonal tiled text
 WATERMARK_CORNER_OPACITY = 200
 WATERMARK_ANGLE = 30
 WATERMARK_FONT_CANDIDATES = [

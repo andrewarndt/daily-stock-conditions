@@ -19,7 +19,7 @@
 <meta property="og:title" content="4A Holdings Company">
 <meta property="og:description" content="A live daily market conditions dashboard, a small store and event items, and vending machine services in the Columbus and Cincinnati area.">
 <meta property="og:url" content="https://4aholdingscompany.com/">
-<meta property="og:image" content="https://4aholdingscompany.com/favicon.png">
+<meta property="og:image" content="https://4aholdingscompany.com/images/logo-mark.png">
 <meta name="twitter:card" content="summary">
 <link rel="icon" type="image/png" href="/favicon.png">
 <style>
@@ -38,6 +38,11 @@
     --lift: rgba(6, 26, 51, 0.28);
     --navy-ui: #061a33;
     --on-navy: #ffffff;
+    --hero-fg: #061a33;
+    --hero-muted: #6d6a62;
+    --hero-top: #fdfcf9;
+    --hero-bottom: #f6f3ec;
+    --hero-glow: rgba(181, 138, 69, 0.13);
     --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
     --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   }
@@ -55,6 +60,11 @@
       --lift: rgba(0, 0, 0, 0.7);
       --navy-ui: #eeece7;
       --on-navy: #121211;
+      --hero-fg: #eeece7;
+      --hero-muted: #a9a59c;
+      --hero-top: #171615;
+      --hero-bottom: #121211;
+      --hero-glow: rgba(199, 154, 88, 0.14);
     }
   }
   * { box-sizing: border-box; }
@@ -73,20 +83,20 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 100vh;
-    min-height: 100svh;
-    padding: 2rem 1.5rem 6rem;
+    min-height: 78vh;
+    min-height: 78svh;
+    padding: 3rem 1.5rem 6rem;
     text-align: center;
-    color: var(--navy);
+    color: var(--hero-fg);
     background:
-      radial-gradient(48rem 30rem at 50% 38%, rgba(181, 138, 69, 0.13), transparent 70%),
-      linear-gradient(to bottom, #fdfcf9, #f6f3ec);
+      radial-gradient(48rem 30rem at 50% 38%, var(--hero-glow), transparent 70%),
+      linear-gradient(to bottom, var(--hero-top), var(--hero-bottom));
     border-bottom: 1px solid var(--rule);
   }
   .hero .mark {
-    width: clamp(11rem, 34vw, 19rem);
+    width: clamp(8rem, 26vw, 14rem);
     height: auto;
-    margin-bottom: 2.25rem;
+    margin-bottom: 1.75rem;
   }
   .hero h1 {
     margin: 0 0 0.9rem;
@@ -104,11 +114,53 @@
   }
   .hero .tagline {
     margin: 0;
-    max-width: 26rem;
-    color: #6d6a62;
+    max-width: 30rem;
+    color: var(--hero-muted);
     font-size: clamp(1rem, 2.4vw, 1.15rem);
     line-height: 1.6;
   }
+  .quick {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem;
+    margin: 2rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .quick a {
+    display: inline-block;
+    padding: 0.6rem 1.15rem;
+    border: 1px solid var(--gold-line);
+    border-radius: 999px;
+    color: var(--hero-fg);
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+  }
+  .quick a:hover, .quick a:focus-visible {
+    background: var(--navy-ui);
+    border-color: var(--navy-ui);
+    color: var(--on-navy);
+  }
+  .about {
+    display: grid;
+    grid-template-columns: 4.5rem 1fr;
+    gap: 1.25rem;
+    align-items: center;
+    padding: 2.5rem 0;
+    border-top: 1px solid var(--rule);
+  }
+  .about img {
+    width: 4.5rem;
+    height: 4.5rem;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--gold-line);
+  }
+  .about p { margin: 0; color: var(--muted); font-size: 0.95rem; line-height: 1.65; }
+  .about b { color: var(--fg); font-weight: 600; }
+  .about a { color: var(--gold); }
   .hero .cue {
     position: absolute;
     bottom: 2rem;
@@ -244,18 +296,12 @@
     color: var(--on-navy);
     transform: translateX(2px);
   }
-  footer {
-    padding-top: 2rem;
-    border-top: 1px solid var(--rule);
-    color: var(--muted);
-    font-size: 0.8rem;
-    letter-spacing: 0.04em;
-  }
   @media (prefers-reduced-motion: reduce) {
     a.card, a.card .go, a.card::before { transition: none; }
     a.card:hover { transform: none; }
     html { scroll-behavior: auto; }
     .hero .cue::after { animation: none; }
+    .quick a { transition: none; }
   }
   @media (max-width: 40rem) {
     .group { grid-template-columns: 1fr; gap: 1.25rem 0; }
@@ -268,7 +314,14 @@
   <img class="mark" src="images/logo-mark.png" alt="4A Holdings logo" width="608" height="493">
   <h1>4A Holdings Company</h1>
   <div class="rule"></div>
-  <p class="tagline">Finance tools, a small store, and local services.</p>
+  <p class="tagline">Vending machine service in Columbus and Cincinnati, small-batch goods and engraved event pieces, wildlife prints, and a daily market dashboard.</p>
+  <ul class="quick">
+    <li><a href="vending/">Vending services</a></li>
+    <li><a href="store/">Shop the store</a></li>
+    <li><a href="wedding-vessels/">Event centerpieces</a></li>
+    <li><a href="wildlife/">Wildlife prints</a></li>
+    <li><a href="market_report/">Market report</a></li>
+  </ul>
   <a class="cue" href="#explore">Explore</a>
 </header>
 
@@ -322,7 +375,11 @@
     </div>
   </section>
 
-  <footer>&copy; 4A Holdings Company</footer>
+  <section class="about">
+    <img src="store/assets/images/andrew-arndt.jpg" alt="Andrew Arndt" width="72" height="72" loading="lazy">
+    <p><b>Run by Andrew Arndt.</b> 4A Holdings Company is a small, owner-operated business. Every machine, listing, and print here is one I handle personally. Questions about anything on the site? Email <a href="mailto:4aholdingscompany@gmail.com">4aholdingscompany@gmail.com</a>.</p>
+  </section>
+
 </main>
 <script>
   if (matchMedia('(hover: hover)').matches) {
@@ -335,5 +392,6 @@
     });
   }
 </script>
+<script src="/assets/site-links.js" defer></script>
 </body>
 </html>
