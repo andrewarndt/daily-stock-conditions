@@ -22,7 +22,7 @@
 <meta property="og:image" content="https://4aholdingscompany.com/images/logo-mark.png">
 <meta name="twitter:card" content="summary">
 <link rel="icon" type="image/png" href="/favicon.png">
-<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/style.css?v=2">
 </head>
 <body>
 
@@ -48,7 +48,7 @@
 <div class="page">
   <div class="page-head">
     <h1>Overview</h1>
-    <p>Where the market stands right now — index levels, the dollar and key commodities, and the latest economic prints, all in one glance.</p>
+    <p>Where the market stands right now — index levels, market breadth, the dollar and key commodities, and the latest economic prints, all in one glance.</p>
   </div>
 
   <section>
@@ -58,6 +58,27 @@
     </div>
     <div class="metric-grid" id="indices-grid">
       <!-- populated from data/indices.json; see script at bottom of page -->
+    </div>
+  </section>
+
+  <section id="breadth-section">
+    <div class="section-head">
+      <h2>Market Breadth</h2>
+      <span class="section-note" id="breadth-asof">Share of S&amp;P 500 stocks above their own moving average</span>
+    </div>
+    <div class="metric-grid" id="breadth-grid">
+      <!-- populated from data/breadth.json; see script at bottom of page -->
+    </div>
+    <div class="chart-card breadth-chart">
+      <h3>Last 12 months</h3>
+      <p class="chart-sub">Percent of point-in-time S&amp;P 500 members trading above their own 20, 50, 100 and 200-day simple moving average. Dashed lines mark 20% and 80%.</p>
+      <div class="legend">
+        <span class="legend-item"><span class="legend-swatch" style="background:var(--blue)"></span>20-day</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:var(--accent)"></span>50-day</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:var(--up)"></span>100-day</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:var(--ink)"></span>200-day</span>
+      </div>
+      <svg id="chart-breadth" width="900" height="260" viewBox="0 0 900 260" role="img" aria-label="S&amp;P 500 breadth, last 12 months"></svg>
     </div>
   </section>
 
@@ -104,6 +125,7 @@
   </footer>
 </div>
 
+<script src="assets/charts.js?v=2"></script>
 
 <script>
 (function () {
@@ -278,18 +300,91 @@
       });
   }
 
+  // Market breadth comes from a local export (export_site_breadth.py in the
+  // Stock Market research tree), not a GitHub Actions feed, so there is no
+  // seed fallback: if the file is missing the section says so instead of
+  // showing made-up numbers.
+  var BREADTH_COLORS = { b20: "--blue", b50: "--accent", b100: "--up", b200: "--ink" };
+  var BREADTH_STALE_DAYS = 5;
+  var lastRenderedBreadth = null;
+
+  function fmtPct(v) { return v == null ? "--" : v.toFixed(1) + "%"; }
+
+  function renderBreadth(data) {
+    if (data.updated === lastRenderedBreadth) return;
+    lastRenderedBreadth = data.updated;
+
+    var grid = document.getElementById("breadth-grid");
+    grid.innerHTML = "";
+    data.readings.forEach(function (r) {
+      var chg = r.prior == null ? null : r.value - r.prior;
+      var cls = chg == null || Math.abs(chg) < 0.05 ? "flat" : chg > 0 ? "up" : "down";
+      var chgText = chg == null ? "--" : (chg >= 0 ? "▲ " : "▼ ") + Math.abs(chg).toFixed(1) + " pts";
+      var card = document.createElement("div");
+      card.className = "metric-card";
+      card.innerHTML =
+        '<div class="metric-name">' + r.name + '</div>' +
+        '<div class="metric-value">' + fmtPct(r.value) + '</div>' +
+        '<div class="metric-change ' + cls + '">' + chgText + '</div>' +
+        '<div class="metric-sub">1 wk ' + fmtPct(r.week) + ' · 1 mo ' + fmtPct(r.month) + '</div>';
+      grid.appendChild(card);
+    });
+
+    var asof = new Date(data.asof + "T00:00:00Z");
+    var asofText = isNaN(asof) ? data.asof : asof.toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
+    var ageDays = (Date.now() - asof.getTime()) / 864e5;
+    document.getElementById("breadth-asof").innerHTML =
+      "Close of " + asofText + " · change vs prior session" +
+      (ageDays > BREADTH_STALE_DAYS ? '<span class="placeholder-flag">not updated since</span>' : "");
+
+    // Drop any session where a reading is missing, so a gap never plots as 0%.
+    var h = data.history;
+    var keep = h.dates.map(function (_, i) {
+      return data.readings.every(function (r) { return h[r.id][i] != null; });
+    });
+    function kept(arr) { return arr.filter(function (_, i) { return keep[i]; }); }
+    MC.lineChart(document.getElementById("chart-breadth"), {
+      xLabels: kept(h.dates).map(function (d) {
+        return new Date(d + "T00:00:00Z").toLocaleString("en-US", { month: "short", day: "numeric", year: "2-digit", timeZone: "UTC" });
+      }),
+      series: data.readings.map(function (r) {
+        return { name: r.window + "d", color: MC.css(BREADTH_COLORS[r.id]), data: kept(h[r.id]) };
+      }),
+      yMin: 0,
+      yMax: 100,
+      yFmt: function (v) { return v.toFixed(0) + "%"; },
+      referenceLine: { value: 80, label: "80%" },
+      referenceLine2: { value: 20, label: "20%" },
+      endLabels: false,
+      maxXLabels: 7
+    });
+  }
+
+  function loadBreadth() {
+    fetch("data/breadth.json?t=" + Date.now(), { cache: "no-store" })
+      .then(function (res) { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); })
+      .then(renderBreadth)
+      .catch(function (err) {
+        console.warn("Could not load data/breadth.json:", err);
+        if (lastRenderedBreadth) return; // keep the last good render on a transient failure
+        document.getElementById("breadth-grid").innerHTML =
+          '<div class="metric-card"><div class="metric-name">Breadth data not available right now</div></div>';
+      });
+  }
+
   loadIndices();
   loadEconomic();
+  loadBreadth();
 
   // Poll for fresh data while the tab is open and visible, so numbers
   // update on their own with no manual refresh at all. Paused while the
   // tab is hidden/backgrounded to avoid pointless requests.
   var POLL_MS = 60000;
   var pollTimer = setInterval(function () {
-    if (document.visibilityState === "visible") { loadIndices(); loadEconomic(); }
+    if (document.visibilityState === "visible") { loadIndices(); loadEconomic(); loadBreadth(); }
   }, POLL_MS);
   document.addEventListener("visibilitychange", function () {
-    if (document.visibilityState === "visible") { loadIndices(); loadEconomic(); }
+    if (document.visibilityState === "visible") { loadIndices(); loadEconomic(); loadBreadth(); }
   });
 })();
 </script>

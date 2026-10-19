@@ -8,6 +8,16 @@
 
   var NS = "http://www.w3.org/2000/svg";
 
+  // Line charts redraw from their last options when the window is resized.
+  var fluidCharts = [];
+  var resizeTimer = null;
+  global.addEventListener("resize", function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () {
+      fluidCharts.forEach(function (svg) { if (svg.isConnected) lineChart(svg, svg._mcOpts); });
+    }, 150);
+  });
+
   function css(name) {
     return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   }
@@ -36,8 +46,18 @@
    */
   function lineChart(svg, opts) {
     svg.innerHTML = "";
-    var width = +svg.getAttribute("width");
+    // Draw at the width the card actually gives the chart (CSS sets the svg
+    // to 100% of its card), so text stays the same size at every screen
+    // width; the width attribute is only the fallback when it isn't laid out.
+    svg.style.display = "block";
+    svg.style.width = "100%";
+    var laidOut = Math.round(svg.getBoundingClientRect().width);
+    var width = laidOut > 0 ? laidOut : +svg.getAttribute("width");
     var height = +svg.getAttribute("height");
+    svg.setAttribute("width", width);
+    svg.setAttribute("viewBox", "0 0 " + width + " " + height);
+    if (!svg._mcOpts) fluidCharts.push(svg);
+    svg._mcOpts = opts;
     var padL = opts.padL || 42, padR = opts.padR || 14, padT = opts.padT || 16, padB = opts.padB || 26;
     var innerW = width - padL - padR, innerH = height - padT - padB;
     var series = opts.series;

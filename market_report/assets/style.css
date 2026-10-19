@@ -68,7 +68,7 @@ a { color: inherit; }
 }
 
 .topbar-inner {
-  max-width: 960px;
+  max-width: 1600px;
   margin: 0 auto;
   padding: 1.1rem 1.5rem 0.9rem;
 }
@@ -166,7 +166,7 @@ a { color: inherit; }
 /* ---------- page shell ---------- */
 
 .page {
-  max-width: 960px;
+  max-width: 1600px;
   margin: 0 auto;
   padding: 2.25rem 1.5rem 5rem;
 }
@@ -334,6 +334,17 @@ h2 {
 .metric-change.down { color: var(--down); background: var(--down-bg); }
 .metric-change.flat { color: var(--ink-soft); background: var(--line); }
 
+.metric-sub {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+  margin-top: 0.45rem;
+}
+
+/* breadth chart sits directly under its card grid */
+.breadth-chart { border-top: none; }
+
 .stress-banner {
   display: flex;
   align-items: baseline;
@@ -465,7 +476,7 @@ td.trend-cell svg { display: block; }
   border: 1px solid var(--line);
 }
 
-.chart-row .chart-card { border: none; }
+.chart-row .chart-card { border: none; min-width: 0; }
 
 @media (max-width: 720px) {
   .chart-row { grid-template-columns: 1fr; }
