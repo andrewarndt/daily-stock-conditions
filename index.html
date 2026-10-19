@@ -25,104 +25,263 @@
 <style>
   :root {
     color-scheme: light dark;
-    --bg: #ffffff;
-    --fg: #1a1a1a;
-    --muted: #5b5b5b;
-    --accent: #1f5eff;
-    --border: #e2e2e2;
+    --bg: #faf9f7;
+    --fg: #1b1b1a;
+    --muted: #77756f;
+    --rule: #e4e1da;
+    --accent: #1b1b1a;
+    --navy: #061a33;
+    --gold: #b08040;
+    --surface: #ffffff;
+    --gold-line: rgba(176, 128, 64, 0.55);
+    --spot: rgba(176, 128, 64, 0.11);
+    --lift: rgba(6, 26, 51, 0.28);
+    --navy-ui: #061a33;
+    --on-navy: #ffffff;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #111214;
-      --fg: #f2f2f2;
-      --muted: #a5a5a5;
-      --accent: #6d93ff;
-      --border: #2a2b2e;
+      --bg: #121211;
+      --fg: #eeece7;
+      --muted: #8f8c85;
+      --rule: #2b2a28;
+      --accent: #eeece7;
+      --surface: #191918;
+      --gold: #c79a58;
+      --gold-line: rgba(199, 154, 88, 0.5);
+      --spot: rgba(199, 154, 88, 0.12);
+      --lift: rgba(0, 0, 0, 0.7);
+      --navy-ui: #eeece7;
+      --on-navy: #121211;
     }
   }
   * { box-sizing: border-box; }
   body {
     margin: 0;
     min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     background: var(--bg);
     color: var(--fg);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    padding: 2rem;
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
   }
-  main {
-    max-width: 44rem;
+  html { scroll-behavior: smooth; }
+  .hero {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    min-height: 100svh;
+    padding: 2rem 1.5rem 6rem;
     text-align: center;
+    color: var(--navy);
+    background:
+      radial-gradient(48rem 30rem at 50% 38%, rgba(181, 138, 69, 0.13), transparent 70%),
+      linear-gradient(to bottom, #fdfcf9, #f6f3ec);
+    border-bottom: 1px solid var(--rule);
   }
-  h1 {
-    font-size: 2rem;
-    margin: 0 0 0.5rem;
+  .hero .mark {
+    width: clamp(11rem, 34vw, 19rem);
+    height: auto;
+    margin-bottom: 2.25rem;
   }
-  p {
-    color: var(--muted);
-    line-height: 1.5;
+  .hero h1 {
+    margin: 0 0 0.9rem;
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(2rem, 6vw, 3.4rem);
+    letter-spacing: 0.02em;
+    line-height: 1.1;
   }
-  .sections {
-    margin-top: 2.5rem;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
-    gap: 1.25rem;
-    text-align: left;
+  .hero .rule {
+    width: 3.5rem;
+    height: 1px;
+    margin: 0 auto 1.1rem;
+    background: var(--gold);
   }
-  a.card {
-    display: block;
-    padding: 1.5rem;
-    border: 1px solid var(--border);
-    border-radius: 0.75rem;
-    color: var(--fg);
+  .hero .tagline {
+    margin: 0;
+    max-width: 26rem;
+    color: #6d6a62;
+    font-size: clamp(1rem, 2.4vw, 1.15rem);
+    line-height: 1.6;
+  }
+  .hero .cue {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--gold);
+    font-size: 0.7rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
     text-decoration: none;
   }
-  a.card:hover {
-    border-color: var(--accent);
+  .hero .cue::after {
+    content: "";
+    width: 1px;
+    height: 2.5rem;
+    background: linear-gradient(var(--gold), transparent);
+    animation: drop 2.2s ease-in-out infinite;
+    transform-origin: top;
   }
-  .group { margin-top: 2.5rem; text-align: left; }
+  @keyframes drop {
+    0% { transform: scaleY(0); }
+    60% { transform: scaleY(1); }
+    100% { transform: scaleY(1); opacity: 0; }
+  }
+  main {
+    max-width: 58rem;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 3rem;
+    scroll-margin-top: 1rem;
+  }
+  .group {
+    display: grid;
+    grid-template-columns: 9rem 1fr;
+    gap: 0 2.5rem;
+    padding: 2.75rem 0;
+    border-top: 1px solid var(--rule);
+  }
   .group-title {
-    font-size: 1.3rem;
-    margin: 0 0 0.9rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--border);
+    margin: 0.5rem 0 0;
+    color: var(--gold);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    line-height: 1.6;
   }
-  .group .sections { margin-top: 0; }
+  .sections {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    gap: 1rem;
+  }
+  a.card {
+    --mx: 50%;
+    --my: 50%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 11.5rem;
+    padding: 1.5rem 1.5rem 1.4rem;
+    overflow: hidden;
+    isolation: isolate;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 1.1rem;
+    color: var(--fg);
+    text-decoration: none;
+    transition: transform 0.35s cubic-bezier(.2,.7,.2,1), border-color 0.3s ease, box-shadow 0.35s ease;
+  }
+  /* soft gold spotlight that follows the cursor */
+  a.card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: radial-gradient(18rem circle at var(--mx) var(--my), var(--spot), transparent 65%);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+  }
+  a.card:hover, a.card:focus-visible {
+    transform: translateY(-3px);
+    border-color: var(--gold-line);
+    box-shadow: 0 18px 40px -18px var(--lift);
+  }
+  a.card:hover::before, a.card:focus-visible::before { opacity: 1; }
+  a.card:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
   a.card .eyebrow {
     display: block;
-    font-size: 0.75rem;
-    letter-spacing: 0.06em;
+    margin-bottom: 0.9rem;
+    color: var(--gold);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 0.4rem;
   }
   a.card h3 {
-    margin: 0 0 0.4rem;
-    font-size: 1.15rem;
+    margin: 0 0 0.55rem;
+    padding-right: 2.5rem;
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 1.4rem;
+    line-height: 1.22;
+    letter-spacing: -0.01em;
   }
   a.card p {
-    margin: 0;
-    font-size: 0.9rem;
+    margin: 0 0 1.5rem;
+    color: var(--muted);
+    font-size: 0.92rem;
+    line-height: 1.6;
   }
-  a.card:hover h3 {
-    color: var(--accent);
+  /* round arrow button, fills on hover */
+  a.card .go {
+    position: absolute;
+    right: 1.25rem;
+    bottom: 1.25rem;
+    display: grid;
+    place-items: center;
+    width: 2.1rem;
+    height: 2.1rem;
+    border: 1px solid var(--rule);
+    border-radius: 50%;
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1;
+    transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+  }
+  a.card:hover .go, a.card:focus-visible .go {
+    background: var(--navy-ui);
+    border-color: var(--navy-ui);
+    color: var(--on-navy);
+    transform: translateX(2px);
+  }
+  footer {
+    padding-top: 2rem;
+    border-top: 1px solid var(--rule);
+    color: var(--muted);
+    font-size: 0.8rem;
+    letter-spacing: 0.04em;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    a.card, a.card .go, a.card::before { transition: none; }
+    a.card:hover { transform: none; }
+    html { scroll-behavior: auto; }
+    .hero .cue::after { animation: none; }
+  }
+  @media (max-width: 40rem) {
+    .group { grid-template-columns: 1fr; gap: 1.25rem 0; }
+    .group-title { margin-top: 0; }
   }
 </style>
 </head>
 <body>
-<main>
+<header class="hero">
+  <img class="mark" src="images/logo-mark.png" alt="4A Holdings logo" width="608" height="493">
   <h1>4A Holdings Company</h1>
-  <p>Finance tools, a small store, and local services.</p>
+  <div class="rule"></div>
+  <p class="tagline">Finance tools, a small store, and local services.</p>
+  <a class="cue" href="#explore">Explore</a>
+</header>
+
+<main id="explore">
 
   <section class="group">
-    <h2 class="group-title">Financial Services</h2>
+    <h2 class="group-title">Services and Equipment</h2>
     <div class="sections">
-      <a class="card" href="market_report/">
-        <span class="eyebrow">Dashboard</span>
-        <h3>Market Report →</h3>
-        <p>Daily market overview, sentiment, and economic data.</p>
+      <a class="card" href="vending/">
+        <span class="eyebrow">Services</span>
+        <h3>Vending Machine Services</h3>
+        <p>Drink, food, and vapor/tobacco-free vending for Columbus and Cincinnati area facilities.</p>
+        <span class="go" aria-hidden="true">&rarr;</span>
       </a>
     </div>
   </section>
@@ -130,35 +289,51 @@
   <section class="group">
     <h2 class="group-title">Store and Event Items</h2>
     <div class="sections">
-      <a class="card" href="store/">
-        <span class="eyebrow">Store</span>
-        <h3>Store →</h3>
-        <p>Small store: Damascus knives, pocket knives, reed diffusers, and more.</p>
-      </a>
       <a class="card" href="wildlife/">
         <span class="eyebrow">Photography</span>
-        <h3>Wildlife Photography →</h3>
+        <h3>Wildlife Photography</h3>
         <p>Galleries from national parks, organized by location.</p>
+        <span class="go" aria-hidden="true">&rarr;</span>
       </a>
       <a class="card" href="wedding-vessels/">
-        <span class="eyebrow">Interactive Event Decor</span>
-        <h3>Interactive Engravable Event Center Pieces →</h3>
+        <span class="eyebrow">Event Decor</span>
+        <h3>Interactive Engravable Event Center Pieces</h3>
         <p>Engraved reed diffusers with a QR guest experience, for boutiques and planners.</p>
+        <span class="go" aria-hidden="true">&rarr;</span>
+      </a>
+      <a class="card" href="store/">
+        <span class="eyebrow">Store</span>
+        <h3>Store</h3>
+        <p>Small store: Damascus knives, pocket knives, reed diffusers, and more.</p>
+        <span class="go" aria-hidden="true">&rarr;</span>
       </a>
     </div>
   </section>
 
   <section class="group">
-    <h2 class="group-title">Services and Equipment</h2>
+    <h2 class="group-title">Financial Services</h2>
     <div class="sections">
-      <a class="card" href="vending/">
-        <span class="eyebrow">Services</span>
-        <h3>Vending Machine Services →</h3>
-        <p>Drink, food, and vapor/tobacco-free vending for Columbus and Cincinnati area facilities.</p>
+      <a class="card" href="market_report/">
+        <span class="eyebrow">Dashboard</span>
+        <h3>Market Report</h3>
+        <p>Daily market overview, sentiment, and economic data.</p>
+        <span class="go" aria-hidden="true">&rarr;</span>
       </a>
     </div>
   </section>
 
+  <footer>&copy; 4A Holdings Company</footer>
 </main>
+<script>
+  if (matchMedia('(hover: hover)').matches) {
+    document.querySelectorAll('a.card').forEach(function (c) {
+      c.addEventListener('pointermove', function (e) {
+        var r = c.getBoundingClientRect();
+        c.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+        c.style.setProperty('--my', (e.clientY - r.top) + 'px');
+      });
+    });
+  }
+</script>
 </body>
 </html>

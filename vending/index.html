@@ -24,75 +24,416 @@
 <style>
   :root {
     color-scheme: light dark;
-    --bg: #ffffff;
-    --fg: #1a1a1a;
-    --muted: #5b5b5b;
-    --accent: #1f5eff;
-    --border: #e2e2e2;
+    --bg: #faf9f7;
+    --surface: #ffffff;
+    --fg: #1b1b1a;
+    --muted: #77756f;
+    --rule: #e4e1da;
+    --navy: #061a33;
+    --gold: #b08040;
+    --gold-line: rgba(176, 128, 64, 0.55);
+    --spot: rgba(176, 128, 64, 0.11);
+    --lift: rgba(6, 26, 51, 0.28);
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #111214;
-      --fg: #f2f2f2;
-      --muted: #a5a5a5;
-      --accent: #6d93ff;
-      --border: #2a2b2e;
+      --bg: #121211;
+      --surface: #191918;
+      --fg: #eeece7;
+      --muted: #8f8c85;
+      --rule: #2b2a28;
+      --gold: #c79a58;
+      --gold-line: rgba(199, 154, 88, 0.5);
+      --spot: rgba(199, 154, 88, 0.12);
+      --lift: rgba(0, 0, 0, 0.7);
     }
   }
   * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
   body {
     margin: 0;
     background: var(--bg);
     color: var(--fg);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: var(--sans);
     line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
   }
-  .topbar { padding: 1rem 1.5rem; }
-  .topbar a { color: var(--muted); text-decoration: none; font-size: 0.85rem; }
-  .topbar a:hover { color: var(--accent); }
-  main { max-width: 52rem; margin: 0 auto; padding: 1rem 1.5rem 4rem; }
-  .eyebrow { font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
-  h1 { font-size: 2.2rem; margin: 0.3rem 0 0.75rem; }
-  h2 { font-size: 1.3rem; margin: 2.5rem 0 0.75rem; }
-  p { color: var(--muted); }
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 1.25rem; }
-  .box { border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.25rem; }
-  .box h3 { margin: 0 0 0.4rem; font-size: 1.05rem; }
-  .box p { margin: 0; font-size: 0.92rem; }
-  a { color: var(--accent); }
-  .cta { display: inline-block; margin-top: 0.5rem; padding: 0.7rem 1.2rem; border-radius: 0.5rem; background: var(--accent); color: var(--bg); text-decoration: none; font-weight: 600; }
+  a { color: inherit; }
+  .wrap { max-width: 62rem; margin: 0 auto; padding: 0 1.5rem; }
+  .eyebrow {
+    display: block;
+    color: var(--gold);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  /* hero */
+  .hero {
+    position: relative;
+    overflow: hidden;
+    color: #fff;
+    background:
+      radial-gradient(40rem 24rem at 80% 40%, rgba(176, 128, 64, 0.22), transparent 70%),
+      linear-gradient(135deg, #04122a, #0a2548);
+  }
+  .topbar { padding: 1.25rem 0; }
+  .topbar a {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: color 0.2s ease;
+  }
+  .topbar a:hover { color: #fff; }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    align-items: center;
+    gap: 2rem;
+    padding: 2.5rem 0 5rem;
+  }
+  .hero h1 {
+    margin: 0.9rem 0 1.1rem;
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(2.4rem, 6vw, 4rem);
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+  }
+  .hero .lead {
+    max-width: 32rem;
+    margin: 0 0 2rem;
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 1.08rem;
+    line-height: 1.7;
+  }
+  .btns { display: flex; flex-wrap: wrap; gap: 0.8rem; }
+  .btn {
+    display: inline-block;
+    padding: 0.85rem 1.5rem;
+    border-radius: 999px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease;
+  }
+  .btn.primary { background: #c79a58; color: #1a1205; }
+  .btn.primary:hover { background: #d8ad6d; transform: translateY(-2px); }
+  .btn.ghost { border: 1px solid rgba(255, 255, 255, 0.35); color: #fff; }
+  .btn.ghost:hover { border-color: #fff; }
+  .machine { width: 100%; max-width: 20rem; margin: 0 auto; height: auto; filter: drop-shadow(0 30px 40px rgba(0, 0, 0, 0.45)); }
+
+  /* facts strip */
+  .facts {
+    position: relative;
+    margin-top: -2.2rem;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 1.1rem;
+    box-shadow: 0 18px 40px -22px var(--lift);
+  }
+  .fact { padding: 1.4rem 1.6rem; }
+  .fact + .fact { border-left: 1px solid var(--rule); }
+  .fact b {
+    display: block;
+    margin-bottom: 0.15rem;
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 1.25rem;
+  }
+  .fact span { color: var(--muted); font-size: 0.88rem; }
+
+  /* sections */
+  section { padding: 4.5rem 0 0; }
+  section h2 {
+    margin: 0.6rem 0 0.6rem;
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(1.7rem, 4vw, 2.3rem);
+    letter-spacing: -0.015em;
+    line-height: 1.15;
+  }
+  .sub { max-width: 34rem; margin: 0 0 2.25rem; color: var(--muted); }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1rem; }
+  .card {
+    --mx: 50%;
+    --my: 50%;
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    padding: 1.6rem;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 1.1rem;
+    transition: transform 0.35s cubic-bezier(.2,.7,.2,1), border-color 0.3s ease, box-shadow 0.35s ease;
+  }
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: radial-gradient(18rem circle at var(--mx) var(--my), var(--spot), transparent 65%);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+  }
+  .card:hover { transform: translateY(-3px); border-color: var(--gold-line); box-shadow: 0 18px 40px -18px var(--lift); }
+  .card:hover::before { opacity: 1; }
+  .icon {
+    display: grid;
+    place-items: center;
+    width: 3.1rem;
+    height: 3.1rem;
+    margin-bottom: 1.2rem;
+    border: 1px solid var(--gold-line);
+    border-radius: 50%;
+    color: var(--gold);
+  }
+  .icon svg { width: 1.5rem; height: 1.5rem; }
+  .card h3 {
+    margin: 0 0 0.5rem;
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 1.35rem;
+    line-height: 1.2;
+  }
+  .card p { margin: 0; color: var(--muted); font-size: 0.93rem; }
+  .note { margin: 1.5rem 0 0; color: var(--muted); font-size: 0.93rem; }
+
+  /* steps */
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; counter-reset: s; }
+  .step { position: relative; padding-top: 1.6rem; border-top: 1px solid var(--rule); }
+  .step::before {
+    content: "";
+    position: absolute;
+    top: -0.3rem;
+    left: 0;
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 0 0 4px var(--bg);
+  }
+  .step .n {
+    display: block;
+    margin-bottom: 0.6rem;
+    font-family: var(--serif);
+    font-size: 2.4rem;
+    line-height: 1;
+    color: var(--gold);
+    opacity: 0.85;
+  }
+  .step h3 { margin: 0 0 0.4rem; font-family: var(--serif); font-weight: 400; font-size: 1.2rem; }
+  .step p { margin: 0; color: var(--muted); font-size: 0.92rem; }
+
+  /* who */
+  .chips { display: flex; flex-wrap: wrap; gap: 0.6rem; margin: 0 0 1.5rem; padding: 0; list-style: none; }
+  .chips li {
+    padding: 0.55rem 1.05rem;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    background: var(--surface);
+    font-size: 0.92rem;
+    transition: border-color 0.25s ease, color 0.25s ease;
+  }
+  .chips li:hover { border-color: var(--gold-line); color: var(--gold); }
+
+  /* contact */
+  .contact {
+    margin-top: 5rem;
+    padding: 3.25rem 2rem;
+    text-align: center;
+    color: #fff;
+    border-radius: 1.4rem;
+    background:
+      radial-gradient(30rem 16rem at 50% 0%, rgba(176, 128, 64, 0.22), transparent 70%),
+      linear-gradient(135deg, #04122a, #0a2548);
+  }
+  .contact h2 { margin-top: 0.7rem; }
+  .contact p { max-width: 30rem; margin: 0 auto 1.75rem; color: rgba(255, 255, 255, 0.78); }
+  .contact .btns { justify-content: center; }
+  .contact .who { margin: 1.5rem 0 0; font-size: 0.88rem; color: rgba(255, 255, 255, 0.65); }
+  .contact .who a { color: #e3c08a; text-decoration: none; }
+  .contact .who a:hover { text-decoration: underline; }
+
+  footer { padding: 3rem 0; text-align: center; color: var(--muted); font-size: 0.8rem; letter-spacing: 0.04em; }
+  footer a { text-decoration: none; }
+  footer a:hover { color: var(--gold); }
+
+  @media (max-width: 52rem) {
+    .hero-grid { grid-template-columns: 1fr; padding-bottom: 4rem; }
+    .machine { max-width: 14rem; order: -1; }
+    .steps { grid-template-columns: repeat(2, 1fr); gap: 2rem 1.5rem; }
+  }
+  @media (max-width: 36rem) {
+    .facts { grid-template-columns: 1fr; }
+    .fact + .fact { border-left: 0; border-top: 1px solid var(--rule); }
+    .steps { grid-template-columns: 1fr; }
+    .contact { padding: 2.5rem 1.25rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .card, .card::before, .btn { transition: none; }
+    .card:hover, .btn.primary:hover { transform: none; }
+  }
 </style>
 </head>
 <body>
-<div class="topbar"><a href="../">&larr; 4A Holdings Company</a></div>
-<main>
-  <span class="eyebrow">Services and Equipment</span>
-  <h1>Vending Machine Services</h1>
-  <p>Serving the Columbus and Cincinnati, Ohio area. If you manage a facility and are thinking about adding a vending machine, this page explains what is available and how it works. I place, stock, and service the machines, so there is nothing for you to run or maintain.</p>
 
-  <h2>Machine types</h2>
-  <div class="grid">
-    <div class="box"><h3>Drink</h3><p>Cold beverage machines with water, soda, juice, sports drinks, and energy drinks.</p></div>
-    <div class="box"><h3>Food</h3><p>Snack and food machines with chips, candy, granola bars, and other grab-and-go items.</p></div>
-    <div class="box"><h3>Vapor / Tobacco-Free</h3><p>Machines for vapor and tobacco-free products, for locations where that fits the clientele.</p></div>
+<header class="hero">
+  <div class="wrap">
+    <div class="topbar"><a href="../">&larr; 4A Holdings Company</a></div>
+    <div class="hero-grid">
+      <div>
+        <span class="eyebrow">Services and Equipment</span>
+        <h1>Vending Machine Services</h1>
+        <p class="lead">Serving the Columbus and Cincinnati, Ohio area. If you manage a facility and are thinking about adding a vending machine, this page explains what is available and how it works. I place, stock, and service the machines, so there is nothing for you to run or maintain.</p>
+        <div class="btns">
+          <a class="btn primary" href="mailto:4aholdingscompany@gmail.com?subject=Vending%20machine%20services">Ask about a machine</a>
+          <a class="btn ghost" href="#machines">See machine types</a>
+        </div>
+      </div>
+
+      <!-- Illustration. To use a real photo instead, replace this <svg> with:
+           <img class="machine" src="photos/machine.jpg" alt="Vending machine installed at a client facility"> -->
+      <svg class="machine" viewBox="0 0 240 360" role="img" aria-label="Illustration of a vending machine">
+        <defs>
+          <linearGradient id="body" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#16345c"/><stop offset="1" stop-color="#0a1f3d"/>
+          </linearGradient>
+          <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#e9f0f7" stop-opacity=".95"/><stop offset="1" stop-color="#b9c9db" stop-opacity=".9"/>
+          </linearGradient>
+          <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#e8c987"/><stop offset="1" stop-color="#b08040"/>
+          </linearGradient>
+        </defs>
+        <rect x="14" y="8" width="212" height="338" rx="14" fill="url(#body)" stroke="#c79a58" stroke-opacity=".6"/>
+        <rect x="26" y="20" width="188" height="26" rx="6" fill="none" stroke="url(#gold)" stroke-width="1.5"/>
+        <text x="120" y="38" text-anchor="middle" font-family="Georgia, serif" font-size="15" letter-spacing="4" fill="url(#gold)">4A</text>
+        <rect x="26" y="58" width="140" height="228" rx="8" fill="url(#glass)"/>
+        <!-- shelves -->
+        <g stroke="#7d8fa6" stroke-width="2" opacity=".7">
+          <line x1="30" y1="112" x2="162" y2="112"/><line x1="30" y1="166" x2="162" y2="166"/>
+          <line x1="30" y1="220" x2="162" y2="220"/><line x1="30" y1="274" x2="162" y2="274"/>
+        </g>
+        <!-- drinks -->
+        <g fill="#2b6cb0"><rect x="36" y="76" width="14" height="34" rx="4"/><rect x="56" y="76" width="14" height="34" rx="4"/><rect x="76" y="76" width="14" height="34" rx="4"/></g>
+        <g fill="#c0392b"><rect x="100" y="76" width="14" height="34" rx="4"/><rect x="120" y="76" width="14" height="34" rx="4"/><rect x="140" y="76" width="14" height="34" rx="4"/></g>
+        <!-- snacks -->
+        <g fill="#d99a2b"><rect x="36" y="134" width="22" height="30" rx="3"/><rect x="64" y="134" width="22" height="30" rx="3"/></g>
+        <g fill="#3a8f5c"><rect x="94" y="134" width="22" height="30" rx="3"/><rect x="122" y="134" width="22" height="30" rx="3"/></g>
+        <g fill="#8a5a9a"><rect x="36" y="188" width="22" height="30" rx="3"/><rect x="64" y="188" width="22" height="30" rx="3"/></g>
+        <g fill="#c77d3a"><rect x="94" y="188" width="22" height="30" rx="3"/><rect x="122" y="188" width="22" height="30" rx="3"/></g>
+        <g fill="#2f9aa8"><rect x="36" y="242" width="22" height="30" rx="3"/><rect x="64" y="242" width="22" height="30" rx="3"/><rect x="94" y="242" width="22" height="30" rx="3"/><rect x="122" y="242" width="22" height="30" rx="3"/></g>
+        <!-- glass shine -->
+        <path d="M30 62 L96 62 L30 160 Z" fill="#fff" opacity=".18"/>
+        <!-- keypad panel -->
+        <rect x="174" y="58" width="40" height="92" rx="6" fill="#071a33" stroke="#c79a58" stroke-opacity=".5"/>
+        <rect x="180" y="64" width="28" height="14" rx="2" fill="#0f3b2d"/>
+        <g fill="#c79a58" opacity=".85">
+          <circle cx="184" cy="92" r="3"/><circle cx="194" cy="92" r="3"/><circle cx="204" cy="92" r="3"/>
+          <circle cx="184" cy="104" r="3"/><circle cx="194" cy="104" r="3"/><circle cx="204" cy="104" r="3"/>
+          <circle cx="184" cy="116" r="3"/><circle cx="194" cy="116" r="3"/><circle cx="204" cy="116" r="3"/>
+        </g>
+        <rect x="180" y="128" width="28" height="10" rx="2" fill="url(#gold)"/>
+        <!-- card slot + coin -->
+        <rect x="178" y="170" width="32" height="6" rx="3" fill="#050f20"/>
+        <circle cx="194" cy="196" r="9" fill="none" stroke="url(#gold)" stroke-width="2"/>
+        <!-- pickup -->
+        <rect x="30" y="298" width="132" height="34" rx="6" fill="#050f20" stroke="#c79a58" stroke-opacity=".4"/>
+        <rect x="44" y="310" width="104" height="4" rx="2" fill="#c79a58" opacity=".35"/>
+      </svg>
+    </div>
   </div>
-  <p>Product selection can be adjusted to suit the people who use your facility.</p>
+</header>
 
-  <h2>How it works</h2>
-  <div class="grid">
-    <div class="box"><h3>1. Reach out</h3><p>Tell me about your facility and which kind of machine you are interested in.</p></div>
-    <div class="box"><h3>2. Site visit</h3><p>We look at the space, foot traffic, and where a machine would fit best.</p></div>
-    <div class="box"><h3>3. Placement</h3><p>I install the machine and stock it with products suited to your location.</p></div>
-    <div class="box"><h3>4. Ongoing service</h3><p>Regular restocking and maintenance, with a contact if anything needs attention.</p></div>
+<main class="wrap">
+  <div class="facts">
+    <div class="fact"><b>Columbus &amp; Cincinnati</b><span>Serving facilities across both areas</span></div>
+    <div class="fact"><b>Placed, stocked, serviced</b><span>Nothing for you to run or maintain</span></div>
+    <div class="fact"><b>No obligation</b><span>Happy to answer questions first</span></div>
   </div>
 
-  <h2>Who it is for</h2>
-  <p>Offices, apartment communities, gyms, shops, warehouses, schools, and event venues in the Columbus and Cincinnati areas. If you have a break room, lobby, or common area with steady traffic, it is worth a conversation.</p>
+  <section id="machines">
+    <span class="eyebrow">Machine types</span>
+    <h2>The right machine for your space</h2>
+    <p class="sub">Three kinds of machines, each stocked to suit the people who use your facility.</p>
+    <div class="cards">
+      <div class="card">
+        <div class="icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2h4M10.5 2v3L9 8v12a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2V8l-1.5-3V2M9 12h6"/></svg>
+        </div>
+        <h3>Drink</h3>
+        <p>Cold beverage machines with water, soda, juice, sports drinks, and energy drinks.</p>
+      </div>
+      <div class="card">
+        <div class="icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h14l-1 16H6L5 4zM5 4c1 1.2 2 1.2 3.5 0s2.5-1.2 3.5 0 2.5 1.2 3.5 0 2.5-1.2 3.5 0M9 11h6M9 15h6"/></svg>
+        </div>
+        <h3>Food</h3>
+        <p>Snack and food machines with chips, candy, granola bars, and other grab-and-go items.</p>
+      </div>
+      <div class="card">
+        <div class="icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2.5" width="10" height="19" rx="3"/><path d="M10 6.5h4M10 17.5h4"/></svg>
+        </div>
+        <h3>Vapor / Tobacco-Free</h3>
+        <p>Machines for vapor and tobacco-free products, for locations where that fits the clientele.</p>
+      </div>
+    </div>
+    <p class="note">Product selection can be adjusted to suit the people who use your facility.</p>
+  </section>
 
-  <h2>Interested in a machine at your facility?</h2>
-  <p>Send a short note with your facility type, location, and the machine type you are considering. There is no obligation, and I am happy to answer questions.</p>
-  <p>Andrew Arndt<br><a href="mailto:4aholdingscompany@gmail.com?subject=Vending%20machine%20services">4aholdingscompany@gmail.com</a></p>
-  <a class="cta" href="mailto:4aholdingscompany@gmail.com?subject=Vending%20machine%20services">Ask about a vending machine</a>
+  <section>
+    <span class="eyebrow">How it works</span>
+    <h2>Four simple steps</h2>
+    <p class="sub">From first message to a stocked machine, with ongoing service after.</p>
+    <div class="steps">
+      <div class="step"><span class="n">01</span><h3>Reach out</h3><p>Tell me about your facility and which kind of machine you are interested in.</p></div>
+      <div class="step"><span class="n">02</span><h3>Site visit</h3><p>We look at the space, foot traffic, and where a machine would fit best.</p></div>
+      <div class="step"><span class="n">03</span><h3>Placement</h3><p>I install the machine and stock it with products suited to your location.</p></div>
+      <div class="step"><span class="n">04</span><h3>Ongoing service</h3><p>Regular restocking and maintenance, with a contact if anything needs attention.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <span class="eyebrow">Who it is for</span>
+    <h2>Places with steady foot traffic</h2>
+    <p class="sub">Offices, apartment communities, gyms, shops, warehouses, schools, and event venues in the Columbus and Cincinnati areas.</p>
+    <ul class="chips">
+      <li>Offices</li><li>Apartment communities</li><li>Gyms</li><li>Shops</li><li>Warehouses</li><li>Schools</li><li>Event venues</li>
+    </ul>
+    <p class="note" style="margin-top:0">If you have a break room, lobby, or common area with steady traffic, it is worth a conversation.</p>
+  </section>
+
+  <div class="contact">
+    <span class="eyebrow">Get in touch</span>
+    <h2>Interested in a machine at your facility?</h2>
+    <p>Send a short note with your facility type, location, and the machine type you are considering. There is no obligation, and I am happy to answer questions.</p>
+    <div class="btns">
+      <a class="btn primary" href="mailto:4aholdingscompany@gmail.com?subject=Vending%20machine%20services">Ask about a vending machine</a>
+    </div>
+    <p class="who">Andrew Arndt &middot; <a href="mailto:4aholdingscompany@gmail.com?subject=Vending%20machine%20services">4aholdingscompany@gmail.com</a></p>
+  </div>
 </main>
+
+<footer><a href="../">&larr; Back to 4A Holdings Company</a></footer>
+
+<script>
+  if (matchMedia('(hover: hover)').matches) {
+    document.querySelectorAll('.card').forEach(function (c) {
+      c.addEventListener('pointermove', function (e) {
+        var r = c.getBoundingClientRect();
+        c.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+        c.style.setProperty('--my', (e.clientY - r.top) + 'px');
+      });
+    });
+  }
+</script>
 </body>
 </html>
