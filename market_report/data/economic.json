@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-19T19:43:11.914Z",
+  "updated": "2026-10-20T18:23:47.861Z",
   "source": "live",
   "indicators": [
     {
@@ -120,17 +120,17 @@
       "id": "housing_starts",
       "name": "Housing Starts, Year-over-Year",
       "desc": "US Census Bureau",
-      "value": -1.23935,
-      "prior": -8.58939,
-      "asof": "2026-08-01",
+      "value": -7.42987,
+      "prior": -0.23238,
+      "asof": "2026-09-01",
       "unit": "%",
       "trend": [
-        13.07578,
         1,
         -8.30101,
         4.35098,
-        -8.58939,
-        -1.23935
+        -4.39944,
+        -0.23238,
+        -7.42987
       ],
       "live": true,
       "nextRelease": "2026-10-20"
