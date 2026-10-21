@@ -1,25 +1,25 @@
 {
-  "updated": "2026-10-20T00:29:46.103Z",
+  "updated": "2026-10-21T00:00:38.230Z",
   "source": "live",
   "series": [
     {
       "id": "1mo",
       "name": "1-Month",
       "label": "1M",
-      "value": 4.12,
-      "prior": 4.17,
-      "monthAgo": 3.96,
-      "asof": "2026-10-16",
+      "value": 4.11,
+      "prior": 4.12,
+      "monthAgo": 3.97,
+      "asof": "2026-10-19",
       "live": true
     },
     {
       "id": "3mo",
       "name": "3-Month",
       "label": "3M",
-      "value": 4.26,
-      "prior": 4.28,
+      "value": 4.27,
+      "prior": 4.26,
       "monthAgo": 4.14,
-      "asof": "2026-10-16",
+      "asof": "2026-10-19",
       "live": true
     },
     {
@@ -30,46 +30,46 @@
       "prior": 4.35,
       "monthAgo": 4.22,
       "asof": "2026-10-16",
-      "live": true
+      "live": false
     },
     {
       "id": "1y",
       "name": "1-Year",
       "label": "1Y",
-      "value": 4.46,
-      "prior": 4.49,
-      "monthAgo": 4.45,
-      "asof": "2026-10-16",
+      "value": 4.5,
+      "prior": 4.46,
+      "monthAgo": 4.44,
+      "asof": "2026-10-19",
       "live": true
     },
     {
       "id": "2y",
       "name": "2-Year",
       "label": "2Y",
-      "value": 4.74,
-      "prior": 4.77,
-      "monthAgo": 4.74,
-      "asof": "2026-10-16",
+      "value": 4.77,
+      "prior": 4.74,
+      "monthAgo": 4.76,
+      "asof": "2026-10-19",
       "live": true
     },
     {
       "id": "5y",
       "name": "5-Year",
       "label": "5Y",
-      "value": 4.89,
-      "prior": 4.91,
+      "value": 4.94,
+      "prior": 4.89,
       "monthAgo": 4.86,
-      "asof": "2026-10-16",
+      "asof": "2026-10-19",
       "live": true
     },
     {
       "id": "10y",
       "name": "10-Year",
       "label": "10Y",
-      "value": 5.09,
-      "prior": 5.1,
+      "value": 5.15,
+      "prior": 5.09,
       "monthAgo": 5.01,
-      "asof": "2026-10-16",
+      "asof": "2026-10-19",
       "live": true
     },
     {
@@ -80,7 +80,7 @@
       "prior": 5.43,
       "monthAgo": 5.35,
       "asof": "2026-10-16",
-      "live": true
+      "live": false
     }
   ]
 }
