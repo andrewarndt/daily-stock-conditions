@@ -1,6 +1,6 @@
 {
-  "updated": "2026-10-20T18:38:04.607Z",
-  "source": "live",
+  "updated": "2026-10-21T18:49:47.383Z",
+  "source": "seed",
   "series": [
     {
       "id": "dfedtaru",
@@ -11,7 +11,7 @@
       "value": 4,
       "prior": 4,
       "asof": "2026-10-20",
-      "live": true
+      "live": false
     },
     {
       "id": "dfedtarl",
@@ -22,7 +22,7 @@
       "value": 3.75,
       "prior": 3.75,
       "asof": "2026-10-20",
-      "live": true
+      "live": false
     },
     {
       "id": "effr",
@@ -33,7 +33,7 @@
       "value": 3.88,
       "prior": 3.88,
       "asof": "2026-10-19",
-      "live": true
+      "live": false
     },
     {
       "id": "sofr",
@@ -44,7 +44,7 @@
       "value": 3.87,
       "prior": 3.88,
       "asof": "2026-10-19",
-      "live": true
+      "live": false
     },
     {
       "id": "iorb",
@@ -55,7 +55,7 @@
       "value": 3.9,
       "prior": 3.9,
       "asof": "2026-10-20",
-      "live": true
+      "live": false
     },
     {
       "id": "walcl",
@@ -66,7 +66,7 @@
       "value": 6755639,
       "prior": 6747560,
       "asof": "2026-10-14",
-      "live": true,
+      "live": false,
       "trend": "expanding",
       "trendChange": 9091,
       "trendLabel": "4-wk"
@@ -80,7 +80,7 @@
       "value": 883373,
       "prior": 880253,
       "asof": "2026-10-14",
-      "live": true
+      "live": false
     },
     {
       "id": "wresbal",
@@ -91,7 +91,7 @@
       "value": 3022140,
       "prior": 3029659,
       "asof": "2026-10-14",
-      "live": true,
+      "live": false,
       "trend": "expanding",
       "trendChange": 8346,
       "trendLabel": "4-wk"
@@ -105,7 +105,7 @@
       "value": 0.227,
       "prior": 0.33,
       "asof": "2026-10-20",
-      "live": true,
+      "live": false,
       "change5d": -0.048000000000000015,
       "stressed": false
     },
@@ -118,7 +118,7 @@
       "value": -0.499,
       "prior": -0.507,
       "asof": "2026-10-09",
-      "live": true,
+      "live": false,
       "condition": "Loose",
       "conditionClass": "up"
     },
@@ -131,7 +131,7 @@
       "value": 329,
       "prior": 331,
       "asof": "2026-10-19",
-      "live": true,
+      "live": false,
       "trend": "up",
       "trendChange": 18,
       "trendLabel": "5-day",
@@ -147,7 +147,7 @@
       "value": 87,
       "prior": 85,
       "asof": "2026-10-19",
-      "live": true,
+      "live": false,
       "trend": "up",
       "trendChange": 4,
       "trendLabel": "5-day",
