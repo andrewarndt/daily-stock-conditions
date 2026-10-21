@@ -67,6 +67,11 @@
    * moving-average overlay that converges with its source line near the
    * end and would otherwise collide with it) without losing labels on
    * the rest via the chart-wide `opts.endLabels`.
+   *
+   * A series' data may hold `null` for points it has no value at (e.g. a
+   * series that starts later than the x-axis); the line breaks there.
+   * `opts.bands` ([{ from, to, title }], x indexes, inclusive) shades
+   * vertical spans behind the lines, e.g. recessions.
    */
   function lineChart(svg, opts) {
     svg.innerHTML = "";
@@ -91,7 +96,8 @@
     var series = opts.series;
     var xLabels = opts.xLabels;
     var allY = [];
-    series.forEach(function (s) { allY = allY.concat(s.data); });
+    function has(v) { return v !== null && v !== undefined && isFinite(v); }
+    series.forEach(function (s) { allY = allY.concat(s.data.filter(has)); });
     var yLo = opts.yMin !== undefined ? opts.yMin : Math.min.apply(null, allY);
     var yHi = opts.yMax !== undefined ? opts.yMax : Math.max.apply(null, allY);
     // Fit an auto-scaled axis to its reference lines too, so a threshold the
@@ -118,6 +124,13 @@
       el("text", { x: padL - 8 * k, y: gy + 3 * k, class: "axis-label", "text-anchor": "end" }, svg).textContent = yFmt(v);
     }
 
+    var halfStep = innerW / Math.max(1, xLabels.length - 1) / 2;
+    (opts.bands || []).forEach(function (b) {
+      var bx0 = Math.max(padL, x(b.from) - halfStep), bx1 = Math.min(padL + innerW, x(b.to) + halfStep);
+      var band = el("rect", { x: bx0, y: padT, width: Math.max(1, bx1 - bx0), height: innerH, class: "band" }, svg);
+      if (b.title) el("title", {}, band).textContent = b.title;
+    });
+
     [opts.referenceLine, opts.referenceLine2].forEach(function (ref) {
       if (!ref) return;
       var ry = y(ref.value);
@@ -130,34 +143,48 @@
     var maxX = Math.max(2, Math.min(opts.maxXLabels || 7, Math.floor(innerW / (85 * k))));
     var step = Math.max(1, Math.ceil(xLabels.length / maxX));
     var lastX = xLabels.length - 1;
+    // opts.xTickFmt shortens the axis text only; hover titles keep xLabels.
+    var xTick = opts.xTickFmt || function (lab) { return lab; };
     xLabels.forEach(function (lab, i) {
       if (i === lastX) {
-        el("text", { x: x(i), y: height - 8 * k, class: "axis-label", "text-anchor": "end" }, svg).textContent = lab;
+        el("text", { x: x(i), y: height - 8 * k, class: "axis-label", "text-anchor": "end" }, svg).textContent = xTick(lab, i);
         return;
       }
       if (i % step !== 0 || x(lastX) - x(i) < 70 * k) return;
-      el("text", { x: x(i), y: height - 8 * k, class: "axis-label", "text-anchor": i === 0 ? "start" : "middle" }, svg).textContent = lab;
+      el("text", { x: x(i), y: height - 8 * k, class: "axis-label", "text-anchor": i === 0 ? "start" : "middle" }, svg).textContent = xTick(lab, i);
     });
 
     var endLabels = [];
     series.forEach(function (s) {
-      var pts = s.data.map(function (v, i) { return x(i) + "," + y(v); }).join(" ");
-      if (s.area) {
-        var areaPts = x(0) + "," + y(yLo) + " " + pts + " " + x(s.data.length - 1) + "," + y(yLo);
-        el("polygon", { points: areaPts, fill: s.color, opacity: 0.1, stroke: "none" }, svg);
-      }
-      el("polyline", {
-        points: pts, fill: "none", stroke: s.color, "stroke-width": 2 * k,
-        "stroke-linejoin": "round", "stroke-linecap": "round",
-        "stroke-dasharray": s.dashed ? (5 * k) + "," + (4 * k) : "none"
-      }, svg);
+      // One polyline per unbroken run of values.
+      var runs = [], run = null;
+      s.data.forEach(function (v, i) {
+        if (!has(v)) { run = null; return; }
+        if (!run) { run = []; runs.push(run); }
+        run.push(i);
+      });
+      runs.forEach(function (idx) {
+        var pts = idx.map(function (i) { return x(i) + "," + y(s.data[i]); }).join(" ");
+        if (s.area) {
+          var areaPts = x(idx[0]) + "," + y(yLo) + " " + pts + " " + x(idx[idx.length - 1]) + "," + y(yLo);
+          el("polygon", { points: areaPts, fill: s.color, opacity: 0.1, stroke: "none" }, svg);
+        }
+        el("polyline", {
+          points: pts, fill: "none", stroke: s.color, "stroke-width": (s.width || 2) * k,
+          "stroke-linejoin": "round", "stroke-linecap": "round",
+          "stroke-dasharray": s.dashed ? (5 * k) + "," + (4 * k) : "none"
+        }, svg);
+      });
 
       s.data.forEach(function (v, i) {
+        if (!has(v)) return;
         var hit = el("circle", { cx: x(i), cy: y(v), r: 6 * k, fill: "transparent" }, svg);
         el("title", {}, hit).textContent = xLabels[i] + " — " + s.name + ": " + yFmt(v);
       });
 
       var lastI = s.data.length - 1;
+      while (lastI > 0 && !has(s.data[lastI])) lastI--;
+      if (!has(s.data[lastI])) return;
       var cx = x(lastI), cy = y(s.data[lastI]);
       el("circle", { cx: cx, cy: cy, r: 4 * k, fill: s.color, stroke: css("--paper-raised"), "stroke-width": 2 * k }, svg);
       if (opts.endLabels !== false && s.endLabel !== false) {

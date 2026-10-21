@@ -468,8 +468,16 @@ section > .legend:last-child { margin-bottom: 0.6rem; }
 .metric-grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .metric-grid.cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 
+/* Treasury Yields cards with a long-run chart under each number. */
+.yield-charts .metric-card svg { margin-top: 0.5rem; }
+
 @media (max-width: 560px) {
   .metric-grid.cols-3, .metric-grid.cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* The yield charts need the width; stack them before they get cramped. */
+@media (max-width: 900px) {
+  .metric-grid.yield-charts { grid-template-columns: minmax(0, 1fr); }
 }
 
 .metric-card {
@@ -718,7 +726,8 @@ td.trend-cell svg { display: block; }
 }
 
 svg .gridline { stroke: var(--line); stroke-width: 1; }
-svg .ref-line { stroke: var(--ink-soft); stroke-width: 1; stroke-dasharray: 3 3; opacity: 0.6; }
+svg .band { fill: var(--ink-soft); opacity: 0.16; }
+svg .ref-line {stroke: var(--ink-soft); stroke-width: 1; stroke-dasharray: 3 3; opacity: 0.6; }
 svg .axis-label { fill: var(--ink-soft); font-family: var(--font-mono); font-size: 0.625rem; }
 svg .ref-label { fill: var(--ink-soft); font-family: var(--font-mono); font-size: 0.625rem; }
 svg .end-label { font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 600; fill: var(--ink); }
@@ -849,6 +858,8 @@ section > .legend + .fedwatch-meeting,
 .weight-toggle-btn + .weight-toggle-btn { border-left: 1px solid var(--line-strong); }
 .weight-toggle-btn:hover { color: var(--ink); }
 .weight-toggle-btn.active { background: var(--accent); color: var(--on-accent); }
+.weight-toggle-btn:disabled { opacity: 0.4; cursor: default; }
+.weight-toggle-btn:disabled:hover { color: var(--ink-soft); }
 
 /* ---------- sector grid ---------- */
 

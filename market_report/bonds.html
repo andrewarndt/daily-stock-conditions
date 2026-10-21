@@ -60,7 +60,7 @@
     <div class="stress-banner-body" id="stress-banner-body"></div>
   </div>
 
-  <section class="span-7 stretch">
+  <section>
     <div class="section-head">
       <h2>Treasury &amp; Bond ETF Snapshot</h2>
       <span class="section-note">Intraday, spot as of last print</span>
@@ -70,44 +70,69 @@
     </div>
   </section>
 
-  <section class="span-5 stretch">
+  <section>
     <div class="section-head">
       <h2>Treasury Yields</h2>
       <span class="section-note">2s10s spread: <strong id="spread-value" style="color:var(--up)">+29 bps</strong> <span id="spread-trend">(steepening)</span></span>
     </div>
-    <div class="metric-grid cols-3">
+    <div class="weight-toggle" role="group" aria-label="Chart timeframe" id="yield-range-toggle">
+      <button type="button" class="weight-toggle-btn" data-range="1">1Y</button>
+      <button type="button" class="weight-toggle-btn" data-range="5">5Y</button>
+      <button type="button" class="weight-toggle-btn" data-range="10">10Y</button>
+      <button type="button" class="weight-toggle-btn active" data-range="max">Max</button>
+    </div>
+    <div class="metric-grid cols-3 yield-charts">
       <div class="metric-card">
         <div class="metric-name">2-Year<span id="yield-2y-flag"></span></div>
         <div class="metric-value" id="yield-2y-value">3.92%</div>
         <div class="metric-change down" id="yield-2y-change">▼ 0.02 pt</div>
+        <div class="metric-sub" id="yield-2y-range"></div>
+        <svg id="chart-yield-2y" width="400" height="200"></svg>
       </div>
       <div class="metric-card">
         <div class="metric-name">10-Year<span id="yield-10y-flag"></span></div>
         <div class="metric-value" id="yield-10y-value">4.21%</div>
         <div class="metric-change down" id="yield-10y-change">▼ 0.03 pt</div>
+        <div class="metric-sub" id="yield-10y-range"></div>
+        <svg id="chart-yield-10y" width="400" height="200"></svg>
       </div>
       <div class="metric-card">
         <div class="metric-name">30-Year<span id="yield-30y-flag"></span></div>
         <div class="metric-value" id="yield-30y-value">4.48%</div>
         <div class="metric-change down" id="yield-30y-change">▼ 0.01 pt</div>
+        <div class="metric-sub" id="yield-30y-range"></div>
+        <svg id="chart-yield-30y" width="400" height="200"></svg>
       </div>
     </div>
+    <p class="chart-sub">Daily close above each chart. Charts: 1Y daily closes, 5Y and 10Y weekly (last close of each week), Max monthly averages, all three on one shared scale so levels compare across maturities. Shaded = NBER recession. The 30-year has a gap from Mar 2002 to Jan 2006, when Treasury stopped issuing it.</p>
   </section>
 
   <section>
     <div class="section-head">
-      <h2>Yield Curve<span id="yieldcurve-flag"></span></h2>
-      <span class="section-note" id="yieldcurve-asof">Constant-maturity Treasury</span>
+      <h2>Yield Curve Spread — Long Run<span id="spreadhist-flag"></span></h2>
+      <span class="section-note" id="spreadhist-asof">Monthly averages, FRED</span>
     </div>
     <div class="chart-card">
-      <h3>UST Curve — today vs. 1 month ago</h3>
-      <p class="chart-sub">Yield (%) by maturity</p>
+      <h3>10Y − 3M and 10Y − 2Y Treasury spreads</h3>
+      <p class="chart-sub">Percentage points, monthly average of daily yields. Below 0 = inverted curve (short rates above the 10-year). Shaded = NBER recession.</p>
       <div class="legend">
-        <span class="legend-item"><span class="legend-swatch" style="background:var(--accent)"></span>Today</span>
-        <span class="legend-item"><span class="legend-swatch dashed" style="background:var(--ink-soft)"></span>1 month ago</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:var(--accent)"></span>10Y − 3M</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:var(--blue)"></span>10Y − 2Y (from Jun 1976)</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:var(--ink-soft);opacity:0.4;height:0.6rem"></span>Recession</span>
       </div>
-      <svg id="chart-yield-curve" width="900" height="260"></svg>
+      <svg id="chart-spread-history" width="900" height="320"></svg>
     </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>10Y − 3M inverted</th><th>Back above 0</th><th class="num">Months inverted</th><th class="num">Deepest</th><th>Next recession</th><th class="num">Lead from inversion</th><th class="num">Lead from back above 0</th></tr>
+        </thead>
+        <tbody id="inversion-rows">
+          <tr><td colspan="7" class="muted">Loading&hellip;</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="chart-sub" id="inversion-note"></p>
   </section>
 
   <section class="span-6 stretch">
@@ -176,7 +201,7 @@
   </section>
 
   <footer>
-    <p>Sourced from FRED (St. Louis Fed) unless noted otherwise. Treasury Yields, the Yield Curve, and derived metrics (Net Liquidity, SOFR&ndash;IORB spread, 10Y&ndash;3M spread, 2s10s spread) are computed client-side from the live series above rather than fetched separately. Two exceptions: HYG in Tier 3 is a live daily close from Yahoo Finance, refreshed once per weekday after market close; the Treasury &amp; Bond ETF Snapshot cards above are live intraday quotes from Twelve Data, refreshed every 30 min on weekdays.</p>
+    <p>Sourced from FRED (St. Louis Fed) unless noted otherwise. Treasury Yields and derived metrics (Net Liquidity, SOFR&ndash;IORB spread, 10Y&ndash;3M spread, 2s10s spread) are computed client-side from the live series above rather than fetched separately. The long-run spread chart uses FRED monthly averages (GS10, GS2, GS3M; before Sep 1981 the 3-month bill TB3MS, converted from discount to bond-equivalent yield) with NBER recession months from USREC, refreshed with the daily yields. Two exceptions: HYG in Tier 3 is a live daily close from Yahoo Finance, refreshed once per weekday after market close; the Treasury &amp; Bond ETF Snapshot cards above are live intraday quotes from Twelve Data, refreshed every 30 min on weekdays.</p>
     <p>Context only. Not wired into Regime Classifier or Exposure Model. Gate 1 of the Macro Permission Hierarchy still runs on Regime Classifier v2.</p>
     <p class="disclaimer">For informational purposes only, not investment advice. Data comes from the third-party sources named on each tab and may be delayed or contain errors.</p>
   </footer>
@@ -459,7 +484,7 @@
       renderAll();
     });
 
-  // Treasury Yields + Yield Curve -- moved here from fed-economic.html.
+  // Treasury Yields -- moved here from fed-economic.html.
   var YIELDS_FALLBACK = {
     updated: "2026-08-07T20:15:00Z",
     source: "seed",
@@ -493,26 +518,304 @@
     flagEl.innerHTML = entry.live === false ? '<span class="placeholder-flag">static</span>' : "";
   }
 
-  function renderYieldCurve(series) {
-    var withCurve = series.filter(function (s) { return s && Number.isFinite(s.monthAgo); });
-    if (!series.length) return;
+  // Long-run spread history: months are "YYYY-MM", spreads in percentage
+  // points (10Y minus the shorter maturity), recession is NBER 0/1.
+  var MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  function fmtMonth(ym) {
+    return MONTH_NAMES[Number(ym.slice(5, 7)) - 1] + " " + ym.slice(0, 4);
+  }
 
-    var flagEl = document.getElementById("yieldcurve-flag");
-    var asofEl = document.getElementById("yieldcurve-asof");
-    var allLive = series.every(function (s) { return s.live; });
-    flagEl.innerHTML = allLive ? "" : '<span class="placeholder-flag">static</span>';
-    var mostRecentAsof = series.reduce(function (max, s) { return s.asof > max ? s.asof : max; }, series[0].asof);
-    asofEl.textContent = allLive ? "Constant-maturity Treasury, as of " + mostRecentAsof : "Constant-maturity Treasury";
+  // Inversion episodes of the 10Y-3M spread. A run of negative months is one
+  // episode; runs separated by INVERSION_MERGE_GAP or fewer positive months
+  // count as the same episode, so a brief pop above zero mid-inversion
+  // doesn't split it in two. Each episode is matched to the first recession
+  // that starts within RECESSION_HORIZON months of its first inverted month
+  // (two episodes can point at the same recession, e.g. Jun 2019 and the
+  // one-month Feb 2020 blip both precede Mar 2020).
+  var INVERSION_MERGE_GAP = 3;
+  var RECESSION_HORIZON = 24;
+  function findInversions(h) {
+    var spread = h["10y3m"], rec = h.recession, n = h.months.length;
+    var episodes = [];
+    for (var i = 0; i < n; i++) {
+      if (!(spread[i] < 0)) continue;
+      var last = episodes[episodes.length - 1];
+      if (last && i - last.end - 1 <= INVERSION_MERGE_GAP) {
+        last.end = i;
+      } else {
+        episodes.push({ start: i, end: i });
+      }
+    }
+    var recStarts = [];
+    for (var r = 0; r < n; r++) if (rec[r] === 1 && (r === 0 || rec[r - 1] !== 1)) recStarts.push(r);
 
-    MC.lineChart(document.getElementById("chart-yield-curve"), {
-      xLabels: series.map(function (s) { return s.label || s.name; }),
-      series: [
-        { name: "Today", color: MC.css("--accent"), data: series.map(function (s) { return s.value; }) },
-        { name: "1M ago", color: MC.css("--ink-soft"), dashed: true, data: withCurve.length === series.length ? series.map(function (s) { return s.monthAgo; }) : null }
-      ].filter(function (s) { return s.data; }),
-      yFmt: function (v) { return v.toFixed(1) + "%"; },
-      maxXLabels: 8
+    episodes.forEach(function (e) {
+      e.monthsInverted = 0;
+      e.deepest = 0;
+      for (var j = e.start; j <= e.end; j++) {
+        if (spread[j] < 0) e.monthsInverted++;
+        if (spread[j] < e.deepest) e.deepest = spread[j];
+      }
+      e.backAbove = e.end + 1 < n ? e.end + 1 : null;
+      e.recession = null;
+      for (var k = 0; k < recStarts.length; k++) {
+        if (recStarts[k] >= e.start && recStarts[k] - e.start <= RECESSION_HORIZON) { e.recession = recStarts[k]; break; }
+      }
+      // Horizon still open: no recession yet, but the data can't rule one out.
+      e.horizonOpen = e.recession === null && e.start + RECESSION_HORIZON >= n - 1;
     });
+    return { episodes: episodes, recStarts: recStarts };
+  }
+
+  function fmtDay(iso) {
+    return MONTH_NAMES[Number(iso.slice(5, 7)) - 1] + " " + Number(iso.slice(8, 10)) + ", " + iso.slice(0, 4);
+  }
+
+  // Recession shading: one band per run of 1s in `rec`. `months` gives each
+  // point's "YYYY-MM" for the band's hover title.
+  function recessionBands(rec, months) {
+    var bands = [], n = rec.length;
+    for (var i = 0; i < n; i++) {
+      if (rec[i] !== 1) continue;
+      var from = i;
+      while (i + 1 < n && rec[i + 1] === 1) i++;
+      bands.push({ from: from, to: i, title: "Recession " + fmtMonth(months[from]) + " – " + fmtMonth(months[i]) });
+    }
+    return bands;
+  }
+
+  // 2Y/10Y/30Y charts inside the Treasury Yields cards, with a 1Y/5Y/10Y/Max
+  // timeframe toggle. 1Y plots daily closes; 5Y and 10Y plot the last close
+  // of each week (thousands of daily points would just blur at card width);
+  // Max plots monthly averages back to each series' start. All three charts
+  // share one y-scale per view so levels compare across maturities.
+  var YIELD_CHART_IDS = ["2y", "10y", "30y"];
+  var yieldHist = { monthly: null, daily: null, range: "max" };
+
+  // Monday of the date's week, as an ISO date: the weekly bucket key.
+  function weekKey(iso) {
+    var d = new Date(iso + "T00:00:00Z");
+    d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7));
+    return d.toISOString().slice(0, 10);
+  }
+
+  // Points for one timeframe: { keys, labels, rec, values: { id: [...] }, daily }.
+  function yieldView(range) {
+    var m = yieldHist.monthly, d = yieldHist.daily;
+    var recByMonth = {};
+    if (m) m.months.forEach(function (mo, i) { recByMonth[mo] = m.recession[i]; });
+
+    if (range === "max" || !d) {
+      var vm = { keys: m.months, labels: m.months.map(fmtMonth), rec: m.recession, values: {}, daily: false };
+      YIELD_CHART_IDS.forEach(function (id) { if (m[id]) vm.values[id] = m[id]; });
+      return vm;
+    }
+
+    var latest = d.dates[d.dates.length - 1];
+    var cutoff = (Number(latest.slice(0, 4)) - Number(range)) + latest.slice(4);
+    var idx = [];
+    d.dates.forEach(function (date, i) { if (date > cutoff) idx.push(i); });
+    // High/low come from every daily close in the window, before weekly
+    // sampling, so an intra-week extreme isn't missed.
+    var stats = {};
+    YIELD_CHART_IDS.forEach(function (id) {
+      if (!d[id]) return;
+      var hi = null, lo = null;
+      idx.forEach(function (i) {
+        var val = d[id][i];
+        if (val === null) return;
+        if (hi === null || val > d[id][hi]) hi = i;
+        if (lo === null || val < d[id][lo]) lo = i;
+      });
+      if (hi !== null) stats[id] = { hi: d[id][hi], hiAt: fmtDay(d.dates[hi]), lo: d[id][lo], loAt: fmtDay(d.dates[lo]) };
+    });
+    if (range !== "1") {
+      // Keep each week's last trading day.
+      idx = idx.filter(function (i, k) {
+        return k === idx.length - 1 || weekKey(d.dates[idx[k + 1]]) !== weekKey(d.dates[i]);
+      });
+    }
+    var v = { keys: [], labels: [], rec: [], values: {}, daily: true, stats: stats };
+    YIELD_CHART_IDS.forEach(function (id) { if (d[id]) v.values[id] = []; });
+    idx.forEach(function (i) {
+      var date = d.dates[i];
+      v.keys.push(date.slice(0, 7));
+      v.labels.push(fmtDay(date));
+      v.rec.push(recByMonth[date.slice(0, 7)] === 1 ? 1 : 0);
+      Object.keys(v.values).forEach(function (id) { v.values[id].push(d[id][i]); });
+    });
+    return v;
+  }
+
+  // Shared y-range: Max starts at 0 with 4-point ticks; shorter views fit the
+  // visible data with a tick step that gives at most 6 gridlines.
+  function yieldScale(all, range) {
+    var lo = Math.min.apply(null, all), hi = Math.max.apply(null, all);
+    if (range === "max") return { min: 0, max: Math.ceil(hi / 4) * 4, step: 4 };
+    var steps = [0.1, 0.25, 0.5, 1, 2, 4];
+    for (var s = 0; s < steps.length; s++) {
+      var min = Math.floor(lo / steps[s]) * steps[s], max = Math.ceil(hi / steps[s]) * steps[s];
+      if (max === min) max += steps[s];
+      if ((max - min) / steps[s] <= 6) return { min: min, max: max, step: steps[s] };
+    }
+    return { min: Math.floor(lo), max: Math.ceil(hi), step: 1 };
+  }
+
+  function drawYieldCharts() {
+    var range = yieldHist.range;
+    var view = yieldView(range);
+    var ids = Object.keys(view.values);
+    var all = [];
+    ids.forEach(function (id) { all = all.concat(view.values[id].filter(function (v) { return v !== null; })); });
+    if (!all.length) return;
+    var sc = yieldScale(all, range);
+    var decimals = sc.step < 1 ? 2 : 0;
+
+    ids.forEach(function (id) {
+      var data = view.values[id], start = 0;
+      while (start < data.length && data[start] === null) start++;
+      var last = data.length - 1;
+      while (last > start && data[last] === null) last--;
+      if (last <= start) return;
+
+      var st = view.stats && view.stats[id];
+      if (!st) {
+        var peak = start, low = start;
+        for (var i = start; i <= last; i++) {
+          if (data[i] === null) continue;
+          if (data[i] > data[peak]) peak = i;
+          if (data[i] < data[low]) low = i;
+        }
+        st = { hi: data[peak], hiAt: fmtMonth(view.keys[peak]), lo: data[low], loAt: fmtMonth(view.keys[low]) };
+      }
+      var lead = range === "max" ? "Since " + fmtMonth(view.keys[start]) + ", monthly avg" : range + "Y daily";
+      document.getElementById("yield-" + id + "-range").textContent =
+        lead + " · high " + st.hi.toFixed(2) + "% (" + st.hiAt + ") · low " + st.lo.toFixed(2) + "% (" + st.loAt + ")";
+
+      MC.lineChart(document.getElementById("chart-yield-" + id), {
+        xLabels: view.labels.slice(start, last + 1),
+        series: [{ name: view.daily ? (range === "1" ? "Close" : "Week close") : "Monthly avg", color: MC.css("--accent"), width: 1.5, data: data.slice(start, last + 1), endLabel: false }],
+        bands: recessionBands(view.rec.slice(start, last + 1), view.keys.slice(start, last + 1)),
+        yMin: sc.min,
+        yMax: sc.max,
+        exactRange: true,
+        yTicks: Math.round((sc.max - sc.min) / sc.step),
+        yFmt: function (v) {
+          var onTick = Math.abs((v - sc.min) / sc.step - Math.round((v - sc.min) / sc.step)) < 1e-9;
+          return (onTick ? v.toFixed(decimals) : v.toFixed(2)) + "%";
+        },
+        maxXLabels: 4,
+        xTickFmt: view.daily ? function (lab, i) { return fmtMonth(view.keys[start + i]); } : null
+      });
+    });
+  }
+
+  var yieldToggleBound = false;
+  function renderYieldHistory(monthly, daily) {
+    if (!monthly || !monthly.months) return;
+    yieldHist.monthly = monthly;
+    yieldHist.daily = daily && daily.dates && daily.dates.length ? daily : null;
+    var btns = document.querySelectorAll("#yield-range-toggle [data-range]");
+    // Without daily history only Max can be drawn.
+    if (!yieldHist.daily) yieldHist.range = "max";
+    Array.prototype.forEach.call(btns, function (btn) {
+      var r = btn.getAttribute("data-range");
+      btn.disabled = r !== "max" && !yieldHist.daily;
+      btn.classList.toggle("active", r === yieldHist.range);
+      btn.setAttribute("aria-pressed", r === yieldHist.range ? "true" : "false");
+      if (!yieldToggleBound) {
+        btn.addEventListener("click", function () {
+          yieldHist.range = r;
+          Array.prototype.forEach.call(btns, function (b) {
+            b.classList.toggle("active", b === btn);
+            b.setAttribute("aria-pressed", b === btn ? "true" : "false");
+          });
+          drawYieldCharts();
+        });
+      }
+    });
+    yieldToggleBound = true;
+    drawYieldCharts();
+  }
+
+  function renderSpreadHistory(h, live) {
+    var svg = document.getElementById("chart-spread-history");
+    var rowsEl = document.getElementById("inversion-rows");
+    var noteEl = document.getElementById("inversion-note");
+    if (!h || !h.months || h.months.length < 2) {
+      rowsEl.innerHTML = '<tr><td colspan="7" class="muted">Spread history not available.</td></tr>';
+      return;
+    }
+    var n = h.months.length;
+    document.getElementById("spreadhist-flag").innerHTML = live ? "" : '<span class="placeholder-flag">static</span>';
+    document.getElementById("spreadhist-asof").textContent =
+      "Monthly averages, " + fmtMonth(h.months[0]) + " – " + fmtMonth(h.months[n - 1]);
+
+    var bands = recessionBands(h.recession, h.months);
+
+    // Whole-point axis bounds with one tick per point, so 0 is always a
+    // gridline.
+    var allSpreads = h["10y3m"].concat(h["10y2y"]).filter(function (v) { return v !== null; });
+    var yMin = Math.floor(Math.min.apply(null, allSpreads)), yMax = Math.ceil(Math.max.apply(null, allSpreads));
+
+    MC.lineChart(svg, {
+      xLabels: h.months.map(fmtMonth),
+      series: [
+        { name: "10Y−2Y", color: MC.css("--blue"), width: 1.25, data: h["10y2y"] },
+        { name: "10Y−3M", color: MC.css("--accent"), width: 1.5, data: h["10y3m"] }
+      ],
+      bands: bands,
+      referenceLine: { value: 0, label: "" },
+      yMin: yMin,
+      yMax: yMax,
+      exactRange: true,
+      yTicks: yMax - yMin,
+      // Axis ticks are whole points; values on hover and end labels keep 2dp.
+      yFmt: function (v) {
+        var whole = Math.abs(v - Math.round(v)) < 1e-9;
+        return (v > 0 ? "+" : "") + (whole ? Math.round(v).toFixed(0) : v.toFixed(2));
+      },
+      maxXLabels: 12
+    });
+
+    var found = findInversions(h), episodes = found.episodes;
+    function leadCell(from, to) {
+      if (from === null || to === null) return '<td class="num muted">—</td>';
+      // Recession began before the curve turned positive again.
+      if (to < from) return '<td class="num muted">began while inverted</td>';
+      return '<td class="num">' + (to - from) + " mo</td>";
+    }
+    rowsEl.innerHTML = episodes.slice().reverse().map(function (e) {
+      var recCell = e.recession !== null ? fmtMonth(h.months[e.recession])
+        : '<span class="muted">' + (e.horizonOpen ? "None yet" : "None within " + RECESSION_HORIZON + " mo") + "</span>";
+      return "<tr>" +
+        "<td>" + fmtMonth(h.months[e.start]) + "</td>" +
+        "<td>" + (e.backAbove !== null ? fmtMonth(h.months[e.backAbove]) : '<span class="muted">Still inverted</span>') + "</td>" +
+        '<td class="num">' + e.monthsInverted + "</td>" +
+        '<td class="num" style="color:var(--down)">' + (e.deepest * 100).toFixed(0) + " bps</td>" +
+        "<td>" + recCell + "</td>" +
+        leadCell(e.start, e.recession) +
+        leadCell(e.backAbove, e.recession) +
+        "</tr>";
+    }).join("");
+
+    // Per recession: lead from the earliest inversion that preceded it.
+    var leadByRecession = {};
+    episodes.forEach(function (e) {
+      if (e.recession !== null && !(e.recession in leadByRecession)) leadByRecession[e.recession] = e.recession - e.start;
+    });
+    var leads = Object.keys(leadByRecession).map(function (r) { return leadByRecession[r]; }).sort(function (a, b) { return a - b; });
+    var median = leads.length ? (leads.length % 2 ? leads[(leads.length - 1) / 2] : (leads[leads.length / 2 - 1] + leads[leads.length / 2]) / 2) : null;
+    var followed = episodes.filter(function (e) { return e.recession !== null; }).length;
+    var decided = episodes.filter(function (e) { return !e.horizonOpen; }).length;
+    noteEl.textContent =
+      followed + " of " + decided + " inversions of the 10Y − 3M spread since " + fmtMonth(h.months[0]) +
+      " were followed by a recession within " + RECESSION_HORIZON + " months" +
+      (decided < episodes.length ? " (" + (episodes.length - decided) + " too recent to judge)" : "") + "; " +
+      leads.length + " of the " + found.recStarts.length + " recessions in the window were preceded by one" +
+      (median !== null ? ", by a median " + median + " months (range " + leads[0] + "–" + leads[leads.length - 1] + ")" : "") +
+      ". The 2020 recession was the pandemic shutdown. Inversions separated by " + INVERSION_MERGE_GAP +
+      " or fewer positive months count as one. NBER dates recessions after the fact, so the latest months read as no recession until it announces one.";
   }
 
   function renderYields(data) {
@@ -539,7 +842,8 @@
       trendEl.textContent = "(" + trend + ")";
     }
 
-    renderYieldCurve((data.series || []).filter(Boolean));
+    renderYieldHistory(data.monthlyHistory, data.dailyHistory);
+    renderSpreadHistory(data.monthlyHistory, data.source === "live");
   }
 
   fetch("data/yields.json?t=" + Date.now(), { cache: "no-store" })
