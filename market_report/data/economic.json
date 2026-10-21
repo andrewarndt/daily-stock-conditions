@@ -1,6 +1,6 @@
 {
-  "updated": "2026-10-20T18:23:47.861Z",
-  "source": "live",
+  "updated": "2026-10-21T18:29:43.032Z",
+  "source": "seed",
   "indicators": [
     {
       "id": "gdp",
@@ -18,7 +18,7 @@
         2.5,
         2.2
       ],
-      "live": true,
+      "live": false,
       "nextRelease": "2026-10-29"
     },
     {
@@ -37,7 +37,7 @@
         3.35302,
         3.71725
       ],
-      "live": true,
+      "live": false,
       "nextRelease": "2026-11-10"
     },
     {
@@ -56,7 +56,7 @@
         9.77643,
         12.84239
       ],
-      "live": true,
+      "live": false,
       "nextRelease": "2026-11-13"
     },
     {
@@ -75,7 +75,7 @@
         100.946376539403,
         100.99927524851
       ],
-      "live": true,
+      "live": false,
       "nextRelease": null
     },
     {
@@ -94,7 +94,7 @@
         4.1,
         4.2
       ],
-      "live": true,
+      "live": false,
       "nextRelease": "2026-11-06"
     },
     {
@@ -113,7 +113,7 @@
         7.335,
         7.079
       ],
-      "live": true,
+      "live": false,
       "nextRelease": "2026-11-03"
     },
     {
@@ -132,7 +132,7 @@
         -0.23238,
         -7.42987
       ],
-      "live": true,
+      "live": false,
       "nextRelease": "2026-10-20"
     },
     {
@@ -151,7 +151,7 @@
         3.93,
         3.99
       ],
-      "live": true,
+      "live": false,
       "nextRelease": "2026-11-12"
     },
     {
@@ -170,7 +170,7 @@
         1.61545,
         2.24515
       ],
-      "live": true,
+      "live": false,
       "nextRelease": "2026-11-17"
     }
   ],
