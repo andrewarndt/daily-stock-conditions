@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-20T23:59:28.622Z",
+  "updated": "2026-10-22T00:04:20.623Z",
   "source": "live",
   "labels": [
     "May",
@@ -18,10 +18,10 @@
         15.99,
         14.92,
         16.34,
-        18.44
+        17.31
       ],
       "live": true,
-      "asof": "2026-10-19"
+      "asof": "2026-10-20"
     },
     "vix3m": {
       "name": "3M ATM IV",
@@ -31,10 +31,10 @@
         19.02,
         17.53,
         18.37,
-        18.99
+        18.72
       ],
       "live": true,
-      "asof": "2026-10-20"
+      "asof": "2026-10-21"
     },
     "vixeq": {
       "name": "Avg constituent IV",
@@ -61,7 +61,7 @@
       ],
       "live": true,
       "asof": "2026-10-20",
-      "avg12mo": 36.346071428571435
+      "avg12mo": 36.33808764940238
     }
   },
   "termStructure": [
@@ -69,45 +69,45 @@
       "id": "vix9d",
       "tenorLabel": "9D",
       "name": "9-Day",
-      "value": 16.27,
-      "monthAgo": 12.27,
-      "asof": "2026-10-20",
+      "value": 15.49,
+      "monthAgo": 13.14,
+      "asof": "2026-10-21",
       "live": true
     },
     {
       "id": "vix",
       "tenorLabel": "30D",
       "name": "30-Day",
-      "value": 18.44,
+      "value": 17.31,
       "monthAgo": 14.81,
-      "asof": "2026-10-19",
+      "asof": "2026-10-20",
       "live": true
     },
     {
       "id": "vix3m",
       "tenorLabel": "3M",
       "name": "3-Month",
-      "value": 18.99,
-      "monthAgo": 18.24,
-      "asof": "2026-10-20",
+      "value": 18.72,
+      "monthAgo": 18.08,
+      "asof": "2026-10-21",
       "live": true
     },
     {
       "id": "vix6m",
       "tenorLabel": "6M",
       "name": "6-Month",
-      "value": 20.74,
-      "monthAgo": 20.21,
-      "asof": "2026-10-20",
+      "value": 20.62,
+      "monthAgo": 20.16,
+      "asof": "2026-10-21",
       "live": true
     },
     {
       "id": "vix1y",
       "tenorLabel": "1Y",
       "name": "1-Year",
-      "value": 22.05,
-      "monthAgo": 21.74,
-      "asof": "2026-10-20",
+      "value": 22.03,
+      "monthAgo": 21.8,
+      "asof": "2026-10-21",
       "live": true
     }
   ]
