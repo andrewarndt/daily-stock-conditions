@@ -1,6 +1,6 @@
 {
-  "updated": "2026-10-21T18:49:47.383Z",
-  "source": "seed",
+  "updated": "2026-10-22T18:43:53.118Z",
+  "source": "live",
   "series": [
     {
       "id": "dfedtaru",
@@ -10,8 +10,8 @@
       "unit": "%",
       "value": 4,
       "prior": 4,
-      "asof": "2026-10-20",
-      "live": false
+      "asof": "2026-10-22",
+      "live": true
     },
     {
       "id": "dfedtarl",
@@ -21,8 +21,8 @@
       "unit": "%",
       "value": 3.75,
       "prior": 3.75,
-      "asof": "2026-10-20",
-      "live": false
+      "asof": "2026-10-22",
+      "live": true
     },
     {
       "id": "effr",
@@ -32,8 +32,8 @@
       "unit": "%",
       "value": 3.88,
       "prior": 3.88,
-      "asof": "2026-10-19",
-      "live": false
+      "asof": "2026-10-21",
+      "live": true
     },
     {
       "id": "sofr",
@@ -41,10 +41,10 @@
       "seriesId": "SOFR",
       "name": "SOFR",
       "unit": "%",
-      "value": 3.87,
+      "value": 3.88,
       "prior": 3.88,
-      "asof": "2026-10-19",
-      "live": false
+      "asof": "2026-10-21",
+      "live": true
     },
     {
       "id": "iorb",
@@ -54,8 +54,8 @@
       "unit": "%",
       "value": 3.9,
       "prior": 3.9,
-      "asof": "2026-10-20",
-      "live": false
+      "asof": "2026-10-22",
+      "live": true
     },
     {
       "id": "walcl",
@@ -66,7 +66,7 @@
       "value": 6755639,
       "prior": 6747560,
       "asof": "2026-10-14",
-      "live": false,
+      "live": true,
       "trend": "expanding",
       "trendChange": 9091,
       "trendLabel": "4-wk"
@@ -80,7 +80,7 @@
       "value": 883373,
       "prior": 880253,
       "asof": "2026-10-14",
-      "live": false
+      "live": true
     },
     {
       "id": "wresbal",
@@ -91,7 +91,7 @@
       "value": 3022140,
       "prior": 3029659,
       "asof": "2026-10-14",
-      "live": false,
+      "live": true,
       "trend": "expanding",
       "trendChange": 8346,
       "trendLabel": "4-wk"
@@ -102,11 +102,11 @@
       "seriesId": "RRPONTSYD",
       "name": "Overnight Reverse Repo",
       "unit": "$B",
-      "value": 0.227,
-      "prior": 0.33,
-      "asof": "2026-10-20",
-      "live": false,
-      "change5d": -0.048000000000000015,
+      "value": 0.351,
+      "prior": 0.237,
+      "asof": "2026-10-22",
+      "live": true,
+      "change5d": -0.8500000000000001,
       "stressed": false
     },
     {
@@ -115,10 +115,10 @@
       "seriesId": "NFCI",
       "name": "Chicago Fed NFCI",
       "unit": "",
-      "value": -0.499,
-      "prior": -0.507,
-      "asof": "2026-10-09",
-      "live": false,
+      "value": -0.496,
+      "prior": -0.502,
+      "asof": "2026-10-16",
+      "live": true,
       "condition": "Loose",
       "conditionClass": "up"
     },
@@ -128,12 +128,12 @@
       "seriesId": "BAMLH0A0HYM2",
       "name": "High Yield OAS",
       "unit": "bps",
-      "value": 329,
-      "prior": 331,
-      "asof": "2026-10-19",
-      "live": false,
+      "value": 327,
+      "prior": 333,
+      "asof": "2026-10-21",
+      "live": true,
       "trend": "up",
-      "trendChange": 18,
+      "trendChange": 2,
       "trendLabel": "5-day",
       "condition": "Tight",
       "conditionClass": "up"
@@ -144,10 +144,10 @@
       "seriesId": "BAMLC0A0CM",
       "name": "Investment Grade OAS",
       "unit": "bps",
-      "value": 87,
-      "prior": 85,
-      "asof": "2026-10-19",
-      "live": false,
+      "value": 88,
+      "prior": 87,
+      "asof": "2026-10-21",
+      "live": true,
       "trend": "up",
       "trendChange": 4,
       "trendLabel": "5-day",
