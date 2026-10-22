@@ -1,6 +1,6 @@
 {
-  "updated": "2026-10-21T00:00:38.230Z",
-  "source": "live",
+  "updated": "2026-10-22T00:05:33.621Z",
+  "source": "seed",
   "series": [
     {
       "id": "1mo",
@@ -10,7 +10,7 @@
       "prior": 4.12,
       "monthAgo": 3.97,
       "asof": "2026-10-19",
-      "live": true
+      "live": false
     },
     {
       "id": "3mo",
@@ -20,7 +20,7 @@
       "prior": 4.26,
       "monthAgo": 4.14,
       "asof": "2026-10-19",
-      "live": true
+      "live": false
     },
     {
       "id": "6mo",
@@ -40,7 +40,7 @@
       "prior": 4.46,
       "monthAgo": 4.44,
       "asof": "2026-10-19",
-      "live": true
+      "live": false
     },
     {
       "id": "2y",
@@ -50,7 +50,7 @@
       "prior": 4.74,
       "monthAgo": 4.76,
       "asof": "2026-10-19",
-      "live": true
+      "live": false
     },
     {
       "id": "5y",
@@ -60,7 +60,7 @@
       "prior": 4.89,
       "monthAgo": 4.86,
       "asof": "2026-10-19",
-      "live": true
+      "live": false
     },
     {
       "id": "10y",
@@ -70,7 +70,7 @@
       "prior": 5.09,
       "monthAgo": 5.01,
       "asof": "2026-10-19",
-      "live": true
+      "live": false
     },
     {
       "id": "30y",
