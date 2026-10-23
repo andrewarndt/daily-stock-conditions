@@ -390,6 +390,56 @@ a.contact-button:hover {
   box-shadow: 0 8px 18px rgba(63, 107, 74, 0.3);
 }
 
+/* print inquiry form inside the contact card */
+.contact-card { flex-direction: column; align-items: stretch; }
+.contact-card p { max-width: 44rem; }
+.inquiry-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem 1rem;
+  align-items: end;
+}
+.inquiry-form label { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.85rem; font-weight: 600; color: var(--ink); }
+.inquiry-form .opt { font-weight: 400; color: var(--ink-soft); }
+.inquiry-form .full { grid-column: 1 / -1; }
+.inquiry-form input, .inquiry-form select, .inquiry-form textarea {
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: var(--ink);
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  padding: 0.55rem 0.7rem;
+  width: 100%;
+}
+.inquiry-form textarea { resize: vertical; min-height: 4.5rem; }
+.inquiry-form input:focus, .inquiry-form select:focus, .inquiry-form textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--grain); }
+.inquiry-form .actions { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.inquiry-form .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+button.contact-button {
+  display: inline-flex;
+  align-items: center;
+  background: var(--accent);
+  color: var(--paper-raised);
+  border: 0;
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0.7rem 1.5rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+button.contact-button:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(63, 107, 74, 0.3); }
+button.contact-button:disabled { opacity: 0.6; cursor: default; transform: none; box-shadow: none; }
+.inquiry-status { margin: 0; font-size: 0.9rem; color: var(--ink-soft); }
+.contact-card p.contact-direct { font-size: 0.85rem; }
+.contact-direct a { color: var(--accent); }
+@media (max-width: 640px) {
+  .inquiry-form { grid-template-columns: minmax(0, 1fr); }
+}
+
 /* ---------- about me ---------- */
 .about-me {
   max-width: 44rem;

@@ -504,6 +504,8 @@
   .request select option { color: #1b1b1a; }
   .request input:focus, .request select:focus, .request textarea:focus { outline: 2px solid #c79a58; outline-offset: 1px; border-color: transparent; }
   .request textarea { min-height: 5.5rem; resize: vertical; }
+  .request .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+  .request button:disabled { opacity: 0.6; cursor: default; }
   .request button { grid-column: 1 / -1; justify-self: center; border: 0; cursor: pointer; font-family: inherit; }
   .request-status { grid-column: 1 / -1; margin: 0; text-align: center; font-size: 0.88rem; color: #e3c08a; min-height: 1.2em; }
 
@@ -685,6 +687,7 @@
       <label class="full">Anything else (optional)
         <textarea name="notes" placeholder="Where the machine would go, hours, questions..."></textarea>
       </label>
+      <input type="text" name="_honey" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
       <button class="btn primary" type="submit">Send request</button>
       <p class="request-status" id="request-status" role="status"></p>
     </form>
@@ -739,14 +742,13 @@
     });
   }
 </script>
+<script src="/assets/inquiry.js?v=1"></script>
 <script>
-  // Vending request form. With FORM_ENDPOINT set (e.g. a Formspree form URL),
-  // requests post straight to that inbox. Left empty, the form opens the
-  // visitor's email app with the details pre-filled instead.
+  // Vending request form, sent by email through /assets/inquiry.js.
   (function () {
-    var FORM_ENDPOINT = "";
-    var EMAIL = "4aholdingscompany@gmail.com";
+    var EMAIL = sendInquiry.email;
     var form = document.getElementById("request-form");
+    var send = form.querySelector('button[type="submit"]');
     var status = document.getElementById("request-status");
 
     form.addEventListener("submit", function (e) {
@@ -758,33 +760,26 @@
         return;
       }
       var d = new FormData(form);
-      var lines = [
-        "Facility type: " + d.get("facility"),
-        "City: " + d.get("city"),
-        "Machine type: " + d.get("machine"),
-        "People on site per day: " + d.get("traffic"),
-        "Name: " + d.get("name"),
-        "Contact: " + d.get("contact"),
-        "Notes: " + (d.get("notes") || "-")
-      ];
-
-      if (!FORM_ENDPOINT) {
-        location.href = "mailto:" + EMAIL +
-          "?subject=" + encodeURIComponent("Vending request: " + d.get("facility") + " in " + d.get("city")) +
-          "&body=" + encodeURIComponent(lines.join("\n"));
-        status.textContent = "Your email app should open with the details filled in. If it doesn't, email " + EMAIL + ".";
-        return;
-      }
       status.textContent = "Sending...";
-      fetch(FORM_ENDPOINT, { method: "POST", body: d, headers: { Accept: "application/json" } })
-        .then(function (res) {
-          if (!res.ok) throw new Error("HTTP " + res.status);
+      send.disabled = true;
+      sendInquiry("Vending request: " + d.get("facility") + " in " + d.get("city").trim(), {
+        "Facility type": d.get("facility"),
+        "City": d.get("city").trim(),
+        "Machine type": d.get("machine"),
+        "People on site per day": d.get("traffic"),
+        "Name": d.get("name").trim(),
+        "Contact": d.get("contact").trim(),
+        "Notes": d.get("notes").trim()
+      }, d.get("_honey"))
+        .then(function () {
           form.reset();
           status.textContent = "Thanks, your request was sent. I'll be in touch soon.";
         })
-        .catch(function () {
+        .catch(function (err) {
+          console.warn("Vending request: send failed", err);
           status.textContent = "That didn't go through. Please email " + EMAIL + " instead.";
-        });
+        })
+        .then(function () { send.disabled = false; });
     });
   })();
 </script>
