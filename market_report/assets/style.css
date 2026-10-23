@@ -1053,6 +1053,85 @@ footer p:last-child { margin-bottom: 0; }
 .about-me p { grid-column: 2; margin: 0 0.7rem 0.45rem 0; color: var(--ink-soft); font-size: 0.8rem; max-width: 110ch; }
 .about-me p:last-child { margin-bottom: 0; }
 
+/* ---------- feedback (added by desk.js) ---------- */
+
+.feedback { padding-bottom: 0.7rem; }
+.feedback > p { margin-top: 0.6rem; margin-bottom: 0.6rem; color: var(--ink-soft); font-size: 0.8rem; }
+
+.feedback-form {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.6rem 0.8rem;
+  align-items: end;
+  padding: 0 0.7rem;
+  max-width: 64rem;
+}
+
+.fb-wide { grid-column: 1 / -1; }
+
+.fb-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.fb-opt { text-transform: none; letter-spacing: 0; color: var(--ink-faint); }
+
+.fb-field input,
+.fb-field select,
+.fb-field textarea {
+  font: inherit;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--line-strong);
+  border-radius: 0;
+  padding: 0.4rem 0.5rem;
+  width: 100%;
+}
+
+.fb-field textarea { resize: vertical; min-height: 5rem; }
+
+.fb-field input:focus,
+.fb-field select:focus,
+.fb-field textarea:focus { outline: none; border-color: var(--accent); }
+
+.fb-honey { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+
+.fb-actions { display: flex; align-items: center; gap: 0.9rem; flex-wrap: wrap; }
+
+.fb-send {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--on-accent);
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  padding: 0.4rem 0.9rem;
+  cursor: pointer;
+}
+
+.fb-send:hover { filter: brightness(1.1); }
+.fb-send:disabled { opacity: 0.6; cursor: default; }
+
+.fb-status { font-family: var(--font-mono); font-size: 0.72rem; color: var(--ink-soft); }
+.fb-status.ok { color: var(--up); }
+.fb-status.err { color: var(--down); }
+
+@media (max-width: 720px) {
+  .feedback-form { grid-template-columns: minmax(0, 1fr); }
+}
+
 /* The site-wide footer links (assets/site-links.js) default to the light
    storefront palette; keep them on the desk's dark one here. */
 body .site-links {

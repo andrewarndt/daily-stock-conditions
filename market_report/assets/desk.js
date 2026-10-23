@@ -92,6 +92,81 @@
     meta.appendChild(btn);
   }
 
+  // ---------- feedback panel ----------
+  // A short form above each tab's footer. The site is static, so
+  // submissions go through FormSubmit, which emails them to FEEDBACK_TO
+  // (the first one ever sent triggers a one-time activation email there).
+
+  var FEEDBACK_TO = "4aholdingscompany@gmail.com";
+  var footer = document.querySelector(".page > footer");
+  if (footer) {
+    var tabName = (document.querySelector(".tab.active") || {}).textContent || document.title;
+    var fb = document.createElement("section");
+    fb.className = "feedback";
+    fb.innerHTML =
+      '<div class="section-head"><h2>Feedback</h2><span class="section-note">Ideas welcome</span></div>' +
+      '<p>What would you like to see on the desk, or what could work better? Every note gets read.</p>' +
+      '<form class="feedback-form" novalidate>' +
+        '<label class="fb-field"><span>Topic</span>' +
+          '<select name="topic">' +
+            '<option>Something I\'d like to see</option>' +
+            '<option>Improve an existing section</option>' +
+            '<option>Something looks wrong</option>' +
+            '<option>Other</option>' +
+          '</select></label>' +
+        '<label class="fb-field"><span>Name <span class="fb-opt">optional</span></span><input name="name" autocomplete="name" maxlength="100"></label>' +
+        '<label class="fb-field"><span>Email <span class="fb-opt">optional, if you want a reply</span></span><input name="email" type="email" autocomplete="email" maxlength="200"></label>' +
+        '<label class="fb-field fb-wide"><span>Your feedback</span><textarea name="message" rows="4" maxlength="4000" required></textarea></label>' +
+        // Honeypot: hidden from people, filled in by bots; FormSubmit drops those.
+        '<input type="text" name="_honey" class="fb-honey" tabindex="-1" autocomplete="off" aria-hidden="true">' +
+        '<div class="fb-actions fb-wide"><button type="submit" class="fb-send">Send feedback</button>' +
+          '<span class="fb-status" role="status" aria-live="polite"></span></div>' +
+      '</form>';
+    footer.parentNode.insertBefore(fb, footer);
+
+    var form = fb.querySelector("form");
+    var status = fb.querySelector(".fb-status");
+    var send = fb.querySelector(".fb-send");
+    var setStatus = function (text, cls) {
+      status.textContent = text;
+      status.className = "fb-status" + (cls ? " " + cls : "");
+    };
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var f = form.elements;
+      if (!f.message.value.trim()) { setStatus("Add a note before sending.", "err"); f.message.focus(); return; }
+      if (f.email.value && !f.email.checkValidity()) { setStatus("That email doesn't look right.", "err"); f.email.focus(); return; }
+      send.disabled = true;
+      setStatus("Sending…");
+      var payload = {
+        topic: f.topic.value,
+        name: f.name.value.trim(),
+        email: f.email.value.trim(),
+        message: f.message.value.trim(),
+        page: tabName.trim(),
+        _honey: f._honey.value,
+        _subject: "Market Desk feedback: " + f.topic.value,
+        _template: "table"
+      };
+      fetch("https://formsubmit.co/ajax/" + FEEDBACK_TO, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify(payload)
+      })
+        .then(function (res) { return res.json().then(function (j) { if (!res.ok || String(j.success) !== "true") throw new Error(j.message || "HTTP " + res.status); }); })
+        .then(function () {
+          form.reset();
+          setStatus("Thanks, got it.", "ok");
+        })
+        .catch(function (err) {
+          console.warn("Feedback: send failed", err);
+          setStatus("Couldn't send just now. You can email " + FEEDBACK_TO + " instead.", "err");
+        })
+        .then(function () { send.disabled = false; });
+    });
+  }
+
   // ---------- quote tape ----------
 
   var topbar = document.querySelector(".topbar");
