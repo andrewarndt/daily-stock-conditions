@@ -1053,6 +1053,14 @@ footer p:last-child { margin-bottom: 0; }
 .about-me p { grid-column: 2; margin: 0 0.7rem 0.45rem 0; color: var(--ink-soft); font-size: 0.8rem; max-width: 110ch; }
 .about-me p:last-child { margin-bottom: 0; }
 
+/* ---------- earnings tab ---------- */
+
+section > p.season-note { margin-top: 0.6rem; margin-bottom: 0.6rem; }
+.rail-gap { margin-top: 0.9rem; }
+.stat-value.small { font-size: 1rem; }
+.research-note { margin: 0.6rem 0 0; padding-top: 0.5rem; border-top: 1px solid var(--line); }
+.research-note strong { color: var(--ink); font-weight: 600; }
+
 /* ---------- feedback (added by desk.js) ---------- */
 
 .feedback { padding-bottom: 0.7rem; }

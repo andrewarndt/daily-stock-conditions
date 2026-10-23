@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SS82YDJ0GN"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-SS82YDJ0GN');
+</script>
+<title>Earnings — Market Desk</title>
+<meta name="description" content="The S&P 500 earnings season at a glance — beat rates, surprises, growth, margins and valuation, plus how many companies are guiding below expectations.">
+<link rel="canonical" href="https://4aholdingscompany.com/market_report/earnings.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Earnings — Market Desk">
+<meta property="og:description" content="The S&P 500 earnings season at a glance — beat rates, surprises, growth, margins and valuation, plus how many companies are guiding below expectations.">
+<meta property="og:url" content="https://4aholdingscompany.com/market_report/earnings.html">
+<meta property="og:image" content="https://4aholdingscompany.com/images/logo-mark.png">
+<meta name="twitter:card" content="summary">
+<link rel="icon" type="image/png" href="/favicon.png">
+<script>try{var t=localStorage.getItem("md-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="assets/style.css?v=11">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand-row">
+      <a class="brand" href="index.html">Market <span>Desk</span></a>
+      <div class="top-meta">
+        <span class="notice" id="live-notice">Loading earnings data&hellip;</span>
+        <span class="refresh-stamp"><span class="dot"></span>Latest report: <span id="refresh-time">--</span></span>
+      </div>
+    </div>
+    <nav class="tabs">
+      <a href="index.html" class="tab">Overview</a>
+      <a href="sentiment.html" class="tab">Sentiment</a>
+      <a href="earnings.html" class="tab active">Earnings</a>
+      <a href="sector-ratios.html" class="tab">Sector Ratios</a>
+      <a href="fed-economic.html" class="tab">Fed &amp; Economic</a>
+      <a href="bonds.html" class="tab">Bonds</a>
+    </nav>
+  </div>
+</div>
+
+<div class="page">
+  <div class="page-head">
+    <h1>Earnings</h1>
+    <p>How S&amp;P 500 companies are reporting against expectations, what they are guiding for next quarter, and where growth, margins and valuation stand.</p>
+  </div>
+
+  <section>
+    <div class="section-head">
+      <h2 id="season-title">Earnings Season<span id="season-flag"></span></h2>
+      <span class="section-note" id="season-asof">S&amp;P 500 scorecard</span>
+    </div>
+    <div class="metric-grid cols-4" id="season-grid">
+      <!-- populated from data/earnings.json; see script at bottom of page -->
+    </div>
+    <p class="chart-sub season-note" id="season-note" hidden></p>
+  </section>
+
+  <div class="group-label">Guidance</div>
+
+  <section>
+    <div class="section-head">
+      <h2>Negative Guidance</h2>
+      <span class="section-note">Share of next-quarter EPS guidance below consensus</span>
+    </div>
+    <div class="chart-row">
+      <div class="chart-card">
+        <h3>Negative share by quarter</h3>
+        <div class="legend">
+          <span class="legend-item"><span class="legend-swatch" style="background:var(--accent)"></span>% of guidance below consensus</span>
+          <span class="legend-item"><span class="legend-swatch dashed" style="background:var(--ink-soft)"></span>FactSet 10-yr average</span>
+        </div>
+        <svg id="chart-guidance" width="640" height="230"></svg>
+      </div>
+      <div class="chart-card">
+        <div class="stat-label" id="guide-now-label">Guidance so far</div>
+        <div class="stat-value" id="guide-now-value">--</div>
+        <div class="stat-delta flat" id="guide-now-sub"></div>
+        <div class="stat-label rail-gap" id="guide-last-label">Last full tally</div>
+        <div class="stat-value" id="guide-last-value">--</div>
+        <div class="stat-delta" id="guide-last-delta"></div>
+        <div class="stat-label rail-gap">Full-year guidance</div>
+        <div class="stat-value small" id="guide-fy-value">--</div>
+        <p class="chart-sub rail-gap">FactSet counts guidance as negative when a company's EPS guidance (or its midpoint) comes in below the consensus estimate, not when a company lowers its own outlook.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="span-6 stretch">
+    <div class="section-head">
+      <h2>Guidance Jumps</h2>
+      <span class="section-note">Change in negative share vs prior quarter</span>
+    </div>
+    <div class="chart-card">
+      <p class="chart-sub">Quarter-over-quarter change in the negative share, in percentage points.</p>
+      <svg id="chart-jump" width="420" height="200"></svg>
+      <p class="chart-sub research-note"><strong>Not a timing signal.</strong> Large jumps came shortly before or during the 2018, 2022 and 2025 sell-offs, but a Market Desk test on 2011&ndash;2016 data found no such link: the 2011 and 2015 declines had no warning jump, and bigger jumps in those years were followed by <em>better</em> returns.</p>
+    </div>
+  </section>
+
+  <section class="span-6 stretch">
+    <div class="section-head">
+      <h2>Beat Rates</h2>
+      <span class="section-note">Share of companies beating estimates, season end</span>
+    </div>
+    <div class="chart-card">
+      <div class="legend">
+        <span class="legend-item"><span class="legend-swatch" style="background:var(--up)"></span>EPS beat</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:var(--blue)"></span>Revenue beat</span>
+        <span class="legend-item"><span class="legend-swatch dashed" style="background:var(--ink-soft)"></span>EPS 5-yr average</span>
+      </div>
+      <svg id="chart-beat" width="420" height="200"></svg>
+    </div>
+  </section>
+
+  <div class="group-label">Fundamentals</div>
+
+  <section class="span-6 stretch">
+    <div class="section-head">
+      <h2>Earnings Growth</h2>
+      <span class="section-note">Year over year, S&amp;P 500 aggregate</span>
+    </div>
+    <div class="chart-card">
+      <div class="legend">
+        <span class="legend-item"><span class="legend-swatch" style="background:var(--accent)"></span>EPS growth</span>
+        <span class="legend-item"><span class="legend-swatch dashed" style="background:var(--ink-soft)"></span>Expected at quarter start</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:var(--blue)"></span>Revenue growth</span>
+      </div>
+      <svg id="chart-growth" width="420" height="200"></svg>
+      <p class="chart-sub" id="growth-note"></p>
+    </div>
+  </section>
+
+  <section class="span-3 stretch">
+    <div class="section-head">
+      <h2>Net Margin</h2>
+      <span class="section-note" id="margin-asof">S&amp;P 500</span>
+    </div>
+    <div class="chart-card">
+      <svg id="chart-margin" width="260" height="200"></svg>
+    </div>
+  </section>
+
+  <section class="span-3 stretch">
+    <div class="section-head">
+      <h2>Forward P/E</h2>
+      <span class="section-note">12-month forward</span>
+    </div>
+    <div class="chart-card">
+      <svg id="chart-pe" width="260" height="200"></svg>
+    </div>
+  </section>
+
+  <footer>
+    <p id="earnings-status-note">Checking feed status&hellip;</p>
+    <p>Figures come from FactSet's weekly Earnings Insight report and are refreshed here after each Friday release. Early in a season only a small share of companies has reported, so beat rates and surprises can move a lot from week to week.</p>
+    <p class="disclaimer">For informational purposes only, not investment advice. Data comes from the third-party sources named on each tab and may be delayed or contain errors.</p>
+  </footer>
+</div>
+
+<script src="assets/charts.js?v=6"></script>
+
+<script>
+(function () {
+  "use strict";
+
+  // Built locally by scripts/export-earnings.mjs from the FactSet Earnings
+  // Insight scraper, like Market Breadth -- so there is no seed fallback:
+  // if the file is missing the page says so instead of showing made-up
+  // numbers, and a feed that hasn't been refreshed is flagged.
+  var STALE_DAYS = 10;
+  var lastRendered = null;
+
+  function has(v) { return v !== null && v !== undefined && isFinite(v); }
+  function pct(v, d) { return has(v) ? v.toFixed(d === undefined ? 0 : d) + "%" : "--"; }
+  function signed(v, d, unit) {
+    if (!has(v)) return "--";
+    return (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v).toFixed(d) + (unit || "");
+  }
+  function shortQuarter(label) { return label.replace(/^(Q\d) \d\d(\d\d)$/, "$1 '$2"); }
+  function fmtDate(d, opts) {
+    return new Date(d + "T00:00:00Z").toLocaleString("en-US", Object.assign({ timeZone: "UTC" }, opts));
+  }
+
+  // ▲/▼ vs a benchmark. higherIsGood=false flips the color, not the arrow.
+  function vsAvg(v, avg, unit, label) {
+    if (!has(v) || !has(avg)) return "";
+    var diff = v - avg;
+    var cls = Math.abs(diff) < 0.05 ? "flat" : diff > 0 ? "up" : "down";
+    var arrow = cls === "flat" ? "" : diff > 0 ? "▲ " : "▼ ";
+    return '<div class="metric-change ' + cls + '">' + arrow + Math.abs(diff).toFixed(1) + unit + " vs " + label + " (" + avg + (unit === " pts" ? "%" : "") + ")</div>";
+  }
+
+  function card(name, value, extra) {
+    return '<div class="metric-card"><div class="metric-name">' + name + '</div>' +
+      '<div class="metric-value">' + value + '</div>' + (extra || "") + '</div>';
+  }
+
+  function renderSeason(data) {
+    var s = data.latest.season, g = data.latest.growth, m = data.latest.margin;
+    document.getElementById("season-title").firstChild.textContent = s.quarter + " Earnings Season";
+    document.getElementById("season-asof").textContent =
+      "S&P 500 scorecard · FactSet, " + fmtDate(s.report_date, { month: "short", day: "numeric", year: "numeric" });
+
+    document.getElementById("season-grid").innerHTML = [
+      card("Companies reported", pct(s.pct_reported),
+        '<div class="metric-sub">' + (s.in_progress ? "Season in progress" : "Season complete") + "</div>"),
+      card("EPS beat rate", pct(s.eps_beat_pct), vsAvg(s.eps_beat_pct, s.eps_beat_5y_avg, " pts", "5-yr avg")),
+      card("EPS surprise", signed(s.eps_surprise_pct, 1, "%"), vsAvg(s.eps_surprise_pct, s.eps_surprise_5y_avg, " pts", "5-yr avg")),
+      card("Revenue beat rate", pct(s.rev_beat_pct), vsAvg(s.rev_beat_pct, s.rev_beat_5y_avg, " pts", "5-yr avg")),
+      card("EPS growth", signed(g.eps_growth, 1, "%"),
+        '<div class="metric-sub">' + g.quarter + ", " + (g.kind === "blended" ? "blended actual + estimate" : g.kind || "year over year") + "</div>"),
+      card("Revenue growth", signed(g.rev_growth, 1, "%"),
+        '<div class="metric-sub">' + g.quarter + ", year over year</div>"),
+      card("Net profit margin", pct(m.net_margin, 1), vsAvg(m.net_margin, m.avg_5y, " pts", "5-yr avg")),
+      card("Forward P/E", has(data.latest.fwd_pe) ? data.latest.fwd_pe.toFixed(1) : "--",
+        '<div class="metric-sub">12-month forward EPS</div>')
+    ].join("");
+
+    var note = document.getElementById("season-note");
+    if (s.in_progress && has(s.pct_reported) && s.pct_reported < 50) {
+      note.textContent = "Early in the season: " + pct(s.pct_reported) +
+        " of S&P 500 companies have reported, so these rates rest on a small sample and can shift as the big reporting weeks arrive.";
+      note.hidden = false;
+    } else {
+      note.hidden = true;
+    }
+  }
+
+  function renderGuidance(data) {
+    var g = data.latest.guidance;
+    var finals = data.quarters.filter(function (q) { return q.guide_final && has(q.guide_negative_pct); });
+    var lastFinal = finals[finals.length - 1];
+
+    document.getElementById("guide-now-label").textContent = g.quarter + " guidance so far";
+    document.getElementById("guide-now-value").textContent =
+      has(g.negative) ? g.negative + " of " + g.issued + " negative" : "--";
+    document.getElementById("guide-now-sub").textContent =
+      pct(g.negative_pct) + " negative · 10-yr avg " + pct(g.negative_10y_avg) +
+      (has(g.issued) && g.issued < 60 ? " · tally still building" : "");
+
+    if (lastFinal) {
+      document.getElementById("guide-last-label").textContent = "Last full tally · " + lastFinal.quarter;
+      document.getElementById("guide-last-value").textContent = pct(lastFinal.guide_negative_pct, 1) + " negative";
+      var d = document.getElementById("guide-last-delta");
+      d.textContent = lastFinal.guide_negative + " negative, " + lastFinal.guide_positive + " positive · " +
+        (has(lastFinal.guide_jump) ? signed(lastFinal.guide_jump, 1, " pts") + " vs prior quarter" : "");
+      d.className = "stat-delta " + (!has(lastFinal.guide_jump) ? "flat" : lastFinal.guide_jump > 0 ? "down" : "up");
+    }
+    document.getElementById("guide-fy-value").textContent =
+      has(g.fy_negative) ? g.fy_negative + " negative · " + g.fy_positive + " positive" : "--";
+
+    var rows = data.quarters.filter(function (q) { return q.guide_final; });
+    MC.lineChart(document.getElementById("chart-guidance"), {
+      xLabels: rows.map(function (q) { return q.quarter; }),
+      xTickFmt: shortQuarter,
+      series: [
+        { name: "Negative", color: MC.css("--accent"), area: true, data: rows.map(function (q) { return q.guide_negative_pct; }) },
+        { name: "10-yr avg", color: MC.css("--ink-soft"), dashed: true, width: 1.5, endLabel: false, data: rows.map(function (q) { return q.guide_negative_10y_avg; }) }
+      ],
+      yMin: 20, yMax: 100, exactRange: true, yTicks: 4,
+      yFmt: function (v) { return v.toFixed(0) + "%"; },
+      maxXLabels: 8
+    });
+
+    var jumps = rows.filter(function (q) { return has(q.guide_jump); });
+    MC.lineChart(document.getElementById("chart-jump"), {
+      xLabels: jumps.map(function (q) { return q.quarter; }),
+      xTickFmt: shortQuarter,
+      series: [{ name: "Change", color: MC.css("--accent"), data: jumps.map(function (q) { return q.guide_jump; }) }],
+      referenceLine: { value: 0, label: "" },
+      yMin: -30, yMax: 30, exactRange: true, yTicks: 6,
+      yFmt: function (v) { return signed(v, 0); },
+      maxXLabels: 6
+    });
+  }
+
+  // Trim a series to the span between its first and last reported values.
+  function fromFirst(rows, keys) {
+    function any(q) { return keys.some(function (k) { return has(q[k]); }); }
+    var start = rows.findIndex(any);
+    if (start < 0) return [];
+    var end = rows.length;
+    while (end > start && !any(rows[end - 1])) end--;
+    return rows.slice(start, end);
+  }
+
+  function renderHistory(data) {
+    var beat = fromFirst(data.quarters.filter(function (q) { return q.season_final; }), ["eps_beat_pct"]);
+    MC.lineChart(document.getElementById("chart-beat"), {
+      xLabels: beat.map(function (q) { return q.quarter; }),
+      xTickFmt: shortQuarter,
+      series: [
+        { name: "EPS", color: MC.css("--up"), data: beat.map(function (q) { return q.eps_beat_pct; }) },
+        { name: "Revenue", color: MC.css("--blue"), data: beat.map(function (q) { return q.rev_beat_pct; }) },
+        { name: "5-yr avg", color: MC.css("--ink-soft"), dashed: true, width: 1.5, endLabel: false, data: beat.map(function (q) { return q.eps_beat_5y_avg; }) }
+      ],
+      yMin: 40, yMax: 100, exactRange: true, yTicks: 6,
+      yFmt: function (v) { return v.toFixed(0) + "%"; },
+      maxXLabels: 5
+    });
+
+    var growth = fromFirst(data.quarters, ["eps_growth"]);
+    MC.lineChart(document.getElementById("chart-growth"), {
+      xLabels: growth.map(function (q) { return q.quarter; }),
+      xTickFmt: shortQuarter,
+      series: [
+        { name: "EPS", color: MC.css("--accent"), data: growth.map(function (q) { return q.eps_growth; }) },
+        { name: "Expected", color: MC.css("--ink-soft"), dashed: true, width: 1.5, endLabel: false, data: growth.map(function (q) { return q.eps_growth_start_est; }) },
+        { name: "Revenue", color: MC.css("--blue"), data: growth.map(function (q) { return q.rev_growth; }) }
+      ],
+      referenceLine: { value: 0, label: "" },
+      yMin: -40, yMax: 100, exactRange: true, yTicks: 7,
+      yFmt: function (v) { return v.toFixed(0) + "%"; },
+      maxXLabels: 5
+    });
+    var lastGrowth = growth[growth.length - 1];
+    document.getElementById("growth-note").textContent = lastGrowth && lastGrowth.eps_growth_kind === "blended"
+      ? "The latest quarter is blended: actual results for companies that have reported, estimates for the rest."
+      : "";
+
+    var margin = fromFirst(data.quarters, ["net_margin"]);
+    MC.lineChart(document.getElementById("chart-margin"), {
+      xLabels: margin.map(function (q) { return q.quarter; }),
+      xTickFmt: shortQuarter,
+      series: [{ name: "Margin", color: MC.css("--up"), area: true, data: margin.map(function (q) { return q.net_margin; }) }],
+      yMin: 8, yMax: 18, exactRange: true, yTicks: 5,
+      yFmt: function (v) { return v.toFixed(0) + "%"; },
+      endLabels: true,
+      maxXLabels: 3
+    });
+
+    var pe = fromFirst(data.quarters, ["fwd_pe"]);
+    MC.lineChart(document.getElementById("chart-pe"), {
+      xLabels: pe.map(function (q) { return q.quarter; }),
+      xTickFmt: shortQuarter,
+      series: [{ name: "P/E", color: MC.css("--blue"), area: true, data: pe.map(function (q) { return q.fwd_pe; }) }],
+      yMin: 12, yMax: 24, exactRange: true, yTicks: 6,
+      yFmt: function (v) { return v.toFixed(0); },
+      maxXLabels: 3
+    });
+  }
+
+  function render(data) {
+    if (data.updated === lastRendered) return;
+    lastRendered = data.updated;
+
+    var asof = new Date(data.asof + "T00:00:00Z");
+    var ageDays = (Date.now() - asof.getTime()) / 864e5;
+    var stale = !(ageDays <= STALE_DAYS);
+    document.getElementById("refresh-time").textContent = fmtDate(data.asof, { month: "short", day: "numeric", year: "numeric" });
+    document.getElementById("live-notice").textContent = stale
+      ? "FactSet · not updated since " + fmtDate(data.asof, { month: "short", day: "numeric" })
+      : "FactSet · weekly";
+    document.getElementById("season-flag").innerHTML = stale ? '<span class="placeholder-flag">not updated since</span>' : "";
+    document.getElementById("earnings-status-note").textContent = stale
+      ? "These figures are from the " + fmtDate(data.asof, { month: "long", day: "numeric" }) + " report and have not been refreshed since; a newer FactSet report may be out."
+      : "Figures are from FactSet's " + fmtDate(data.asof, { month: "long", day: "numeric", year: "numeric" }) + " Earnings Insight report.";
+
+    renderSeason(data);
+    renderGuidance(data);
+    renderHistory(data);
+  }
+
+  function load() {
+    fetch("data/earnings.json?t=" + Date.now(), { cache: "no-store" })
+      .then(function (res) { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); })
+      .then(render)
+      .catch(function (err) {
+        console.warn("Could not load data/earnings.json:", err);
+        if (lastRendered) return; // keep the last good render on a transient failure
+        document.getElementById("live-notice").textContent = "Earnings data not available right now";
+        document.getElementById("season-grid").innerHTML =
+          '<div class="metric-card"><div class="metric-name">Earnings data not available right now</div></div>';
+        document.getElementById("earnings-status-note").textContent = "The earnings feed could not be loaded.";
+      });
+  }
+
+  load();
+  // The feed changes weekly, so a slow poll is plenty; it only matters for
+  // a tab left open across a Friday refresh.
+  setInterval(function () { if (document.visibilityState === "visible") load(); }, 10 * 60000);
+})();
+</script>
+<script src="assets/desk.js?v=3" defer></script>
+<script src="/assets/site-links.js?v=2" defer></script>
+</body>
+</html>

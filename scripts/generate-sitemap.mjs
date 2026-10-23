@@ -27,6 +27,7 @@ const STATIC_PAGES = [
   ["/", "weekly", "1.0"],
   ["/market_report/index.html", "hourly", "0.9"],
   ["/market_report/sentiment.html", "daily", "0.7"],
+  ["/market_report/earnings.html", "weekly", "0.7"],
   ["/market_report/sector-ratios.html", "daily", "0.7"],
   ["/market_report/fed-economic.html", "daily", "0.7"],
   ["/market_report/bonds.html", "daily", "0.7"],
