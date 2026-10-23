@@ -22,7 +22,7 @@
 <meta property="og:image" content="https://4aholdingscompany.com/wildlife/assets/web/Everglades%20National%20Park%2C%20Florida/IMG_7093.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/png" href="/favicon.png">
-<link rel="stylesheet" href="assets/style.css?v=4">
+<link rel="stylesheet" href="assets/style.css?v=5">
 </head>
 <body>
 
@@ -58,7 +58,8 @@
   <div id="footer-slot"></div>
 </div>
 
-<script src="assets/parks.js?v=2"></script>
+<script src="/assets/inquiry.js?v=1"></script>
+<script src="assets/parks.js?v=3"></script>
 <script>
   const slug = new URLSearchParams(location.search).get("park");
 
@@ -67,7 +68,7 @@
     const titleEl = document.getElementById("park-title");
     const subtitleEl = document.getElementById("park-subtitle");
     const gridEl = document.getElementById("photo-grid");
-    document.getElementById("footer-slot").outerHTML = contactFooterHtml();
+    document.getElementById("footer-slot").outerHTML = contactFooterHtml(park && park.name);
     document.getElementById("quality-note-slot").outerHTML = photoQualityNoteHtml();
 
     if (!park) {

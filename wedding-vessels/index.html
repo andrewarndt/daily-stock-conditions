@@ -25,7 +25,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Jost:wght@300;400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/style.css?v=2">
+<link rel="stylesheet" href="assets/style.css?v=3">
 </head>
 <body>
 <div class="topbar"><a href="../">&larr; 4A Holdings Company</a></div>
@@ -97,12 +97,88 @@
 
   <section class="contact">
     <img class="headshot" src="assets/images/andrew-arndt.jpg" alt="Andrew Arndt" width="400" height="400">
-    <h2>Contact</h2>
-    <p class="sub">Andrew Arndt<br><a href="mailto:4aholdingscompany@gmail.com">4aholdingscompany@gmail.com</a><br><a href="tel:+17247572421">724-757-2421</a></p>
+    <h2>Start an inquiry</h2>
+    <p class="sub intro">Tell me about your boutique or event and I'll follow up with samples, colors and engraving ideas. No obligation.</p>
+    <form class="inquiry" id="inquiry-form" novalidate>
+      <label>Your name
+        <input name="name" type="text" autocomplete="name" required>
+      </label>
+      <label>Email
+        <input name="email" type="email" autocomplete="email" required>
+      </label>
+      <label><span>Boutique or business <span class="opt">optional</span></span>
+        <input name="business" type="text" autocomplete="organization">
+      </label>
+      <label><span>Phone <span class="opt">optional</span></span>
+        <input name="phone" type="tel" autocomplete="tel">
+      </label>
+      <label><span>Event date <span class="opt">optional</span></span>
+        <input name="date" type="date">
+      </label>
+      <label>Vessels needed
+        <select name="quantity">
+          <option>Not sure yet</option><option>10 to 24</option><option>25 to 49</option><option>50 to 99</option><option>100+</option>
+        </select>
+      </label>
+      <label class="full">Tell me about it
+        <textarea name="message" rows="4" placeholder="Colors you have in mind, engraving ideas, venue, questions..." required></textarea>
+      </label>
+      <input type="text" name="_honey" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <div class="full actions">
+        <button type="submit">Send inquiry</button>
+        <p class="status" id="inquiry-status" role="status" aria-live="polite"></p>
+      </div>
+    </form>
+    <p class="sub direct">Prefer to reach out directly? Andrew Arndt &middot; <a href="mailto:4aholdingscompany@gmail.com">4aholdingscompany@gmail.com</a> &middot; <a href="tel:+17247572421">724-757-2421</a></p>
   </section>
 </div>
 <div class="lightbox" id="lightbox"><img alt=""></div>
 <script src="assets/concepts.js"></script>
+<script src="/assets/inquiry.js?v=1"></script>
+<script>
+  // Event inquiry form, sent by email through /assets/inquiry.js.
+  (function () {
+    var form = document.getElementById("inquiry-form");
+    var status = document.getElementById("inquiry-status");
+    var send = form.querySelector('button[type="submit"]');
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var missing = Array.prototype.filter.call(form.querySelectorAll("[required]"), function (el) { return !el.value.trim(); });
+      if (missing.length) {
+        status.textContent = "Please add your name, email, and a note about your event.";
+        missing[0].focus();
+        return;
+      }
+      if (!form.elements.email.checkValidity()) {
+        status.textContent = "That email doesn't look right.";
+        form.elements.email.focus();
+        return;
+      }
+      var d = new FormData(form);
+      status.textContent = "Sending...";
+      send.disabled = true;
+      sendInquiry("Centerpiece inquiry: " + (d.get("business").trim() || d.get("name").trim()), {
+        "Name": d.get("name").trim(),
+        "Email": d.get("email").trim(),
+        "Boutique or business": d.get("business").trim(),
+        "Phone": d.get("phone").trim(),
+        "Event date": d.get("date"),
+        "Vessels needed": d.get("quantity"),
+        "Message": d.get("message").trim()
+      }, d.get("_honey"))
+        .then(function () {
+          form.reset();
+          status.textContent = "Thank you, your inquiry was sent. I'll be in touch soon.";
+        })
+        .catch(function (err) {
+          console.warn("Centerpiece inquiry: send failed", err);
+          status.textContent = "That didn't go through. Please email " + sendInquiry.email + " instead.";
+        })
+        .then(function () { send.disabled = false; });
+    });
+  })();
+</script>
 <script src="/assets/site-links.js?v=2" defer></script>
 </body>
 </html>

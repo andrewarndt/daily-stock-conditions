@@ -42,18 +42,79 @@ function locationHtml(park) {
 // Contact address shown on every page in this section — edit here, not per-page.
 const CONTACT_EMAIL = "4aholdingscompany@gmail.com";
 
-function contactFooterHtml() {
+// parkName (optional) pre-fills the "which photo" field on a gallery page.
+// The form is sent by the submit handler below through /assets/inquiry.js.
+function contactFooterHtml(parkName) {
+  const photo = parkName ? escapeHtml(parkName) + " — " : "";
   return `
     <footer class="site-footer">
       <div class="contact-card">
         <div>
           <h2>Interested in a print?</h2>
-          <p>Every photo here is from a real trip. Prints start at <strong>$27 for an 8 × 10 in</strong> print, with larger sizes available. If one catches your eye or you'd like to license a photo, get in touch.</p>
+          <p>Every photo here is from a real trip. Prints start at <strong>$27 for an 8 × 10 in</strong> print, with larger sizes available. If one catches your eye or you'd like to license a photo, send a note below.</p>
         </div>
-        <a class="contact-button" href="mailto:${CONTACT_EMAIL}">✉ ${CONTACT_EMAIL}</a>
+        <form class="inquiry-form" novalidate>
+          <label>Your name<input name="name" type="text" autocomplete="name" required></label>
+          <label>Email<input name="email" type="email" autocomplete="email" required></label>
+          <label>I'm interested in
+            <select name="interest">
+              <option>An 8 × 10 in print ($27)</option>
+              <option>A larger print</option>
+              <option>Licensing a photo</option>
+              <option>Something else</option>
+            </select>
+          </label>
+          <label><span>Which photo? <span class="opt">park and a short description</span></span><input name="photo" type="text" value="${photo}" placeholder="e.g. Everglades — heron at sunrise"></label>
+          <label class="full"><span>Message <span class="opt">optional</span></span><textarea name="message" rows="3" placeholder="Size, framing, timing, questions..."></textarea></label>
+          <input type="text" name="_honey" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <div class="full actions">
+            <button type="submit" class="contact-button">Send inquiry</button>
+            <p class="inquiry-status" role="status" aria-live="polite"></p>
+          </div>
+        </form>
+        <p class="contact-direct">Prefer email? <a href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a></p>
       </div>
     </footer>`;
 }
+
+document.addEventListener("submit", (e) => {
+  const form = e.target.closest(".inquiry-form");
+  if (!form) return;
+  e.preventDefault();
+  const f = form.elements;
+  const status = form.querySelector(".inquiry-status");
+  const send = form.querySelector('button[type="submit"]');
+  const missing = [f.name, f.email].filter((el) => !el.value.trim());
+  if (missing.length) {
+    status.textContent = "Please add your name and email.";
+    missing[0].focus();
+    return;
+  }
+  if (!f.email.checkValidity()) {
+    status.textContent = "That email doesn't look right.";
+    f.email.focus();
+    return;
+  }
+  status.textContent = "Sending…";
+  send.disabled = true;
+  sendInquiry("Print inquiry: " + f.interest.value, {
+    "Name": f.name.value.trim(),
+    "Email": f.email.value.trim(),
+    "Interested in": f.interest.value,
+    "Photo": f.photo.value.trim(),
+    "Message": f.message.value.trim(),
+    "Sent from": location.href,
+  }, f._honey.value)
+    .then(() => {
+      form.reset();
+      status.textContent = "Thanks, your inquiry was sent. I'll be in touch soon.";
+    })
+    .catch((err) => {
+      console.warn("Print inquiry: send failed", err);
+      status.textContent = `That didn't go through. Please email ${CONTACT_EMAIL} instead.`;
+    })
+    .finally(() => { send.disabled = false; });
+});
 
 // Small print note shown on every wildlife page -- see webPhotoUrl() above.
 function photoQualityNoteHtml() {

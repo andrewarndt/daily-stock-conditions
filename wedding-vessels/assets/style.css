@@ -93,6 +93,49 @@ td:first-child { font-family: var(--serif); font-size: 1.2rem; font-weight: 500;
 .headshot { width: 9rem; height: 9rem; border-radius: 50%; object-fit: cover; object-position: center 30%; border: 3px solid var(--accent); box-shadow: var(--shadow); margin: 0 auto 1.25rem; display: block; }
 .contact a { color: var(--accent); text-decoration: none; }
 .contact a:hover { text-decoration: underline; }
+.contact .sub.intro { margin-bottom: 2rem; }
+.contact .sub.direct { margin-top: 2rem; font-size: 0.92rem; }
+
+.inquiry { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem 1.25rem; align-items: end; max-width: 40rem; margin: 0 auto; text-align: left; }
+.inquiry label { display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.85rem; letter-spacing: 0.04em; color: var(--muted); }
+.inquiry .opt { font-style: italic; opacity: 0.8; letter-spacing: 0; }
+.inquiry .full { grid-column: 1 / -1; }
+.inquiry input, .inquiry select, .inquiry textarea {
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--fg);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 0.6rem;
+  padding: 0.65rem 0.8rem;
+  width: 100%;
+}
+.inquiry textarea { resize: vertical; min-height: 6rem; }
+.inquiry input:focus, .inquiry select:focus, .inquiry textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(168, 134, 79, 0.18); }
+.inquiry .actions { display: flex; flex-direction: column; align-items: center; gap: 0.75rem; margin-top: 0.5rem; }
+.inquiry button {
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--accent);
+  border: 0;
+  border-radius: 999px;
+  padding: 0.85rem 2.2rem;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+.inquiry button:hover { transform: translateY(-2px); filter: brightness(1.06); }
+.inquiry button:disabled { opacity: 0.6; cursor: default; transform: none; }
+.inquiry .status { margin: 0; min-height: 1.2em; font-size: 0.92rem; color: var(--muted); text-align: center; }
+.inquiry .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+@media (max-width: 40rem) {
+  .inquiry { grid-template-columns: minmax(0, 1fr); }
+}
 
 .lightbox { position: fixed; inset: 0; background: rgba(20, 16, 12, 0.88); display: none; align-items: center; justify-content: center; padding: 1.5rem; z-index: 10; }
 .lightbox.open { display: flex; }
