@@ -51,15 +51,14 @@ function contactFooterHtml(parkName) {
       <div class="contact-card">
         <div>
           <h2>Interested in a print?</h2>
-          <p>Every photo here is from a real trip. Prints start at <strong>$27 for an 8 × 10 in</strong> print, with larger sizes available. If one catches your eye or you'd like to license a photo, send a note below.</p>
+          <p>Every photo here is from a real trip. Prints come in small, medium and large, on foam core, acrylic or HD acrylic. If one catches your eye or you'd like to license a photo, send a note below.</p>
         </div>
         <form class="inquiry-form" novalidate>
           <label>Your name<input name="name" type="text" autocomplete="name" required></label>
           <label>Email<input name="email" type="email" autocomplete="email" required></label>
           <label>I'm interested in
             <select name="interest">
-              <option>An 8 × 10 in print ($27)</option>
-              <option>A larger print</option>
+              <option>A print</option>
               <option>Licensing a photo</option>
               <option>Something else</option>
             </select>
@@ -78,7 +77,8 @@ function contactFooterHtml(parkName) {
 }
 
 document.addEventListener("submit", (e) => {
-  const form = e.target.closest(".inquiry-form");
+  // order.html's form has its own handler.
+  const form = e.target.closest(".inquiry-form:not(.order-form)");
   if (!form) return;
   e.preventDefault();
   const f = form.elements;
@@ -118,7 +118,7 @@ document.addEventListener("submit", (e) => {
 
 // Small print note shown on every wildlife page -- see webPhotoUrl() above.
 function photoQualityNoteHtml() {
-  return `<div class="notice-banner">📷 Photos on this site are watermarked and shown at reduced resolution. Prints are made from the full high-resolution files, starting at $27 for 8 × 10 in. Get in touch to order.</div>`;
+  return `<div class="notice-banner">📷 Photos on this site are watermarked and shown at reduced resolution. Prints are made from the full high-resolution files. Get in touch to order.</div>`;
 }
 
 // Updates <meta name="description">, the canonical link, and Open

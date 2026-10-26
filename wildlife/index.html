@@ -13,16 +13,16 @@
   gtag('config', 'G-SS82YDJ0GN');
 </script>
 <title>Wildlife Photography — 4A Holdings Company</title>
-<meta name="description" content="Wildlife photography from real trips — the Everglades, Sri Lanka's national parks, the Smokies, and more. Browse galleries, or order a print, starting at $27 for 8 × 10 in.">
+<meta name="description" content="Wildlife photography from real trips — the Everglades, Sri Lanka's national parks, the Smokies, and more. Browse galleries, or order a print.">
 <link rel="canonical" href="https://4aholdingscompany.com/wildlife/">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Wildlife Photography — 4A Holdings Company">
-<meta property="og:description" content="Wildlife photography from real trips — the Everglades, Sri Lanka's national parks, the Smokies, and more. Browse galleries, or order a print, starting at $27 for 8 × 10 in.">
+<meta property="og:description" content="Wildlife photography from real trips — the Everglades, Sri Lanka's national parks, the Smokies, and more. Browse galleries, or order a print.">
 <meta property="og:url" content="https://4aholdingscompany.com/wildlife/">
 <meta property="og:image" content="https://4aholdingscompany.com/wildlife/assets/web/Everglades%20National%20Park%2C%20Florida/IMG_7093.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/png" href="/favicon.png">
-<link rel="stylesheet" href="assets/style.css?v=5">
+<link rel="stylesheet" href="assets/style.css?v=6">
 </head>
 <body>
 
@@ -73,7 +73,7 @@
 </div>
 
 <script src="/assets/inquiry.js?v=1"></script>
-<script src="assets/parks.js?v=3"></script>
+<script src="assets/parks.js?v=4"></script>
 <script>
   // Header reel: every photo, whole and uncropped, at one height, scrolling
   // across the top in a loop. The photos mix wide and tall shots, so any
@@ -153,5 +153,13 @@
 </script>
 
 <script src="/assets/site-links.js?v=2" defer></script>
+<p class="order-form-link" id="order-form-link"><a href="order.html">Show form</a></p>
+<script>
+  // Keep the link below the section links, which site-links.js appends to
+  // the end of <body>; deferred scripts finish before DOMContentLoaded.
+  document.addEventListener("DOMContentLoaded", () => {
+    document.body.appendChild(document.getElementById("order-form-link"));
+  });
+</script>
 </body>
 </html>

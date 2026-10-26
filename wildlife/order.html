@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SS82YDJ0GN"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-SS82YDJ0GN');
+</script>
+<title>Order a Print — Wildlife Photography</title>
+<meta name="description" content="Pick a wildlife photo from any park gallery and send a print order: size, shipping address, and any special requests.">
+<link rel="canonical" href="https://4aholdingscompany.com/wildlife/order.html">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="stylesheet" href="assets/style.css?v=6">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="home-link" href="../">&larr; 4A Holdings Company</a>
+    <a class="brand" href="index.html"><img class="brand-icon" src="assets/brand/wildlife-icon.png" alt="">Wildlife <span>Photography</span></a>
+    <span class="home-link-spacer" aria-hidden="true">&larr; 4A Holdings Company</span>
+  </div>
+</div>
+
+<div class="page">
+  <a class="back-link" href="index.html">&larr; All parks</a>
+  <div class="page-head">
+    <h1>Order a print</h1>
+    <p>Pick a photo from any gallery below, then fill in the form at the bottom.</p>
+  </div>
+
+  <div id="quality-note-slot"></div>
+
+  <div id="order-galleries">
+    <!-- populated from data/parks.json -->
+  </div>
+
+  <section class="contact-card order-card" id="order-form-card">
+    <h2>Your order</h2>
+    <div class="order-selected" id="order-selected">
+      <p class="order-selected-empty">No photo picked yet &mdash; choose one from the galleries above.</p>
+    </div>
+    <form class="inquiry-form order-form" novalidate>
+      <input type="hidden" name="photo">
+      <label>Your name<input name="name" type="text" autocomplete="name" required></label>
+      <label>Email<input name="email" type="email" autocomplete="email" required></label>
+      <label><span>Phone <span class="opt">optional</span></span><input name="phone" type="tel" autocomplete="tel"></label>
+      <label>Print size
+        <select name="size">
+          <option>Small</option>
+          <option>Medium</option>
+          <option>Large</option>
+        </select>
+      </label>
+      <label>Print medium
+        <select name="medium">
+          <option>Foam Core</option>
+          <option>Acrylic</option>
+          <option>HD Acrylic</option>
+        </select>
+      </label>
+      <label class="full">Street address<input name="street" type="text" autocomplete="street-address" required></label>
+      <label>City<input name="city" type="text" autocomplete="address-level2" required></label>
+      <label>State / region<input name="region" type="text" autocomplete="address-level1"></label>
+      <label>ZIP / postal code<input name="postal" type="text" autocomplete="postal-code" required></label>
+      <label>Country<input name="country" type="text" autocomplete="country-name" value="United States"></label>
+      <label class="full"><span>Special requests <span class="opt">optional</span></span><textarea name="requests" rows="3" placeholder="Framing, paper, cropping, a gift note, a date you need it by..."></textarea></label>
+      <input type="text" name="_honey" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <div class="full actions">
+        <button type="submit" class="contact-button">Send order</button>
+        <p class="inquiry-status" role="status" aria-live="polite"></p>
+      </div>
+    </form>
+    <p class="contact-direct">Nothing is charged yet. I'll email you to confirm the details and payment. Questions? <a id="order-email" href="#"></a></p>
+  </section>
+</div>
+
+<script src="/assets/inquiry.js?v=1"></script>
+<script src="assets/parks.js?v=4"></script>
+<script>
+  const galleriesEl = document.getElementById("order-galleries");
+  const selectedEl = document.getElementById("order-selected");
+  const form = document.querySelector(".order-form");
+  const emailLink = document.getElementById("order-email");
+  emailLink.href = "mailto:" + CONTACT_EMAIL;
+  emailLink.textContent = CONTACT_EMAIL;
+  document.getElementById("quality-note-slot").outerHTML = photoQualityNoteHtml();
+
+  let picked = null; // { park, filename }
+
+  function pick(park, filename, button) {
+    picked = { park, filename };
+    galleriesEl.querySelectorAll(".pick-tile[aria-pressed=true]").forEach((b) => b.setAttribute("aria-pressed", "false"));
+    button.setAttribute("aria-pressed", "true");
+    form.elements.photo.value = park.name + " — " + filename;
+    selectedEl.innerHTML = `
+      <img src="${webPhotoUrl(park, filename)}" alt="Selected photo, ${escapeHtml(park.name)}">
+      <div>
+        <p class="order-selected-park">${escapeHtml(park.name)}</p>
+        <p class="order-selected-file">${escapeHtml(filename)}</p>
+        <a href="#order-galleries" class="order-change">Pick a different photo</a>
+      </div>`;
+    document.getElementById("order-form-card").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  loadParks().then((parks) => {
+    const withPhotos = parks.filter((park) => park.photos.length > 0);
+    galleriesEl.innerHTML = withPhotos.map((park, p) => `
+      <section class="order-park">
+        <h2>${escapeHtml(park.name)}</h2>
+        ${locationHtml(park)}
+        <div class="photo-grid pick-grid">
+          ${park.photos.map((filename, i) => `
+            <button type="button" class="pick-tile" aria-pressed="false" data-park="${p}" data-photo="${i}" title="Pick this photo">
+              <img src="${webPhotoUrl(park, filename)}" alt="${escapeHtml(park.name)} wildlife photo ${i + 1}" loading="lazy">
+            </button>`).join("")}
+        </div>
+      </section>`).join("");
+
+    galleriesEl.addEventListener("click", (e) => {
+      const button = e.target.closest(".pick-tile");
+      if (!button) return;
+      const park = withPhotos[button.dataset.park];
+      pick(park, park.photos[button.dataset.photo], button);
+    });
+  }).catch((err) => {
+    console.error("Failed to load parks:", err);
+    galleriesEl.innerHTML = '<div class="empty-state">Couldn\'t load the galleries right now &mdash; try refreshing.</div>';
+  });
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const f = form.elements;
+    const status = form.querySelector(".inquiry-status");
+    const send = form.querySelector('button[type="submit"]');
+    if (!picked) {
+      status.textContent = "Please pick a photo from the galleries above.";
+      galleriesEl.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
+    const missing = [f.name, f.email, f.street, f.city, f.postal].filter((el) => !el.value.trim());
+    if (missing.length) {
+      status.textContent = "Please fill in your name, email, and shipping address.";
+      missing[0].focus();
+      return;
+    }
+    if (!f.email.checkValidity()) {
+      status.textContent = "That email doesn't look right.";
+      f.email.focus();
+      return;
+    }
+    const address = [
+      f.street.value.trim(),
+      [f.city.value.trim(), f.region.value.trim()].filter(Boolean).join(", ") + " " + f.postal.value.trim(),
+      f.country.value.trim(),
+    ].filter(Boolean).join("\n");
+    status.textContent = "Sending…";
+    send.disabled = true;
+    sendInquiry("Print order: " + picked.park.name + " (" + f.size.value + ", " + f.medium.value + ")", {
+      "Name": f.name.value.trim(),
+      "Email": f.email.value.trim(),
+      "Phone": f.phone.value.trim(),
+      "Photo": f.photo.value,
+      "Photo link": new URL(webPhotoUrl(picked.park, picked.filename), location.href).href,
+      "Size": f.size.value,
+      "Medium": f.medium.value,
+      "Shipping address": address,
+      "Special requests": f.requests.value.trim(),
+      "Sent from": location.href,
+    }, f._honey.value)
+      .then(() => {
+        form.reset();
+        picked = null;
+        galleriesEl.querySelectorAll(".pick-tile[aria-pressed=true]").forEach((b) => b.setAttribute("aria-pressed", "false"));
+        selectedEl.innerHTML = '<p class="order-selected-empty">No photo picked yet &mdash; choose one from the galleries above.</p>';
+        status.textContent = "Thanks, your order was sent. I'll email you to confirm the details.";
+      })
+      .catch((err) => {
+        console.warn("Print order: send failed", err);
+        status.textContent = `That didn't go through. Please email ${CONTACT_EMAIL} instead.`;
+      })
+      .finally(() => { send.disabled = false; });
+  });
+</script>
+
+<script src="/assets/site-links.js?v=2" defer></script>
+</body>
+</html>
