@@ -1,22 +1,22 @@
 {
-  "updated": "2026-10-28T19:23:57.400Z",
+  "updated": "2026-10-29T19:27:26.597Z",
   "source": "live",
   "indicators": [
     {
       "id": "gdp",
       "name": "Real GDP, QoQ Annualized",
       "desc": "Bureau of Economic Analysis",
-      "value": 2.2,
-      "prior": 2.5,
-      "asof": "2026-04-01",
+      "value": 3.4,
+      "prior": 2.2,
+      "asof": "2026-07-01",
       "unit": "%",
       "trend": [
-        0.1,
         4,
         3.9,
         0.2,
         2.5,
-        2.2
+        2.2,
+        3.4
       ],
       "live": true,
       "nextRelease": "2026-10-29"
