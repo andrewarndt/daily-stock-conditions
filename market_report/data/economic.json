@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-29T19:27:26.597Z",
+  "updated": "2026-10-30T19:03:41.691Z",
   "source": "live",
   "indicators": [
     {
@@ -19,7 +19,7 @@
         3.4
       ],
       "live": true,
-      "nextRelease": "2026-10-29"
+      "nextRelease": "2026-11-25"
     },
     {
       "id": "cpi",
@@ -179,7 +179,7 @@
       "id": "pce_price_index",
       "name": "PCE Price Index",
       "desc": "Bureau of Economic Analysis",
-      "date": "2026-10-29"
+      "date": "2026-11-25"
     },
     {
       "id": "retail_sales",
