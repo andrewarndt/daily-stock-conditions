@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-29T19:46:23.116Z",
+  "updated": "2026-10-30T19:36:49.561Z",
   "source": "live",
   "series": [
     {
@@ -10,7 +10,7 @@
       "unit": "%",
       "value": 4,
       "prior": 4,
-      "asof": "2026-10-29",
+      "asof": "2026-10-30",
       "live": true
     },
     {
@@ -21,7 +21,7 @@
       "unit": "%",
       "value": 3.75,
       "prior": 3.75,
-      "asof": "2026-10-29",
+      "asof": "2026-10-30",
       "live": true
     },
     {
@@ -32,7 +32,7 @@
       "unit": "%",
       "value": 3.88,
       "prior": 3.88,
-      "asof": "2026-10-28",
+      "asof": "2026-10-29",
       "live": true
     },
     {
@@ -42,8 +42,8 @@
       "name": "SOFR",
       "unit": "%",
       "value": 3.94,
-      "prior": 3.95,
-      "asof": "2026-10-28",
+      "prior": 3.94,
+      "asof": "2026-10-29",
       "live": true
     },
     {
@@ -54,7 +54,7 @@
       "unit": "%",
       "value": 3.9,
       "prior": 3.9,
-      "asof": "2026-10-29",
+      "asof": "2026-10-30",
       "live": true
     },
     {
@@ -63,12 +63,12 @@
       "seriesId": "WALCL",
       "name": "Fed Balance Sheet (Total Assets)",
       "unit": "$M",
-      "value": 6753604,
-      "prior": 6755639,
-      "asof": "2026-10-21",
+      "value": 6745635,
+      "prior": 6753604,
+      "asof": "2026-10-28",
       "live": true,
       "trend": "expanding",
-      "trendChange": 5900,
+      "trendChange": 2604,
       "trendLabel": "4-wk"
     },
     {
@@ -77,9 +77,9 @@
       "seriesId": "WTREGEN",
       "name": "Treasury General Account",
       "unit": "$M",
-      "value": 952002,
-      "prior": 883373,
-      "asof": "2026-10-21",
+      "value": 999727,
+      "prior": 952002,
+      "asof": "2026-10-28",
       "live": true
     },
     {
@@ -88,12 +88,12 @@
       "seriesId": "WRESBAL",
       "name": "Bank Reserves",
       "unit": "$M",
-      "value": 2962607,
-      "prior": 3022140,
-      "asof": "2026-10-21",
+      "value": 2893770,
+      "prior": 2962607,
+      "asof": "2026-10-28",
       "live": true,
-      "trend": "expanding",
-      "trendChange": 32414,
+      "trend": "contracting",
+      "trendChange": -54320,
       "trendLabel": "4-wk"
     },
     {
@@ -102,11 +102,11 @@
       "seriesId": "RRPONTSYD",
       "name": "Overnight Reverse Repo",
       "unit": "$B",
-      "value": 0.353,
-      "prior": 0.176,
-      "asof": "2026-10-29",
+      "value": 4.375,
+      "prior": 0.353,
+      "asof": "2026-10-30",
       "live": true,
-      "change5d": 0.0020000000000000018,
+      "change5d": 4.175,
       "stressed": false
     },
     {
@@ -128,12 +128,12 @@
       "seriesId": "BAMLH0A0HYM2",
       "name": "High Yield OAS",
       "unit": "bps",
-      "value": 314,
-      "prior": 318,
-      "asof": "2026-10-28",
+      "value": 326,
+      "prior": 314,
+      "asof": "2026-10-29",
       "live": true,
       "trend": "down",
-      "trendChange": -13,
+      "trendChange": -14,
       "trendLabel": "5-day",
       "condition": "Tight",
       "conditionClass": "up"
@@ -144,12 +144,12 @@
       "seriesId": "BAMLC0A0CM",
       "name": "Investment Grade OAS",
       "unit": "bps",
-      "value": 86,
-      "prior": 88,
-      "asof": "2026-10-28",
+      "value": 89,
+      "prior": 86,
+      "asof": "2026-10-29",
       "live": true,
-      "trend": "down",
-      "trendChange": -2,
+      "trend": "flat",
+      "trendChange": 0,
       "trendLabel": "5-day",
       "condition": "Very Tight",
       "conditionClass": "up"
