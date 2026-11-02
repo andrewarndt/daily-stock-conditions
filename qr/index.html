@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SS82YDJ0GN"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-SS82YDJ0GN');
+</script>
+<title>4A Holdings Company</title>
+<!-- QR code landing page (printed codes point at /qr/): keep it out of search results. -->
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" href="/favicon.png">
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #faf9f7;
+    --fg: #1b1b1a;
+    --muted: #77756f;
+    --rule: #e4e1da;
+    --gold: #b08040;
+    --surface: #ffffff;
+    --gold-line: rgba(176, 128, 64, 0.55);
+    --lift: rgba(6, 26, 51, 0.28);
+    --navy-ui: #061a33;
+    --on-navy: #ffffff;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #121211;
+      --fg: #eeece7;
+      --muted: #8f8c85;
+      --rule: #2b2a28;
+      --surface: #191918;
+      --gold: #c79a58;
+      --gold-line: rgba(199, 154, 88, 0.5);
+      --lift: rgba(0, 0, 0, 0.7);
+      --navy-ui: #eeece7;
+      --on-navy: #121211;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  main {
+    max-width: 32rem;
+    margin: 0 auto;
+    padding: 3rem 16px 2.5rem;
+  }
+  header { text-align: center; margin-bottom: 2rem; }
+  header img { width: 4.5rem; height: auto; }
+  h1 {
+    margin: 0.75rem 0 0.35rem;
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 1.8rem;
+    letter-spacing: -0.01em;
+  }
+  header p { margin: 0; color: var(--muted); font-size: 0.95rem; }
+  .cards { display: grid; gap: 0.9rem; }
+  .card {
+    position: relative;
+    display: block;
+    padding: 1.3rem 4rem 1.3rem 1.4rem;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 1.1rem;
+    color: var(--fg);
+    text-decoration: none;
+    transition: transform 0.3s cubic-bezier(.2,.7,.2,1), border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  a.card:hover, a.card:focus-visible {
+    transform: translateY(-2px);
+    border-color: var(--gold-line);
+    box-shadow: 0 18px 40px -18px var(--lift);
+  }
+  a.card:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+  .card .eyebrow {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--gold);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .card h2 {
+    margin: 0 0 0.35rem;
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 1.3rem;
+    line-height: 1.22;
+  }
+  .card p { margin: 0; color: var(--muted); font-size: 0.9rem; line-height: 1.55; }
+  .card .go {
+    position: absolute;
+    right: 1.25rem;
+    top: 50%;
+    display: grid;
+    place-items: center;
+    width: 2.1rem;
+    height: 2.1rem;
+    margin-top: -1.05rem;
+    border: 1px solid var(--rule);
+    border-radius: 50%;
+    color: var(--muted);
+    transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  }
+  a.card:hover .go, a.card:focus-visible .go {
+    background: var(--navy-ui);
+    border-color: var(--navy-ui);
+    color: var(--on-navy);
+  }
+  /* Placeholder look for the spare card while it has no link. */
+  .card.blank { border-style: dashed; background: transparent; }
+  footer { margin-top: 2rem; text-align: center; font-size: 0.85rem; }
+  footer a { color: var(--muted); }
+  @media (prefers-reduced-motion: reduce) {
+    .card, .card .go { transition: none; }
+    a.card:hover { transform: none; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <img src="/images/logo-mark.png" alt="">
+    <h1>4A Holdings Company</h1>
+    <p>Thanks for scanning. Where would you like to go?</p>
+  </header>
+
+  <div class="cards">
+    <a class="card" href="/store/">
+      <span class="eyebrow">Store</span>
+      <h2>Shop the Store</h2>
+      <p>Damascus knives, pocket knives, reed diffusers, and more.</p>
+      <span class="go" aria-hidden="true">&rarr;</span>
+    </a>
+
+    <a class="card" href="/wildlife/order.html">
+      <span class="eyebrow">Wildlife Photography</span>
+      <h2>Order a Wildlife Print</h2>
+      <p>Pick a photo from any park gallery and send in your order.</p>
+      <span class="go" aria-hidden="true">&rarr;</span>
+    </a>
+
+    <!--
+      Spare card: change it as needed.
+      To turn it on, replace this <div class="card blank"> ... </div> with a link
+      shaped like the two cards above, e.g.:
+
+      <a class="card" href="/vending/">
+        <span class="eyebrow">Services</span>
+        <h2>Vending Machine Services</h2>
+        <p>Drink and food vending for Columbus and Cincinnati area facilities.</p>
+        <span class="go" aria-hidden="true">&rarr;</span>
+      </a>
+    -->
+    <div class="card blank">
+      <span class="eyebrow">Coming Soon</span>
+      <h2>More on the way</h2>
+      <p>Check back soon for something new.</p>
+    </div>
+  </div>
+
+  <footer><a href="/">Visit the full site</a></footer>
+</main>
+</body>
+</html>
