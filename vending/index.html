@@ -12,15 +12,17 @@
 
   gtag('config', 'G-SS82YDJ0GN');
 </script>
-<title>Vending Machine Services — 4A Holdings Company</title>
-<meta name="description" content="Vending machine placement, stocking, and service for facilities in the Columbus and Cincinnati, Ohio area. Drink, food, and vapor/tobacco-free vending machines.">
+<title>Snack and Drink Vending Machine Services, Columbus and Cincinnati — 4A Holdings Company</title>
+<meta name="description" content="Free snack and drink vending machine placement, stocking, and service for workplaces and facilities in the Columbus and Cincinnati, Ohio areas. Machines accept cards, mobile pay, and cash.">
 <link rel="canonical" href="https://4aholdingscompany.com/vending/">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Vending Machine Services — 4A Holdings Company">
-<meta property="og:description" content="Drink, food, and vapor/tobacco-free vending machines for Columbus and Cincinnati area facilities.">
+<meta property="og:title" content="Snack and Drink Vending — 4A Holdings Company">
+<meta property="og:description" content="Free placement of snack and drink vending machines, stocked and serviced, for Columbus and Cincinnati area workplaces.">
 <meta property="og:url" content="https://4aholdingscompany.com/vending/">
-<meta property="og:image" content="https://4aholdingscompany.com/images/logo-mark.png">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://4aholdingscompany.com/vending/assets/og-vending.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/png" href="/favicon.png">
 <script type="application/ld+json">
 {
@@ -31,7 +33,8 @@
   "image": "https://4aholdingscompany.com/images/logo-mark.png",
   "email": "4aholdingscompany@gmail.com",
   "telephone": "+1-724-757-2421",
-  "description": "Drink, food, and vapor/tobacco-free vending machine placement, stocking, and service for facilities in the Columbus and Cincinnati, Ohio areas.",
+  "description": "Free snack and drink vending machine placement, stocking, and service for workplaces and facilities in the Columbus and Cincinnati, Ohio areas.",
+  "paymentAccepted": "Cash, Credit Card, Debit Card, Apple Pay, Google Pay",
   "areaServed": [
     { "@type": "City", "name": "Columbus, OH" },
     { "@type": "City", "name": "Cincinnati, OH" }
@@ -53,6 +56,8 @@
     --food: #e8760f;
     --vapor: #8a4fe6;
     --gold: #b08040;
+    /* gold dark enough for small text on the light backgrounds (WCAG AA) */
+    --gold-text: #86602c;
     --gold-line: rgba(176, 128, 64, 0.55);
     --spot: rgba(176, 128, 64, 0.11);
     --lift: rgba(6, 26, 51, 0.28);
@@ -71,6 +76,7 @@
       --food: #ffa23a;
       --vapor: #a87bff;
       --gold: #c79a58;
+      --gold-text: #c79a58;
       --gold-line: rgba(199, 154, 88, 0.5);
       --spot: rgba(199, 154, 88, 0.12);
       --lift: rgba(0, 0, 0, 0.7);
@@ -94,7 +100,7 @@
   .wrap { max-width: 62rem; margin: 0 auto; padding: 0 1.5rem; }
   .eyebrow {
     display: block;
-    color: var(--gold);
+    color: var(--gold-text);
     font-size: 0.72rem;
     font-weight: 600;
     letter-spacing: 0.16em;
@@ -110,6 +116,7 @@
       radial-gradient(40rem 24rem at 80% 40%, rgba(176, 128, 64, 0.22), transparent 70%),
       linear-gradient(135deg, #04122a, #0a2548);
   }
+  .hero .eyebrow, .contact .eyebrow { color: #c79a58; }
   .topbar { padding: 1.25rem 0; }
   .topbar a {
     color: rgba(255, 255, 255, 0.7);
@@ -141,6 +148,8 @@
     line-height: 1.7;
   }
   .btns { display: flex; flex-wrap: wrap; gap: 0.8rem; }
+  .trust { display: flex; flex-wrap: wrap; gap: 0.4rem 1.25rem; margin: 1.5rem 0 0; padding: 0; list-style: none; font-size: 0.85rem; color: rgba(255, 255, 255, 0.78); }
+  .trust li::before { content: "\2713"; margin-right: 0.4rem; color: #c79a58; }
   .btn {
     display: inline-block;
     padding: 0.85rem 1.5rem;
@@ -420,6 +429,10 @@
     stroke-linejoin: round;
   }
 
+  .checks { display: grid; gap: 0.5rem; margin: 0; padding: 0; list-style: none; }
+  .checks li { position: relative; padding-left: 1.6rem; }
+  .checks li::before { content: "\2713"; position: absolute; left: 0; color: var(--gold-text); font-weight: 600; }
+
   /* contact */
   .contact {
     margin-top: 5rem;
@@ -444,8 +457,8 @@
   .contact p { max-width: 30rem; margin: 0 auto 1.75rem; color: rgba(255, 255, 255, 0.78); }
   .contact .btns { justify-content: center; }
   .contact .who { margin: 1.5rem 0 0; font-size: 0.88rem; color: rgba(255, 255, 255, 0.65); }
-  .contact .who a { color: #e3c08a; text-decoration: none; }
-  .contact .who a:hover { text-decoration: underline; }
+  .contact .who a { color: #e3c08a; text-decoration: underline; text-underline-offset: 2px; }
+  .contact .who a:hover { color: #fff; }
 
   /* service areas */
   .service { display: grid; grid-template-columns: 1fr 1.1fr; gap: 1.5rem; align-items: center; }
@@ -491,6 +504,11 @@
   }
   .request label { display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.82rem; color: rgba(255, 255, 255, 0.8); }
   .request .full { grid-column: 1 / -1; }
+  .request fieldset { margin: 0; padding: 0; border: 0; display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; }
+  .request legend { padding: 0; margin-bottom: 0.45rem; font-size: 0.82rem; color: rgba(255, 255, 255, 0.8); }
+  .request fieldset label { flex-direction: row; align-items: center; gap: 0.45rem; font-size: 0.95rem; color: #fff; cursor: pointer; }
+  .request input[type="checkbox"] { width: 1.05rem; height: 1.05rem; padding: 0; accent-color: #c79a58; }
+  .request .hint { margin: -0.4rem 0 0; font-size: 0.8rem; color: rgba(255, 255, 255, 0.65); }
   .request input, .request select, .request textarea {
     width: 100%;
     padding: 0.7rem 0.85rem;
@@ -541,13 +559,18 @@
     <div class="topbar"><a href="../">&larr; 4A Holdings Company</a></div>
     <div class="hero-grid">
       <div>
-        <span class="eyebrow">Services and Equipment</span>
-        <h1>Vending Machine Services</h1>
-        <p class="lead">Serving the Columbus and Cincinnati, Ohio area. If you manage a facility and are thinking about adding a vending machine, this page explains what is available and how it works. I place, stock, and service the machines, so there is nothing for you to run or maintain.</p>
+        <span class="eyebrow">Vending Machine Services</span>
+        <h1>Snack and Drink Vending for Central Ohio Workplaces</h1>
+        <p class="lead">I place, stock, and service vending machines for offices, warehouses, manufacturing facilities, apartment communities, and other locations across the Columbus and Cincinnati areas. Placement is free, and the setup is built around your people, shifts, and space.</p>
         <div class="btns">
-          <a class="btn primary" href="#contact">Ask about a machine</a>
-          <a class="btn ghost" href="#machines">See machine types</a>
+          <a class="btn primary" href="#contact">Schedule a site walkthrough</a>
+          <a class="btn ghost" href="#machines">See machine options</a>
         </div>
+        <ul class="trust">
+          <li>Locally owned and operated</li>
+          <li>Free placement</li>
+          <li>Cards, mobile pay, and cash</li>
+        </ul>
       </div>
 
       <!-- Machine renderings (drawn by vending/scripts/generate-machines.py).
@@ -555,11 +578,9 @@
       <div class="machine-show" id="machine-show" aria-roledescription="carousel" aria-label="Machine types">
         <figure class="machine-slide is-active"><img src="assets/machine-drink.svg?v=2" alt="Glass-front cold drink vending machine" width="420" height="680"></figure>
         <figure class="machine-slide" aria-hidden="true"><img src="assets/machine-snack.svg?v=2" alt="Glass-front snack vending machine with spiral coils" width="420" height="680"></figure>
-        <figure class="machine-slide" aria-hidden="true"><img src="assets/machine-vapor.svg?v=2" alt="Touchscreen vapor vending machine with ID scanner" width="420" height="680"></figure>
         <div class="machine-tabs" role="group" aria-label="Show machine type">
           <button type="button" class="is-active" aria-pressed="true">Drink</button>
           <button type="button" aria-pressed="false">Snack</button>
-          <button type="button" aria-pressed="false">Vapor</button>
         </div>
       </div>
     </div>
@@ -569,14 +590,14 @@
 <main class="wrap">
   <div class="facts">
     <div class="fact"><span class="fact-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span><div><b>Columbus &amp; Cincinnati</b><span>Serving facilities across both areas</span></div></div>
-    <div class="fact"><span class="fact-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg></span><div><b>Placed, stocked, serviced</b><span>Nothing for you to run or maintain</span></div></div>
-    <div class="fact"><span class="fact-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><path d="M5 3h10l4 4v14H5z"/></svg></span><div><b>Terms set per site</b><span>Placement terms are negotiated with each facility, with no obligation to ask</span></div></div>
+    <div class="fact"><span class="fact-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg></span><div><b>Free placement</b><span>Placed, stocked, and serviced at no cost to your facility</span></div></div>
+    <div class="fact"><span class="fact-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18M7 15h3"/></svg></span><div><b>Card, tap, or cash</b><span>Credit and debit cards, Apple Pay, Google Pay, and cash</span></div></div>
   </div>
 
   <section id="machines">
-    <span class="eyebrow">Machine types</span>
-    <h2>The right machine for your space</h2>
-    <p class="sub">Three kinds of machines, each stocked to suit the people who use your facility.</p>
+    <span class="eyebrow">Machine options</span>
+    <h2>Snack, drinks, or both</h2>
+    <p class="sub">One machine or a snack and drink pair, each stocked to suit the people who use your facility.</p>
     <div class="cards">
       <div class="card card--drink">
         <div class="card-art"><img src="assets/machine-drink.svg?v=2" alt="" width="420" height="680">
@@ -594,22 +615,12 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h14l-1 16H6L5 4zM5 4c1 1.2 2 1.2 3.5 0s2.5-1.2 3.5 0 2.5 1.2 3.5 0 2.5-1.2 3.5 0M9 11h6M9 15h6"/></svg>
           </div>
         </div>
-        <h3>Food</h3>
-        <p>Snack and food machines with grab-and-go items.</p>
+        <h3>Snack</h3>
+        <p>Snack machines with chips, candy, and grab-and-go items.</p>
         <ul class="tags"><li>Chips</li><li>Candy</li><li>Granola bars</li><li>Grab-and-go</li></ul>
       </div>
-      <div class="card card--vapor">
-        <div class="card-art"><img src="assets/machine-vapor.svg?v=2" alt="" width="420" height="680">
-          <div class="icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2.5" width="10" height="19" rx="3"/><path d="M10 6.5h4M10 17.5h4"/></svg>
-          </div>
-        </div>
-        <h3>Vapor / Tobacco-Free</h3>
-        <p>Machines for vapor and tobacco-free products, for locations where that fits the clientele.</p>
-        <ul class="tags"><li>Vapor products</li><li>Tobacco-free products</li></ul>
-      </div>
     </div>
-    <p class="note">Product selection can be adjusted to suit the people who use your facility.</p>
+    <p class="note">Every machine accepts credit and debit cards, Apple Pay, Google Pay, and cash. Specialty machines, such as vapor and tobacco-free products, are available for suitable locations on request.</p>
   </section>
 
   <section class="band">
@@ -618,7 +629,7 @@
     <p class="sub">From first message to a stocked machine, with ongoing service after.</p>
     <div class="steps">
       <div class="step"><span class="n">01</span><h3>Reach out</h3><p>Tell me about your facility and which kind of machine you are interested in.</p></div>
-      <div class="step"><span class="n">02</span><h3>Site visit and terms</h3><p>We look at the space, foot traffic, and where a machine would fit best, then agree on placement terms that work for your facility.</p></div>
+      <div class="step"><span class="n">02</span><h3>Site walkthrough</h3><p>We look at the space, foot traffic, and where a machine would fit best, then settle on the machine mix and placement details.</p></div>
       <div class="step"><span class="n">03</span><h3>Placement</h3><p>I install the machine and stock it with products suited to your location.</p></div>
       <div class="step"><span class="n">04</span><h3>Ongoing service</h3><p>Regular restocking and maintenance, with a contact if anything needs attention.</p></div>
     </div>
@@ -626,10 +637,11 @@
 
   <section>
     <span class="eyebrow">Who it is for</span>
-    <h2>Places with steady foot traffic</h2>
-    <p class="sub">Offices, apartment communities, gyms, shops, warehouses, schools, and event venues in the Columbus and Cincinnati areas.</p>
+    <h2>Built around your facility</h2>
+    <p class="sub">The right setup depends on more than headcount. On a short site walkthrough, I look at your shifts, contractor and visitor traffic, available space, power, and delivery access, then recommend the machine mix and product plan that fits.</p>
     <ul class="venues">
       <li><span class="vi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V5l8-3v19M12 8l8 3v10M3 21h18M7 8h2M7 12h2M7 16h2M15 13h2M15 17h2"/></svg></span>Offices</li>
+      <li><span class="vi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 21V10l6 4V10l6 4V6h4l1 15zM2 21h20M6 18h2M11 18h2"/></svg></span>Manufacturing</li>
       <li><span class="vi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-7 9 7M5 9.5V21h14V9.5M10 21v-6h4v6"/></svg></span>Apartment communities</li>
       <li><span class="vi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5v11M17.5 6.5v11M3.5 9v6M20.5 9v6M6.5 12h11"/></svg></span>Gyms</li>
       <li><span class="vi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9l1.5-5h15L21 9M3 9h18M3 9c0 1.7 1.3 3 3 3s3-1.3 3-3c0 1.7 1.3 3 3 3s3-1.3 3-3c0 1.7 1.3 3 3 3s3-1.3 3-3M5 12v9h14v-9M10 21v-5h4v5"/></svg></span>Shops</li>
@@ -637,7 +649,12 @@
       <li><span class="vi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 8l10-4 10 4-10 4zM6 10v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5M22 8v6"/></svg></span>Schools</li>
       <li><span class="vi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8a2 2 0 0 0 0 4v5h18v-5a2 2 0 0 0 0-4V5H3zM9 5v12" stroke-dasharray="0"/></svg></span>Event venues</li>
     </ul>
-    <p class="note" style="margin-top:0">If you have a break room, lobby, or common area with steady traffic, it is worth a conversation.</p>
+    <ul class="checks">
+      <li>Products adjusted based on what people ask for and what sells</li>
+      <li>Restocked based on actual demand at your site</li>
+      <li>Repairs and routine maintenance handled by me</li>
+    </ul>
+    <p class="note">If you have a break room, lobby, or common area with steady traffic, it is worth a conversation.</p>
   </section>
 
   <section class="band">
@@ -655,8 +672,8 @@
 
   <div class="contact" id="contact">
     <span class="eyebrow">Get in touch</span>
-    <h2>Interested in a machine at your facility?</h2>
-    <p>Tell me a little about your facility. There is no obligation, and I am happy to answer questions.</p>
+    <h2>Schedule a site walkthrough</h2>
+    <p>Tell me a little about your facility. Placement is free, there is no obligation, and I am happy to answer questions.</p>
     <form class="request" id="request-form" novalidate>
       <label>Facility type
         <select name="facility" required>
@@ -668,22 +685,33 @@
       <label>City
         <input name="city" type="text" autocomplete="address-level2" placeholder="e.g. Dublin" required>
       </label>
-      <label>Machine type
-        <select name="machine">
-          <option>Not sure yet</option><option>Drink</option><option>Food</option><option>Vapor / tobacco-free</option>
+      <fieldset class="full machines">
+        <legend>Machines you are interested in (choose any)</legend>
+        <label><input type="checkbox" name="machine" value="Snack"> Snack</label>
+        <label><input type="checkbox" name="machine" value="Cold drinks"> Cold drinks</label>
+        <label><input type="checkbox" name="machine" value="Not sure yet"> Not sure yet</label>
+        <label><input type="checkbox" name="machine" value="Other"> Other</label>
+      </fieldset>
+      <label>Shifts / hours
+        <select name="shifts">
+          <option>Not sure</option><option>Business hours only</option><option>Two shifts</option><option>Three shifts or 24/7</option><option>Evenings / weekends</option>
         </select>
       </label>
-      <label>People on site per day (rough)
+      <label>People on site per day, incl. visitors (rough)
         <select name="traffic">
           <option>Not sure</option><option>Under 25</option><option>25 to 75</option><option>75 to 200</option><option>200+</option>
         </select>
       </label>
-      <label>Your name
+      <label class="full">Your name
         <input name="name" type="text" autocomplete="name" required>
       </label>
-      <label>Your email or phone
-        <input name="contact" type="text" autocomplete="email" required>
+      <label>Email
+        <input name="email" type="email" autocomplete="email" inputmode="email">
       </label>
+      <label>Phone
+        <input name="phone" type="tel" autocomplete="tel" inputmode="tel">
+      </label>
+      <p class="full hint">Email or phone is fine, whichever you prefer.</p>
       <label class="full">Anything else (optional)
         <textarea name="notes" placeholder="Where the machine would go, hours, questions..."></textarea>
       </label>
@@ -698,7 +726,7 @@
 
 
 <script>
-  // Hero carousel: drink -> snack -> vapor every 5 s. Hover or keyboard
+  // Hero carousel: drink <-> snack every 5 s. Hover or keyboard
   // focus pauses it; the buttons jump to a machine; no auto-advance for
   // visitors who ask for reduced motion.
   (function () {
@@ -754,9 +782,16 @@
     form.addEventListener("submit", function (e) {
       e.preventDefault();
       var missing = Array.prototype.filter.call(form.querySelectorAll("[required]"), function (el) { return !el.value.trim(); });
+      var email = form.elements.email, phone = form.elements.phone;
+      if (!email.value.trim() && !phone.value.trim()) missing.push(email);
       if (missing.length) {
-        status.textContent = "Please fill in facility type, city, your name, and how to reach you.";
+        status.textContent = "Please fill in facility type, city, your name, and an email or phone number.";
         missing[0].focus();
+        return;
+      }
+      if (email.value.trim() && !email.checkValidity()) {
+        status.textContent = "That email address doesn't look right.";
+        email.focus();
         return;
       }
       var d = new FormData(form);
@@ -765,10 +800,12 @@
       sendInquiry("Vending request: " + d.get("facility") + " in " + d.get("city").trim(), {
         "Facility type": d.get("facility"),
         "City": d.get("city").trim(),
-        "Machine type": d.get("machine"),
+        "Machines": d.getAll("machine").join(", ") || "Not specified",
+        "Shifts / hours": d.get("shifts"),
         "People on site per day": d.get("traffic"),
         "Name": d.get("name").trim(),
-        "Contact": d.get("contact").trim(),
+        "Email": d.get("email").trim(),
+        "Phone": d.get("phone").trim(),
         "Notes": d.get("notes").trim()
       }, d.get("_honey"))
         .then(function () {
@@ -783,6 +820,6 @@
     });
   })();
 </script>
-<script src="/assets/site-links.js?v=2" defer></script>
+<script src="/assets/site-links.js?v=3" data-focus="vending" defer></script>
 </body>
 </html>

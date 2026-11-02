@@ -2,7 +2,13 @@
 // visitor can move between sections (store -> wildlife, etc.) without going
 // back through the homepage. Edit the list here, not per-page. Paths are
 // root-relative, so this works from any section folder.
+//
+// A page aimed at one audience can load this with data-focus="<name>"
+// (e.g. the vending page) to drop the section list and show just the brand,
+// contact line, and one quiet link to the rest of the company.
 (function () {
+  var script = document.currentScript;
+  var focus = script && script.getAttribute("data-focus");
   var LINKS = [
     ["/", "Home"],
     ["/vending/", "Vending"],
@@ -14,7 +20,7 @@
   var EMAIL = "4aholdingscompany@gmail.com";
 
   var css =
-    ".site-links{--sl-bg:#f6f3ec;--sl-fg:#1b1b1a;--sl-muted:#77756f;--sl-rule:#e4e1da;--sl-gold:#b08040;" +
+    ".site-links{--sl-bg:#f6f3ec;--sl-fg:#1b1b1a;--sl-muted:#625f59;--sl-rule:#e4e1da;--sl-gold:#86602c;" +
     "background:var(--sl-bg);border-top:1px solid var(--sl-rule);color:var(--sl-fg);" +
     "font:0.875rem/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;}" +
     "@media (prefers-color-scheme:dark){.site-links{--sl-bg:#121211;--sl-fg:#eeece7;--sl-muted:#8f8c85;--sl-rule:#2b2a28;--sl-gold:#c79a58;}}" +
@@ -25,7 +31,7 @@
     ".site-links ul a{color:var(--sl-muted);text-decoration:none;}" +
     ".site-links ul a:hover,.site-links ul a:focus-visible,.site-links ul a[aria-current]{color:var(--sl-gold);}" +
     ".site-links-contact{flex-basis:100%;margin:0;color:var(--sl-muted);font-size:0.78rem;}" +
-    ".site-links-contact a{color:var(--sl-gold);text-decoration:none;}";
+    ".site-links-contact a{color:var(--sl-gold);text-decoration:underline;text-underline-offset:2px;}";
 
   var style = document.createElement("style");
   style.textContent = css;
@@ -43,9 +49,10 @@
   nav.innerHTML =
     '<div class="site-links-inner">' +
     '<a class="site-links-brand" href="/"><img src="/images/logo-mark.png" alt="" width="608" height="493">4A Holdings Company</a>' +
-    "<ul>" + items + "</ul>" +
+    (focus ? '<ul><li><a href="/">Other 4A Holdings businesses</a></li></ul>' : "<ul>" + items + "</ul>") +
     '<p class="site-links-contact">&copy; ' + new Date().getFullYear() +
-    ' 4A Holdings Company &middot; <a href="mailto:' + EMAIL + '">' + EMAIL + "</a></p>" +
+    ' 4A Holdings Company &middot; <a href="mailto:' + EMAIL + '">' + EMAIL + "</a>" +
+    (focus === "vending" ? ' &middot; <a href="tel:+17247572421">724-757-2421</a>' : "") + "</p>" +
     "</div>";
   document.body.appendChild(nav);
 })();
