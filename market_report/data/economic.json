@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-02T22:38:46.742Z",
+  "updated": "2026-11-03T20:27:45.917Z",
   "source": "live",
   "indicators": [
     {
@@ -101,17 +101,17 @@
       "id": "jolts",
       "name": "JOLTS Job Openings",
       "desc": "Bureau of Labor Statistics",
-      "value": 7.079,
-      "prior": 7.335,
-      "asof": "2026-08-01",
+      "value": 7.523,
+      "prior": 7.19,
+      "asof": "2026-09-01",
       "unit": "M",
       "trend": [
-        6.887,
         7.585,
         7.537,
         7.182,
         7.335,
-        7.079
+        7.19,
+        7.523
       ],
       "live": true,
       "nextRelease": "2026-11-03"
