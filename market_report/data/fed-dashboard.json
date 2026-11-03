@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-02T22:51:14.980Z",
+  "updated": "2026-11-03T20:36:09.698Z",
   "source": "live",
   "series": [
     {
@@ -10,7 +10,7 @@
       "unit": "%",
       "value": 4,
       "prior": 4,
-      "asof": "2026-11-02",
+      "asof": "2026-11-03",
       "live": true
     },
     {
@@ -21,7 +21,7 @@
       "unit": "%",
       "value": 3.75,
       "prior": 3.75,
-      "asof": "2026-11-02",
+      "asof": "2026-11-03",
       "live": true
     },
     {
@@ -32,7 +32,7 @@
       "unit": "%",
       "value": 3.88,
       "prior": 3.88,
-      "asof": "2026-10-30",
+      "asof": "2026-11-02",
       "live": true
     },
     {
@@ -42,8 +42,8 @@
       "name": "SOFR",
       "unit": "%",
       "value": 3.95,
-      "prior": 3.94,
-      "asof": "2026-10-30",
+      "prior": 3.95,
+      "asof": "2026-11-02",
       "live": true
     },
     {
@@ -102,11 +102,11 @@
       "seriesId": "RRPONTSYD",
       "name": "Overnight Reverse Repo",
       "unit": "$B",
-      "value": 5.087,
-      "prior": 4.375,
-      "asof": "2026-11-02",
+      "value": 0.427,
+      "prior": 5.087,
+      "asof": "2026-11-03",
       "live": true,
-      "change5d": 4.887,
+      "change5d": 0.20099999999999998,
       "stressed": false
     },
     {
@@ -128,12 +128,12 @@
       "seriesId": "BAMLH0A0HYM2",
       "name": "High Yield OAS",
       "unit": "bps",
-      "value": 344,
-      "prior": 326,
-      "asof": "2026-10-30",
+      "value": 343,
+      "prior": 344,
+      "asof": "2026-11-02",
       "live": true,
       "trend": "up",
-      "trendChange": 6,
+      "trendChange": 13,
       "trendLabel": "5-day",
       "condition": "Tight",
       "conditionClass": "up"
@@ -145,11 +145,11 @@
       "name": "Investment Grade OAS",
       "unit": "bps",
       "value": 94,
-      "prior": 89,
-      "asof": "2026-10-30",
+      "prior": 94,
+      "asof": "2026-11-02",
       "live": true,
       "trend": "up",
-      "trendChange": 3,
+      "trendChange": 4,
       "trendLabel": "5-day",
       "condition": "Tight",
       "conditionClass": "up"
