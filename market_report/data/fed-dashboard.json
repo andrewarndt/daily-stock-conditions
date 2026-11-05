@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-04T20:53:26.687Z",
+  "updated": "2026-11-05T21:10:20.653Z",
   "source": "live",
   "series": [
     {
@@ -10,7 +10,7 @@
       "unit": "%",
       "value": 4,
       "prior": 4,
-      "asof": "2026-11-04",
+      "asof": "2026-11-05",
       "live": true
     },
     {
@@ -21,7 +21,7 @@
       "unit": "%",
       "value": 3.75,
       "prior": 3.75,
-      "asof": "2026-11-04",
+      "asof": "2026-11-05",
       "live": true
     },
     {
@@ -32,7 +32,7 @@
       "unit": "%",
       "value": 3.88,
       "prior": 3.88,
-      "asof": "2026-11-03",
+      "asof": "2026-11-04",
       "live": true
     },
     {
@@ -41,9 +41,9 @@
       "seriesId": "SOFR",
       "name": "SOFR",
       "unit": "%",
-      "value": 3.97,
-      "prior": 3.95,
-      "asof": "2026-11-03",
+      "value": 3.94,
+      "prior": 3.97,
+      "asof": "2026-11-04",
       "live": true
     },
     {
@@ -54,7 +54,7 @@
       "unit": "%",
       "value": 3.9,
       "prior": 3.9,
-      "asof": "2026-11-04",
+      "asof": "2026-11-05",
       "live": true
     },
     {
@@ -102,11 +102,11 @@
       "seriesId": "RRPONTSYD",
       "name": "Overnight Reverse Repo",
       "unit": "$B",
-      "value": 0.225,
-      "prior": 0.427,
-      "asof": "2026-11-04",
+      "value": 0.125,
+      "prior": 0.225,
+      "asof": "2026-11-05",
       "live": true,
-      "change5d": 0.049000000000000016,
+      "change5d": -0.22799999999999998,
       "stressed": false
     },
     {
@@ -128,12 +128,12 @@
       "seriesId": "BAMLH0A0HYM2",
       "name": "High Yield OAS",
       "unit": "bps",
-      "value": 340,
-      "prior": 343,
-      "asof": "2026-11-03",
+      "value": 332,
+      "prior": 340,
+      "asof": "2026-11-04",
       "live": true,
       "trend": "up",
-      "trendChange": 22,
+      "trendChange": 18,
       "trendLabel": "5-day",
       "condition": "Tight",
       "conditionClass": "up"
@@ -144,9 +144,9 @@
       "seriesId": "BAMLC0A0CM",
       "name": "Investment Grade OAS",
       "unit": "bps",
-      "value": 93,
-      "prior": 94,
-      "asof": "2026-11-03",
+      "value": 91,
+      "prior": 93,
+      "asof": "2026-11-04",
       "live": true,
       "trend": "up",
       "trendChange": 5,
