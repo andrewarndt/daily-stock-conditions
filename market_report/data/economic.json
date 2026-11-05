@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-04T20:41:50.320Z",
+  "updated": "2026-11-05T20:57:41.892Z",
   "source": "live",
   "indicators": [
     {
@@ -209,7 +209,7 @@
       "id": "trade_balance",
       "name": "Trade Balance",
       "desc": "Census Bureau / BEA",
-      "date": "2026-11-04"
+      "date": "2026-12-08"
     },
     {
       "id": "factory_orders",
