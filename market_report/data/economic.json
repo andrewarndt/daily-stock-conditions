@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-05T20:57:41.892Z",
+  "updated": "2026-11-06T20:17:57.286Z",
   "source": "live",
   "indicators": [
     {
@@ -82,17 +82,17 @@
       "id": "unemployment",
       "name": "Unemployment Rate",
       "desc": "Bureau of Labor Statistics",
-      "value": 4.2,
-      "prior": 4.1,
-      "asof": "2026-09-01",
+      "value": 4.1,
+      "prior": 4.2,
+      "asof": "2026-10-01",
       "unit": "%",
       "trend": [
-        4.3,
         4.3,
         4.2,
         4.1,
         4.1,
-        4.2
+        4.2,
+        4.1
       ],
       "live": true,
       "nextRelease": "2026-11-06"
