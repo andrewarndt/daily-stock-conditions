@@ -125,11 +125,55 @@ function findMonthAgo(obs, latestDate) {
   return hit ? hit.value : undefined;
 }
 
+// Same-day source. FRED's DGS* series are copies of Treasury's daily par
+// yield curve but post a business day or more late (Monday 2026-11-09 they
+// ended at Thursday 11-05 while Treasury already had Monday). Treasury's own
+// CSV fills in the days FRED doesn't have yet; FRED stays the history source
+// and the fallback.
+const TREASURY_COLS = { "1mo": "1 Mo", "3mo": "3 Mo", "6mo": "6 Mo", "1y": "1 Yr", "2y": "2 Yr", "5y": "5 Yr", "10y": "10 Yr", "30y": "30 Yr" };
+let treasuryCache = null;
+async function fetchTreasury() {
+  if (treasuryCache) return treasuryCache;
+  const out = {};
+  const year = new Date().getUTCFullYear();
+  for (const y of [year - 1, year]) {
+    try {
+      const url = `https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/${y}/all?type=daily_treasury_yield_curve&field_tdr_date_value=${y}&page&_format=csv`;
+      const res = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0 (Market Desk)" } });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const lines = (await res.text()).trim().split(/\r?\n/);
+      const head = lines[0].split(",").map((h) => h.replace(/"/g, "").trim());
+      if (head[0] !== "Date") throw new Error("unexpected Treasury CSV header");
+      for (const line of lines.slice(1)) {
+        const cols = line.split(",");
+        const [m, d, yy] = cols[0].split("/");
+        const date = `${yy}-${m}-${d}`;
+        for (const [id, name] of Object.entries(TREASURY_COLS)) {
+          const i = head.indexOf(name);
+          const v = Number(cols[i]);
+          if (i > 0 && cols[i] !== "" && Number.isFinite(v)) (out[id] ||= new Map()).set(date, v);
+        }
+      }
+    } catch (err) {
+      console.warn(`[treasury] ${y} curve unavailable: ${err.message}`);
+    }
+  }
+  treasuryCache = out;
+  return out;
+}
+
 async function fetchFredYield(def, previous) {
   const prev = previous.byId[def.id];
   try {
     const lookback = def.history ? DAILY_HISTORY_YEARS * 366 : DAILY_LOOKBACK_DAYS;
-    const obs = (await fetchObservations(def.seriesId, isoDaysAgo(lookback))).reverse();
+    let fred = [];
+    try { fred = await fetchObservations(def.seriesId, isoDaysAgo(lookback)); }
+    catch (err) { console.warn(`[fred] ${def.seriesId}: ${err.message}; using Treasury's curve alone`); }
+    const lastFred = fred.length ? fred[fred.length - 1].date : "";
+    const merged = new Map(fred.map((o) => [o.date, o.value]));
+    const tre = (await fetchTreasury())[def.id];
+    if (tre) for (const [date, v] of tre) if (date > lastFred || !merged.has(date)) merged.set(date, v);
+    const obs = [...merged].map(([date, value]) => ({ date, value })).sort((x, y) => (x.date < y.date ? 1 : -1));
     if (obs.length < 2) throw new Error(`not enough observations for ${def.seriesId}`);
 
     const value = obs[0].value;

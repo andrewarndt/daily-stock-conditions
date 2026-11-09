@@ -60,12 +60,19 @@ async function main() {
   const previous = await loadPrevious();
 
   try {
-    const res = await fetch(URL, { headers: HEADERS });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const html = await res.text();
-
-    const ratioMatch = html.match(/TOTAL PUT\/CALL RATIO\\",\\"value\\":\\"([\d.]+)\\"/);
-    const dateMatch = html.match(/\\"selectedDate\\":\\"(\d{4}-\d{2}-\d{2})\\"/);
+    // Ask for today's (New York) session by date first: the undated page keeps
+    // showing the previous day until Cboe flips its default. Fall back to the
+    // undated page when today's stats aren't posted yet.
+    const todayNY = new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+    let ratioMatch = null, dateMatch = null;
+    for (const url of [`${URL}?dt=${todayNY}`, URL]) {
+      const res = await fetch(url, { headers: HEADERS });
+      if (!res.ok) continue;
+      const html = await res.text();
+      ratioMatch = html.match(/TOTAL PUT\/CALL RATIO\\",\\"value\\":\\"([\d.]+)\\"/);
+      dateMatch = html.match(/\\"selectedDate\\":\\"(\d{4}-\d{2}-\d{2})\\"/);
+      if (ratioMatch && dateMatch) break;
+    }
     if (!ratioMatch || !dateMatch) throw new Error("could not find TOTAL PUT/CALL RATIO or selectedDate in page");
 
     const ratio = Number(ratioMatch[1]);

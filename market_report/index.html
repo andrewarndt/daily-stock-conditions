@@ -36,7 +36,7 @@
       <a class="brand" href="index.html">Market <span>Desk</span></a>
       <div class="top-meta">
         <span class="notice" id="live-notice">Loading live data&hellip;</span>
-        <span class="refresh-stamp"><span class="dot"></span>Last refresh: <span id="refresh-time">Aug 7, 2026, 4:15&nbsp;PM ET</span></span>
+        <span class="refresh-stamp"><span class="dot"></span>Last refresh: <span id="refresh-time">loading&hellip;</span></span>
       </div>
     </div>
     <nav class="tabs">
@@ -127,6 +127,24 @@
 (function () {
   "use strict";
 
+  // When a feed can't be loaded, empty its panel and say so -- never show
+  // sample or old numbers in its place. mode "card" empties only the chart
+  // card holding the anchor; otherwise the whole section (feed's own panel).
+  function showUnavailable(anchorIds, label, mode) {
+    anchorIds.forEach(function (id) {
+      var el = document.getElementById(id);
+      var box = el && ((mode === "card" && el.closest(".chart-card")) || el.closest("section"));
+      if (!box || box.getAttribute("data-unavailable")) return;
+      box.setAttribute("data-unavailable", "1");
+      var head = box.querySelector(":scope > .section-head");
+      Array.prototype.slice.call(box.children).forEach(function (c) { if (c !== head) c.remove(); });
+      var p = document.createElement("p");
+      p.className = "unavailable-msg";
+      p.textContent = label + " could not be loaded just now. Nothing is shown here rather than old or sample figures; it fills in on the next refresh.";
+      box.appendChild(p);
+    });
+  }
+
   // No seeded prices: if data/overview.json can't be loaded the cards say
   // so instead of showing made-up numbers (desk.js also raises the
   // "Data delayed" banner).
@@ -173,7 +191,7 @@
     if (!el) return;
     el.textContent = (liveStatus.overview && liveStatus.econ)
       ? "Major Indices are SPY/DIA/QQQ ETF prices (Alpaca, Yahoo as backup); VIX, the dollar index, crude, TLT and DBC come from Yahoo; Bitcoin, gold and silver from Twelve Data; the 10-year yield and Economic Snapshot from FRED. Quotes refresh every 30 minutes while the market is open, and the page reloads them on its own."
-      : "Some figures on this page are showing illustrative placeholder values because a feed hasn't reported yet or couldn't be loaded -- live sections are unmarked, placeholder ones carry a \"static\" flag above.";
+      : "Some figures on this page did not update in the last refresh; they carry a \"delayed\" or \"static\" flag, and anything that could not be loaded at all is left empty.";
   }
 
   function fmtEconValue(v, unit) {
@@ -214,8 +232,8 @@
       .then(function (res) { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); })
       .then(renderEconRows)
       .catch(function (err) {
-        console.warn("Could not load data/economic.json, showing fallback values:", err);
-        renderEconRows(ECON_FALLBACK);
+        console.warn("Could not load data/economic.json, showing it as unavailable:", err);
+        showUnavailable(["econ-rows"], "The economic snapshot");
       });
   }
 
@@ -258,7 +276,7 @@
     if (data.source === "live") {
       notice.textContent = "Live data — Alpaca, Yahoo, Twelve Data & FRED, refreshed every 30 min while the market is open";
     } else {
-      notice.textContent = "Illustrative sample data — not live market feeds";
+      notice.textContent = "Some data unavailable — see the notice below";
     }
 
     liveStatus.overview = data.source === "live";

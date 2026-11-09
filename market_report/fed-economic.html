@@ -36,7 +36,7 @@
       <a class="brand" href="index.html">Market <span>Desk</span></a>
       <div class="top-meta">
         <span class="notice" id="live-notice">Loading live data&hellip;</span>
-        <span class="refresh-stamp"><span class="dot"></span>Last refresh: <span id="refresh-time">Aug 7, 2026, 4:15&nbsp;PM ET</span></span>
+        <span class="refresh-stamp"><span class="dot"></span>Last refresh: <span id="refresh-time">loading&hellip;</span></span>
       </div>
     </div>
     <nav class="tabs">
@@ -110,6 +110,24 @@
 (function () {
   "use strict";
 
+  // When a feed can't be loaded, empty its panel and say so -- never show
+  // sample or old numbers in its place. mode "card" empties only the chart
+  // card holding the anchor; otherwise the whole section (feed's own panel).
+  function showUnavailable(anchorIds, label, mode) {
+    anchorIds.forEach(function (id) {
+      var el = document.getElementById(id);
+      var box = el && ((mode === "card" && el.closest(".chart-card")) || el.closest("section"));
+      if (!box || box.getAttribute("data-unavailable")) return;
+      box.setAttribute("data-unavailable", "1");
+      var head = box.querySelector(":scope > .section-head");
+      Array.prototype.slice.call(box.children).forEach(function (c) { if (c !== head) c.remove(); });
+      var p = document.createElement("p");
+      p.className = "unavailable-msg";
+      p.textContent = label + " could not be loaded just now. Nothing is shown here rather than old or sample figures; it fills in on the next refresh.";
+      box.appendChild(p);
+    });
+  }
+
   // Economic Indicators is FRED-sourced, so the top banner reflects its
   // status. Fed Watch is never counted here: it's a fixed illustrative
   // section, called out on its own in the footer. (Treasury Yields moved to
@@ -121,7 +139,7 @@
     if (!noticeEl) return;
     noticeEl.textContent = liveStatus.economic
       ? "Live data — FRED, refreshed once per weekday evening"
-      : "Illustrative sample data — not live market feeds";
+      : "Some data unavailable — see the notice below";
   }
 
   // Tracks the newest `updated` timestamp seen across this page's
@@ -356,8 +374,8 @@
     .then(function (res) { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); })
     .then(renderAll)
     .catch(function (err) {
-      console.warn("Could not load data/economic.json, showing fallback values:", err);
-      renderAll(ECON_FALLBACK);
+      console.warn("Could not load data/economic.json, showing it as unavailable:", err);
+      showUnavailable(["fed-indicator-rows"], "Economic indicator data");
     });
 
   // Fed Watch: real implied FOMC odds from Kalshi's public market data
@@ -404,7 +422,7 @@
     .then(function (res) { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); })
     .then(renderFedWatch)
     .catch(function (err) {
-      console.warn("Could not load data/fed-watch.json, showing fallback values:", err);
+      console.warn("Could not load data/fed-watch.json, showing it as unavailable:", err);
       renderFedWatch(FEDWATCH_FALLBACK);
     });
 })();

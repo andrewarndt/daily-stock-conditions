@@ -36,7 +36,7 @@
       <a class="brand" href="index.html">Market <span>Desk</span></a>
       <div class="top-meta">
         <span class="notice" id="live-notice">Loading live data&hellip;</span>
-        <span class="refresh-stamp"><span class="dot"></span>Last refresh: <span id="refresh-time">Aug 7, 2026, 4:15&nbsp;PM ET</span></span>
+        <span class="refresh-stamp"><span class="dot"></span>Last refresh: <span id="refresh-time">loading&hellip;</span></span>
       </div>
     </div>
     <nav class="tabs">
@@ -66,10 +66,10 @@
     </div>
     <div class="gauge-card">
       <svg id="chart-gauge" width="320" height="190" viewBox="0 0 320 190"></svg>
-      <div class="gauge-readout" id="gauge-readout">62</div>
+      <div class="gauge-readout" id="gauge-readout">&mdash;</div>
       <div class="gauge-zone" id="gauge-zone">Greed</div>
       <div class="stat-delta" id="gauge-delta"></div>
-      <div class="report-meta" id="gauge-meta">Illustrative sample value — not a live feed.</div>
+      <div class="report-meta" id="gauge-meta">Loading&hellip;</div>
     </div>
   </section>
 
@@ -86,10 +86,10 @@
       </div>
       <div class="chart-card">
         <div class="stat-label">Latest reading</div>
-        <div class="stat-value" id="putcall-value">0.61</div>
+        <div class="stat-value" id="putcall-value">&mdash;</div>
         <div class="stat-delta" id="putcall-delta"></div>
         <p class="chart-sub" style="margin-top:1rem">Readings below ~0.7 have historically leaned bullish (more call buying); above ~1.0 has leaned bearish/hedging-heavy.</p>
-        <div class="report-meta" id="putcall-meta">Illustrative sample value — not a live feed.</div>
+        <div class="report-meta" id="putcall-meta">Loading&hellip;</div>
       </div>
     </div>
   </section>
@@ -107,10 +107,10 @@
       </div>
       <div class="chart-card">
         <div class="stat-label">Latest reading</div>
-        <div class="stat-value" id="consumer-sentiment-value">68.4</div>
-        <div class="stat-delta" id="consumer-sentiment-delta">▲ 1.5 pts vs. prior (66.9)</div>
+        <div class="stat-value" id="consumer-sentiment-value">&mdash;</div>
+        <div class="stat-delta" id="consumer-sentiment-delta"></div>
         <p class="chart-sub" style="margin-top:1rem">Pre-2020 long-run average runs roughly 96, for reference.</p>
-        <div class="report-meta" id="consumer-sentiment-meta">Illustrative sample value — not a live feed.</div>
+        <div class="report-meta" id="consumer-sentiment-meta">Loading&hellip;</div>
       </div>
     </div>
   </section>
@@ -166,12 +166,10 @@
     </div>
     <div class="report-card">
       <div class="report-kicker">Claude Market Read</div>
-      <h3 id="report-headline">Sentiment leans greedy, but conviction is soft</h3>
+      <h3 id="report-headline">&mdash;</h3>
       <div class="report-body" id="report-body">
-        <p>The composite gauge sits at 62 — solidly in <strong>Greed</strong> territory, but well off the 80+ readings that usually mark euphoric, hard-to-sustain tops. Positioning data agrees with the tone rather than the intensity: the put/call ratio has drifted down to 0.61 from 0.68, a five-session average of 0.65, consistent with traders adding call exposure rather than reaching for downside protection.</p>
-        <p>Consumer sentiment is the more interesting mover — a third straight monthly gain to 68.4 as inflation expectations have eased — but the index is still running well below its pre-2020 norm, so "improving" and "confident" are not the same thing yet. Read together, the setup looks like cautious optimism building from a low base rather than late-cycle exuberance: greedy positioning without the crowding that usually precedes a sentiment air-pocket.</p>
       </div>
-      <div class="report-meta" id="report-meta">Illustrative sample text — not a live model output.</div>
+      <div class="report-meta" id="report-meta">Loading&hellip;</div>
     </div>
   </section>
 
@@ -187,6 +185,24 @@
 <script>
 (function () {
   "use strict";
+
+  // When a feed can't be loaded, empty its panel and say so -- never show
+  // sample or old numbers in its place. mode "card" empties only the chart
+  // card holding the anchor; otherwise the whole section (feed's own panel).
+  function showUnavailable(anchorIds, label, mode) {
+    anchorIds.forEach(function (id) {
+      var el = document.getElementById(id);
+      var box = el && ((mode === "card" && el.closest(".chart-card")) || el.closest("section"));
+      if (!box || box.getAttribute("data-unavailable")) return;
+      box.setAttribute("data-unavailable", "1");
+      var head = box.querySelector(":scope > .section-head");
+      Array.prototype.slice.call(box.children).forEach(function (c) { if (c !== head) c.remove(); });
+      var p = document.createElement("p");
+      p.className = "unavailable-msg";
+      p.textContent = label + " could not be loaded just now. Nothing is shown here rather than old or sample figures; it fills in on the next refresh.";
+      box.appendChild(p);
+    });
+  }
 
   // Tracks the newest `updated` timestamp seen across this page's several
   // independent fetches and reflects it in the header stamp -- same pattern
@@ -219,7 +235,7 @@
     if (liveStatus.consumerSentiment) sources.push("UMich Consumer Sentiment");
     noticeEl.textContent = sources.length
       ? "Live data — " + sources.join(" & ") + ", refreshed morning & evening on weekdays"
-      : "Illustrative sample data — not live market feeds";
+      : "Some data unavailable — see the notice below";
   }
 
   // Drives the footer sentence off the same liveStatus flags as the top
@@ -238,9 +254,9 @@
       text = "The Market Sentiment gauge, Put/Call Ratio, and Consumer Sentiment above are all real live feeds (CNN's Fear & Greed Index; Cboe's Total Put/Call Ratio; FRED's UMCSENT), refreshed morning and evening on weekdays.";
     } else if (live.length) {
       text = live.join(", ") + " " + (live.length > 1 ? "are" : "is") + " live right now, refreshed morning and evening on weekdays; " +
-        stale.join(", ") + " " + (stale.length > 1 ? "are" : "is") + " showing an illustrative placeholder value because its feed hasn't reported yet or couldn't be loaded.";
+        stale.join(", ") + " " + (stale.length > 1 ? "are" : "is") + " showing the previous reading because its feed did not update in the last refresh.";
     } else {
-      text = "The Market Sentiment gauge, Put/Call Ratio, and Consumer Sentiment above are all showing illustrative placeholder values right now -- none of the three feeds has reported yet, or they couldn't be loaded.";
+      text = "The Market Sentiment gauge, Put/Call Ratio, and Consumer Sentiment above did not update in the last refresh -- they show their previous readings.";
     }
     el.textContent = text + " The Claude Report below is a genuine daily AI-generated read, independently researched each morning — not derived from the figures above, and not investment advice.";
   }
@@ -287,7 +303,7 @@
 
     metaEl.textContent = isLive
       ? "CNN's Fear & Greed Index, refreshed morning & evening on weekdays. Updated " + fmtReportTimestamp(data.updated) + "."
-      : "Illustrative sample value -- the live feed hasn't reported yet, or couldn't be loaded.";
+      : "Not updated in the last refresh -- this is the previous reading.";
 
     liveStatus.gauge = isLive;
     updateLiveNotice();
@@ -353,7 +369,7 @@
 
     metaEl.textContent = isLive
       ? "Cboe's Total Put/Call Ratio, as of " + (data.asof || "--") + ". Updated " + fmtReportTimestamp(data.updated) + "."
-      : "Illustrative sample value -- the live feed hasn't reported yet, or couldn't be loaded.";
+      : "Not updated in the last refresh -- this is the previous reading.";
 
     liveStatus.putcall = isLive;
     updateLiveNotice();
@@ -395,7 +411,7 @@
     flagEl.innerHTML = isLive ? "" : '<span class="placeholder-flag">static</span>';
     metaEl.textContent = isLive
       ? "Independently researched by Claude every morning -- not derived from the placeholder figures above. Generated " + fmtReportTimestamp(data.updated) + "."
-      : "Illustrative sample text -- the daily research routine hasn't produced a read yet, or its output couldn't be loaded.";
+      : "Today's read hasn't been produced yet -- this is the previous one.";
     if (data.updated) noteUpdated(data.updated);
   }
 
@@ -404,7 +420,7 @@
     .then(renderReport)
     .catch(function (err) {
       console.warn("Could not load data/sentiment-report.json, showing fallback text:", err);
-      renderReport(REPORT_FALLBACK);
+      showUnavailable(["report-headline"], "The daily market read");
     });
 
   fetch("data/fear-greed.json?t=" + Date.now(), { cache: "no-store" })
@@ -412,7 +428,7 @@
     .then(renderGauge)
     .catch(function (err) {
       console.warn("Could not load data/fear-greed.json, showing fallback value:", err);
-      renderGauge(GAUGE_FALLBACK);
+      showUnavailable(["gauge-readout"], "The Fear & Greed reading");
     });
 
   fetch("data/putcall.json?t=" + Date.now(), { cache: "no-store" })
@@ -420,7 +436,7 @@
     .then(renderPutcall)
     .catch(function (err) {
       console.warn("Could not load data/putcall.json, showing fallback value:", err);
-      renderPutcall(PUTCALL_FALLBACK);
+      showUnavailable(["putcall-value"], "The put/call ratio");
     });
 
   // AAII Investor Sentiment -- Positioning group. See scripts/fetch-aaii.mjs
@@ -482,7 +498,7 @@
 
     metaEl.textContent = isLive
       ? "AAII's public weekly results page, refreshed once per weekday. Full 1987-forward history is AAII-members-only; this site's own history builds up week by week from here. Updated " + fmtReportTimestamp(data.updated) + "."
-      : "Illustrative sample value -- the live feed hasn't reported yet, or couldn't be loaded.";
+      : "Not updated in the last refresh -- this is the previous reading.";
     if (data.updated) noteUpdated(data.updated);
   }
 
@@ -491,7 +507,7 @@
     .then(renderAaii)
     .catch(function (err) {
       console.warn("Could not load data/aaii.json, showing fallback value:", err);
-      renderAaii(AAII_FALLBACK);
+      showUnavailable(["aaii-spread"], "The AAII survey");
     });
 
   // COT Index -- Positioning group, stand-in for NAAIM (see
@@ -521,7 +537,7 @@
       valueEl.textContent = "--";
       zoneEl.textContent = "";
       zoneEl.className = "stat-delta";
-      metaEl.textContent = "Illustrative sample value -- the live feed hasn't reported yet, or couldn't be loaded.";
+      metaEl.textContent = "Not updated in the last refresh -- this is the previous reading.";
       return;
     }
 
@@ -546,7 +562,7 @@
 
     metaEl.textContent = isLive
       ? "CFTC Traders in Financial Futures report, E-mini S&P 500, refreshed weekly (published Fridays). Updated " + fmtReportTimestamp(data.updated) + "."
-      : "Illustrative sample value -- the live feed hasn't reported yet, or couldn't be loaded.";
+      : "Not updated in the last refresh -- this is the previous reading.";
   }
 
   fetch("data/cot.json?t=" + Date.now(), { cache: "no-store" })
@@ -554,7 +570,7 @@
     .then(renderCot)
     .catch(function (err) {
       console.warn("Could not load data/cot.json, showing fallback value:", err);
-      renderCot(COT_FALLBACK);
+      showUnavailable(["cot-value"], "COT positioning data");
     });
 
   // Consumer Sentiment -- Volatility & Options group. See
@@ -604,7 +620,7 @@
 
     metaEl.textContent = isLive
       ? "FRED's UMCSENT, refreshed once per weekday morning (monthly series -- most days re-confirm the same print). Updated " + fmtReportTimestamp(data.updated) + "."
-      : "Illustrative sample value -- the live feed hasn't reported yet, or couldn't be loaded.";
+      : "Not updated in the last refresh -- this is the previous reading.";
 
     liveStatus.consumerSentiment = isLive;
     updateLiveNotice();
@@ -617,7 +633,7 @@
     .then(renderConsumerSentiment)
     .catch(function (err) {
       console.warn("Could not load data/consumer-sentiment.json, showing fallback value:", err);
-      renderConsumerSentiment(CONSUMER_SENTIMENT_FALLBACK);
+      showUnavailable(["consumer-sentiment-value"], "Consumer sentiment data");
     });
 })();
 </script>

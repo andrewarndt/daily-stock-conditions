@@ -36,7 +36,7 @@
       <a class="brand" href="index.html">Market <span>Desk</span></a>
       <div class="top-meta">
         <span class="notice" id="live-notice">Loading live data&hellip;</span>
-        <span class="refresh-stamp"><span class="dot"></span>Last refresh: <span id="refresh-time">Aug 7, 2026, 4:15&nbsp;PM ET</span></span>
+        <span class="refresh-stamp"><span class="dot"></span>Last refresh: <span id="refresh-time">loading&hellip;</span></span>
       </div>
     </div>
     <nav class="tabs">
@@ -110,7 +110,7 @@
   <section>
     <div class="section-head">
       <h2>SPX Volatility Term Structure<span id="termstructure-flag"></span></h2>
-      <span class="section-note">VIX3M/VIX: <strong id="vol-ratio-value" style="color:var(--up)">1.22</strong> <span id="vol-ratio-zone">(contango)</span> &middot; 3M&ndash;30D spread: <strong id="vol-spread-value" style="color:var(--up)">+3.37 pts</strong> <span id="vol-spread-trend">(contango)</span></span>
+      <span class="section-note">VIX3M/VIX: <strong id="vol-ratio-value">&mdash;</strong> <span id="vol-ratio-zone"></span> &middot; 3M&ndash;30D spread: <strong id="vol-spread-value">&mdash;</strong> <span id="vol-spread-trend"></span></span>
     </div>
     <div class="panel-cols">
     <div class="chart-card">
@@ -144,7 +144,7 @@
   </div>
 
   <footer>
-    <p>Sector/SPY ratios are live daily closes from Yahoo Finance, refreshed once per weekday after market close -- both weightings: cap-weight from the SPDR sector ETFs against SPY, equal-weight from Invesco's RSP-family sector ETFs against RSP. Constituent Volatility, Volatility Term Structure, Core 3M, and Dispersion Index are live Cboe index data (VIX9D, VIX, VIX3M, VIX6M, VIX1Y, VIXEQ, DSPX), refreshed on the same schedule. <span id="skew-status-note">Skew Structure below is still an illustrative placeholder.</span></p>
+    <p>Sector/SPY ratios are live daily closes from Yahoo Finance, refreshed once per weekday after market close -- both weightings: cap-weight from the SPDR sector ETFs against SPY, equal-weight from Invesco's RSP-family sector ETFs against RSP. Constituent Volatility, Volatility Term Structure, Core 3M, and Dispersion Index are live Cboe index data (VIX9D, VIX, VIX3M, VIX6M, VIX1Y, VIXEQ, DSPX), refreshed on the same schedule. <span id="skew-status-note"></span></p>
     <p>The figure at the top right of each card is the ratio's move over the trailing month: green outperforming SPY, red underperforming. The line color and the Above/Below tag is a separate, shorter-term signal: green when the ratio is currently above its own 10-day moving average (dashed line), red when below.</p>
     <p>Credit (HYG) has moved to the <a href="bonds.html">Bonds</a> tab, Tier 3 — Financial Conditions &amp; Credit.</p>
     <p class="disclaimer">For informational purposes only, not investment advice. Data comes from the third-party sources named on each tab and may be delayed or contain errors.</p>
@@ -155,6 +155,24 @@
 <script>
 (function () {
   "use strict";
+
+  // When a feed can't be loaded, empty its panel and say so -- never show
+  // sample or old numbers in its place. mode "card" empties only the chart
+  // card holding the anchor; otherwise the whole section (feed's own panel).
+  function showUnavailable(anchorIds, label, mode) {
+    anchorIds.forEach(function (id) {
+      var el = document.getElementById(id);
+      var box = el && ((mode === "card" && el.closest(".chart-card")) || el.closest("section"));
+      if (!box || box.getAttribute("data-unavailable")) return;
+      box.setAttribute("data-unavailable", "1");
+      var head = box.querySelector(":scope > .section-head");
+      Array.prototype.slice.call(box.children).forEach(function (c) { if (c !== head) c.remove(); });
+      var p = document.createElement("p");
+      p.className = "unavailable-msg";
+      p.textContent = label + " could not be loaded just now. Nothing is shown here rather than old or sample figures; it fills in on the next refresh.";
+      box.appendChild(p);
+    });
+  }
 
   var SECTOR_ORDER = ["xlk", "xlf", "xlv", "xly", "xlp", "xle", "xli", "xlb", "xlu", "xlre", "xlc"];
   var MA_WINDOW = 10;
@@ -299,7 +317,7 @@
     var notice = document.getElementById("live-notice");
     notice.textContent = data.source === "live"
       ? "Live data — Yahoo Finance daily closes, refreshed once per weekday after close"
-      : "Illustrative sample data — not live market feeds";
+      : "Some data unavailable — see the notice below";
     if (data.updated) noteUpdated(data.updated);
   }
 
@@ -317,8 +335,8 @@
     .then(function (res) { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); })
     .then(renderSectors)
     .catch(function (err) {
-      console.warn("Could not load data/sector-ratios.json, showing fallback values:", err);
-      renderSectors(FALLBACK);
+      console.warn("Could not load data/sector-ratios.json, showing it as unavailable:", err);
+      showUnavailable(["sector-grid"], "Sector ratio data");
     });
 
   var VOLATILITY_FALLBACK = {
@@ -460,8 +478,8 @@
     .then(function (res) { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); })
     .then(renderVolatility)
     .catch(function (err) {
-      console.warn("Could not load data/volatility.json, showing fallback values:", err);
-      renderVolatility(VOLATILITY_FALLBACK);
+      console.warn("Could not load data/volatility.json, showing it as unavailable:", err);
+      showUnavailable(["chart-constituent-vol", "chart-core3m", "chart-dispersion", "chart-vol-ratio", "chart-term-structure"], "Cboe volatility index data", "card");
     });
 
   // Skew Structure -- SPX implied volatility by strike. See
@@ -494,7 +512,7 @@
       : "SPX options, by strike";
     statusEl.textContent = isLive
       ? "Skew Structure below is live SPX options data (Cboe's delayed-quotes chain), refreshed once per weekday after close."
-      : "Skew Structure below is still an illustrative placeholder -- the live feed hasn't reported yet, or couldn't be loaded.";
+      : "Skew Structure did not update in the last refresh -- it shows the previous reading.";
 
     var withMonthAgo = buckets.filter(function (b) { return Number.isFinite(b.monthAgo); });
     MC.lineChart(document.getElementById("chart-skew"), {
@@ -514,8 +532,8 @@
     .then(function (res) { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); })
     .then(renderSkew)
     .catch(function (err) {
-      console.warn("Could not load data/skew.json, showing fallback values:", err);
-      renderSkew(SKEW_FALLBACK);
+      console.warn("Could not load data/skew.json, showing it as unavailable:", err);
+      showUnavailable(["chart-skew"], "SPX skew data", "card");
     });
 })();
 </script>

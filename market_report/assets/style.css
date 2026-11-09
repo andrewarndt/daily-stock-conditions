@@ -1164,3 +1164,4 @@ body .site-links {
 .refresh-stamp.stale { color: var(--down); }
 .refresh-stamp.stale .dot { background: var(--down); box-shadow: 0 0 6px var(--down); }
 .data-health[hidden] { display: none; }
+.unavailable-msg { margin: 0; padding: 1rem 0.7rem; color: var(--ink-soft); font-size: 0.8rem; }

@@ -251,7 +251,7 @@
 
   function checkFeed(name, data) {
     var f = FEEDS[name], ny = nyNow(), problems = [];
-    if (!data) return [f.label + ": could not be loaded. Figures in that section are placeholders, not market data."];
+    if (!data) return [f.label + ": could not be loaded, so that section is left empty until it does."];
     if (data.source === "seed") { // what every fetch script writes when a run got nothing live
       problems.push(f.label + ": the last refresh got no live data. Figures shown are previous or placeholder values.");
     }

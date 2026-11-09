@@ -333,13 +333,24 @@ async function main() {
   ]);
   const commodityResults = await fetchTwelveDataSequential(COMMODITY_SYMBOLS, previous);
 
-  // Second source for the index ETFs: if Alpaca failed for any of them, try
-  // Yahoo before falling back to the previous (stale) value.
+  // Second source for the index ETFs, checked every run. Alpaca's free feed
+  // is IEX-only, whose last print can lag the consolidated tape on thinner
+  // names (DIA). Use Yahoo when Alpaca failed, when Yahoo's print is more
+  // than 5 minutes newer, or when the two disagree by more than 0.5% (Yahoo
+  // is the consolidated quote); log any disagreement.
   for (const [id, def] of Object.entries(ALPACA_STOCK_SYMBOLS)) {
-    if (stockResults.indices[id] && stockResults.indices[id].live) continue;
-    const y = await fetchYahooCommodity(id, { name: def.name, symbol: def.symbol, ticker: def.ticker, unit: def.unit }, previous);
-    if (y && y.live) {
+    const a = stockResults.indices[id];
+    const y = await fetchYahooCommodity(id, { name: def.name, symbol: def.symbol, ticker: def.ticker, unit: def.unit }, {});
+    if (!y || !y.live) continue;
+    if (!a || !a.live) {
       console.warn(`[overview] ${def.symbol} from Yahoo (Alpaca unavailable)`);
+      stockResults.indices[id] = y;
+      continue;
+    }
+    const gap = Math.abs(a.value / y.value - 1) * 100;
+    const newer = Date.parse(y.asof) - Date.parse(a.asof) > 5 * 60000;
+    if (gap > 0.5 || newer) {
+      console.warn(`[overview] ${def.symbol}: Alpaca ${a.value} (${a.asof}) vs Yahoo ${y.value} (${y.asof}), gap ${gap.toFixed(2)}% -- using Yahoo`);
       stockResults.indices[id] = y;
     }
   }
