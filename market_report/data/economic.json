@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-06T20:17:57.286Z",
+  "updated": "2026-11-09T19:43:26.031Z",
   "source": "live",
   "indicators": [
     {
@@ -95,7 +95,7 @@
         4.1
       ],
       "live": true,
-      "nextRelease": "2026-11-06"
+      "nextRelease": "2026-12-04"
     },
     {
       "id": "jolts",
@@ -221,7 +221,7 @@
       "id": "consumer_credit",
       "name": "Consumer Credit",
       "desc": "Federal Reserve (G.19)",
-      "date": "2026-11-06"
+      "date": "2026-12-07"
     },
     {
       "id": "consumer_sentiment",
