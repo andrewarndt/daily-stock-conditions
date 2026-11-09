@@ -97,6 +97,14 @@ const YAHOO_SYMBOLS = {
 const INDEX_ORDER = ["sp500", "dow", "nasdaq", "ust10y", "vix"];
 const COMMODITY_ORDER = ["dxy", "btc", "gold", "silver", "oil", "bonds", "commodity_basket"];
 
+// "YYYY-MM-DD" of an ISO timestamp in New York time (null if missing).
+function etDay(iso) {
+  if (!iso) return null;
+  const d = new Date(iso);
+  if (isNaN(d)) return null;
+  return d.toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+}
+
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -143,13 +151,20 @@ async function fetchAlpacaStocks(defsById, previous, previousRange) {
       const snap = json[def.symbol];
       try {
         const price = snap?.latestTrade?.p ?? snap?.dailyBar?.c;
-        const prevClose = snap?.prevDailyBar?.c;
+        // Before the open, dailyBar is still the previous session while
+        // latestTrade is today's pre-market print, so the change has to be
+        // measured from dailyBar's close, not prevDailyBar's (which would
+        // be two sessions back).
+        const tradeDay = etDay(snap?.latestTrade?.t);
+        const barDay = etDay(snap?.dailyBar?.t);
+        const prevClose = tradeDay && barDay && tradeDay > barDay ? snap?.dailyBar?.c : snap?.prevDailyBar?.c;
         if (!Number.isFinite(price) || !Number.isFinite(prevClose) || prevClose === 0) {
           throw new Error(`missing price/prevClose for ${def.symbol}`);
         }
         out[id] = {
           id, name: def.name, value: price, change: ((price - prevClose) / prevClose) * 100,
-          changeType: "pct", unit: def.unit, ticker: def.ticker, live: true
+          changeType: "pct", unit: def.unit, ticker: def.ticker, live: true,
+          asof: snap?.latestTrade?.t || snap?.dailyBar?.t || null
         };
       } catch (err) {
         console.warn(`[alpaca] failed for ${id} (${def.symbol}): ${err.message}. Keeping previous value.`);
@@ -196,7 +211,11 @@ async function fetchTwelveData(id, def, previous) {
     const value = Number(json.close);
     const changePct = Number(json.percent_change);
     if (!Number.isFinite(value)) throw new Error(`Bad value for ${def.symbol}`);
-    const item = { id, name: def.name, value, change: changePct, changeType: def.changeType, live: true };
+    const ts = Number(json.last_quote_at || json.timestamp);
+    const item = {
+      id, name: def.name, value, change: changePct, changeType: def.changeType, live: true,
+      asof: Number.isFinite(ts) && ts > 0 ? new Date(ts * 1000).toISOString() : null
+    };
     if (def.unit) item.unit = def.unit;
     if (def.ticker) item.ticker = def.ticker;
     return item;
@@ -217,23 +236,36 @@ async function fetchTwelveDataSequential(defsById, previous) {
 
 async function fetchYahooCommodity(id, def, previous) {
   const prev = previous[id];
-  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(def.symbol)}?range=5d&interval=1d`;
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(def.symbol)}?range=10d&interval=1d`;
   try {
     const res = await fetch(url, { headers: YAHOO_HEADERS });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const json = await res.json();
-    const meta = json?.chart?.result?.[0]?.meta;
+    const result = json?.chart?.result?.[0];
+    const meta = result?.meta;
     const price = meta?.regularMarketPrice;
-    const prevClose = meta?.chartPreviousClose;
+    // The day's change is from the previous SESSION's close. (meta.chartPreviousClose
+    // is the close before the whole chart range -- with range=5d that was a ~5-day
+    // change shown as the day's; 2026-11-09 VIX showed -1.19 when it was -5.80.)
+    const off = Number(meta?.gmtoffset) || 0;
+    const dayOf = (t) => new Date((t + off) * 1000).toISOString().slice(0, 10);
+    const marketDay = Number.isFinite(meta?.regularMarketTime) ? dayOf(meta.regularMarketTime) : null;
+    const ts = result?.timestamp || [];
+    const closes = result?.indicators?.quote?.[0]?.close || [];
+    let prevClose = null;
+    for (let i = ts.length - 1; i >= 0; i--) {
+      if (Number.isFinite(closes[i]) && marketDay && dayOf(ts[i]) < marketDay) { prevClose = closes[i]; break; }
+    }
     if (!Number.isFinite(price) || !Number.isFinite(prevClose) || prevClose === 0) {
-      throw new Error("missing regularMarketPrice/chartPreviousClose");
+      throw new Error("missing regularMarketPrice or prior-session close");
     }
     const changeType = def.changeType || "pct";
     const item = {
       id, name: def.name, ticker: def.ticker, live: true,
       value: price,
       change: changeType === "abs" ? price - prevClose : ((price - prevClose) / prevClose) * 100,
-      changeType
+      changeType,
+      asof: Number.isFinite(meta?.regularMarketTime) ? new Date(meta.regularMarketTime * 1000).toISOString() : null
     };
     if (def.unit) item.unit = def.unit;
     return item;
@@ -264,7 +296,8 @@ async function fetchTreasuryYield(previous) {
       change: Number((latest - prior).toFixed(2)),
       changeType: "pt",
       unit: "%",
-      live: true
+      live: true,
+      asof: obs[0].date // FRED's DGS10 is a daily close, posted with about a one-business-day lag
     };
   } catch (err) {
     console.warn(`[fred] failed for DGS10: ${err.message}. Keeping previous value.`);
@@ -290,6 +323,17 @@ async function main() {
   ]);
   const commodityResults = await fetchTwelveDataSequential(COMMODITY_SYMBOLS, previous);
 
+  // Second source for the index ETFs: if Alpaca failed for any of them, try
+  // Yahoo before falling back to the previous (stale) value.
+  for (const [id, def] of Object.entries(ALPACA_STOCK_SYMBOLS)) {
+    if (stockResults.indices[id] && stockResults.indices[id].live) continue;
+    const y = await fetchYahooCommodity(id, { name: def.name, symbol: def.symbol, ticker: def.ticker, unit: def.unit }, previous);
+    if (y && y.live) {
+      console.warn(`[overview] ${def.symbol} from Yahoo (Alpaca unavailable)`);
+      stockResults.indices[id] = y;
+    }
+  }
+
   const indices = sortByOrder(
     [stockResults.indices.sp500, stockResults.indices.dow, stockResults.indices.nasdaq, treasury, vix],
     INDEX_ORDER
@@ -300,8 +344,13 @@ async function main() {
   );
 
   const anyLive = [...indices, ...commodities].some((i) => i.live);
+  // Newest trade time among the index ETFs: what the page checks for staleness
+  // (`updated` is only when this script ran, which says nothing if every quote
+  // fell back to a previous value).
+  const idxTimes = indices.filter((i) => i.live && i.ticker && i.asof).map((i) => Date.parse(i.asof)).filter(Number.isFinite);
   const out = {
     updated: new Date().toISOString(),
+    quotesAsOf: idxTimes.length ? new Date(Math.max(...idxTimes)).toISOString() : null,
     source: anyLive ? "live" : "seed",
     indices,
     commodities,

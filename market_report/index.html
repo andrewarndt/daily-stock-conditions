@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=11">
+<link rel="stylesheet" href="assets/style.css?v=12">
 </head>
 <body>
 
@@ -127,27 +127,9 @@
 (function () {
   "use strict";
 
-  // Shown only if data/indices.json can't be fetched (e.g. opened via
-  // file:// locally, where browsers block fetch() of local files) so the
-  // page never renders empty.
-  var FALLBACK = {
-    updated: "2026-08-07T20:15:00Z",
-    source: "seed",
-    indices: [
-      { id: "sp500", name: "S&P 500", ticker: "SPY", value: 773.26, change: 0.61, changeType: "pct", unit: "$", live: false },
-      { id: "dow", name: "Dow Jones", ticker: "DIA", value: 539.62, change: 0.27, changeType: "pct", unit: "$", live: false },
-      { id: "nasdaq", name: "Nasdaq-100", ticker: "QQQ", value: 723.03, change: 1.17, changeType: "pct", unit: "$", live: false },
-      { id: "vix", name: "VIX", value: 14.62, change: -1.10, changeType: "abs", live: false }
-    ],
-    commodities: [
-      { id: "dxy", name: "US Dollar Index", ticker: "$DXY", value: 99.60, change: -0.36, changeType: "pct", live: false },
-      { id: "btc", name: "Bitcoin", value: 65081.24, change: 0.24, changeType: "pct", unit: "$", live: false },
-      { id: "gold", name: "Gold", value: 4342.35, change: -0.01, changeType: "pct", unit: "$", live: false },
-      { id: "silver", name: "Silver", ticker: "SLV", value: 57.50, change: 2.95, changeType: "pct", unit: "$", live: false },
-      { id: "oil", name: "Crude Oil", ticker: "/CL", value: 78.18, change: -2.69, changeType: "pct", unit: "$", live: false },
-      { id: "commodity_basket", name: "Broad Commodities", ticker: "DBC", value: 24.10, change: 0.42, changeType: "pct", unit: "$", live: false }
-    ]
-  };
+  // No seeded prices: if data/overview.json can't be loaded the cards say
+  // so instead of showing made-up numbers (desk.js also raises the
+  // "Data delayed" banner).
 
   function fmtValue(item) {
     var formatted = item.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -190,7 +172,7 @@
     var el = document.getElementById("overview-status-note");
     if (!el) return;
     el.textContent = (liveStatus.overview && liveStatus.econ)
-      ? "Major Indices and Dollar & Commodities are live Twelve Data feeds; Economic Snapshot is live FRED data -- all three refresh automatically, no manual reload needed."
+      ? "Major Indices are SPY/DIA/QQQ ETF prices (Alpaca, Yahoo as backup); VIX, the dollar index, crude, TLT and DBC come from Yahoo; Bitcoin, gold and silver from Twelve Data; the 10-year yield and Economic Snapshot from FRED. Quotes refresh every 30 minutes while the market is open, and the page reloads them on its own."
       : "Some figures on this page are showing illustrative placeholder values because a feed hasn't reported yet or couldn't be loaded -- live sections are unmarked, placeholder ones carry a \"static\" flag above.";
   }
 
@@ -245,7 +227,8 @@
       var card = document.createElement("div");
       card.className = "metric-card";
       var label = item.name + (item.ticker ? " (" + item.ticker + ")" : "");
-      var staticFlag = item.live === false ? '<span class="placeholder-flag">static</span>' : "";
+      var staticFlag = item.live === false ? '<span class="placeholder-flag" title="This quote did not update in the last refresh">delayed</span>' : "";
+      if (item.asof) card.title = "Quote as of " + new Date(item.asof).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit", timeZone: "America/New_York" }) + " ET";
       card.innerHTML =
         '<div class="metric-name">' + label + staticFlag + '</div>' +
         '<div class="metric-value">' + fmtValue(item) + '</div>' +
@@ -264,16 +247,16 @@
     renderGrid("indices-grid", data.indices.filter(function (i) { return i.id !== "ust10y"; }));
     renderGrid("commodities-grid", (data.commodities || []).filter(function (i) { return i.id !== "bonds"; }));
 
-    var d = new Date(data.updated);
+    var d = new Date(data.quotesAsOf || data.updated);
     var stamp = isNaN(d) ? "unknown" : d.toLocaleString("en-US", {
       month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", timeZone: "America/New_York"
     }) + " ET";
     document.getElementById("refresh-time").textContent = stamp;
-    document.getElementById("indices-asof").textContent = "As of last refresh";
+    document.getElementById("indices-asof").textContent = data.quotesAsOf ? "Last trade " + stamp : "As of last refresh";
 
     var notice = document.getElementById("live-notice");
     if (data.source === "live") {
-      notice.textContent = "Live data — Twelve Data & FRED, refreshed every 30 min on weekdays";
+      notice.textContent = "Live data — Alpaca, Yahoo, Twelve Data & FRED, refreshed every 30 min while the market is open";
     } else {
       notice.textContent = "Illustrative sample data — not live market feeds";
     }
@@ -291,8 +274,12 @@
       .then(function (res) { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); })
       .then(render)
       .catch(function (err) {
-        console.warn("Could not load data/overview.json, showing fallback values:", err);
-        render(FALLBACK);
+        console.warn("Could not load data/overview.json:", err);
+        if (lastRenderedUpdate) return; // keep the last good render; desk.js flags the delay
+        ["indices-grid", "commodities-grid"].forEach(function (id) {
+          document.getElementById(id).innerHTML = '<div class="metric-card"><div class="metric-name">Quotes unavailable</div><div class="metric-sub">The price feed could not be loaded. Try again in a minute.</div></div>';
+        });
+        document.getElementById("live-notice").textContent = "Price feed unavailable";
       });
   }
 
@@ -394,7 +381,7 @@
   });
 })();
 </script>
-<script src="assets/desk.js?v=3" defer></script>
+<script src="assets/desk.js?v=4" defer></script>
 <script src="/assets/site-links.js?v=2" defer></script>
 </body>
 </html>

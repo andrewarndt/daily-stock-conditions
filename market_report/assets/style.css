@@ -1159,3 +1159,8 @@ body .site-links {
   .brand { padding: 0.55rem 0; }
   .notice { max-width: 100%; }
 }
+
+/* Data freshness check (desk.js): red dot + banner when a feed is late. */
+.refresh-stamp.stale { color: var(--down); }
+.refresh-stamp.stale .dot { background: var(--down); box-shadow: 0 0 6px var(--down); }
+.data-health[hidden] { display: none; }

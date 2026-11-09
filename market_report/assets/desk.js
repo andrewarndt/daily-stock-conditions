@@ -167,6 +167,166 @@
     });
   }
 
+  // ---------- data freshness check ----------
+  // Every tab re-reads the feeds it shows and checks each against the time it
+  // should have been refreshed by. Anything late, partly failed, or missing
+  // raises a red banner at the top of the page and turns the "Last refresh"
+  // dot red, so stale numbers are never shown as current without a warning.
+  // (2026-11-09: GitHub's scheduler skipped a whole Monday and the Overview
+  // showed Friday's prices as "live" with nothing on the page saying so.)
+  //
+  // Policies (all times New York):
+  //   intraday  quotes within 50 min while the market is open; otherwise from
+  //             the last session's close (field quotesAsOf, else updated)
+  //   morning   run since 10:30 on the latest trading day
+  //   eod       run since the last session's close, checked from 21:00 on
+  //             (the after-close jobs run 16:15-17:00, crons as late as ~20:00)
+  //   session   the feed's session date >= the last session, checked from 18:30
+  //   weekly    run within 8 days
+  var FEEDS = {
+    "overview.json": { label: "Index & commodity quotes", policy: "intraday" },
+    "economic.json": { label: "Economic snapshot", policy: "morning" },
+    "breadth.json": { label: "Market breadth", policy: "session", dateField: "asof" },
+    "aaii.json": { label: "AAII survey", policy: "weekly" },
+    "consumer-sentiment.json": { label: "Consumer sentiment", policy: "morning" },
+    "cot.json": { label: "COT positioning", policy: "weekly" },
+    "fear-greed.json": { label: "Fear & Greed", policy: "morning" },
+    "putcall.json": { label: "Put/call ratio", policy: "morning" },
+    "sentiment-report.json": { label: "Daily sentiment read", policy: "morning" },
+    "earnings.json": { label: "FactSet earnings scorecard", policy: "weekly", dateField: "asof" },
+    "sector-ratios.json": { label: "Sector ratios", policy: "eod" },
+    "volatility.json": { label: "Volatility indices", policy: "eod" },
+    "skew.json": { label: "SPX skew", policy: "eod" },
+    "fed-watch.json": { label: "Fed Watch odds", policy: "morning" },
+    "fed-dashboard.json": { label: "Fed dashboard", policy: "morning" },
+    "yields.json": { label: "Treasury yields", policy: "eod" },
+    "credit.json": { label: "Credit (HYG)", policy: "eod" },
+    "gex/index.json": { label: "GEX levels", policy: "session", dateField: "session" }
+  };
+  var PAGE_FEEDS = {
+    "index.html": ["overview.json", "economic.json", "breadth.json"],
+    "sentiment.html": ["fear-greed.json", "putcall.json", "consumer-sentiment.json", "aaii.json", "cot.json", "sentiment-report.json"],
+    "earnings.html": ["earnings.json"],
+    "sector-ratios.html": ["sector-ratios.json", "volatility.json", "skew.json"],
+    "gex.html": ["gex/index.json"],
+    "fed-economic.html": ["economic.json", "fed-watch.json"],
+    "bonds.html": ["yields.json", "credit.json", "fed-dashboard.json", "overview.json"]
+  };
+
+  function isTradingDay(d) { // d = "YYYY-MM-DD"
+    var wd = new Date(d + "T12:00:00Z").getUTCDay();
+    return wd !== 0 && wd !== 6 && !HOLIDAYS[d];
+  }
+  function prevDay(d) {
+    var t = new Date(d + "T12:00:00Z"); t.setUTCDate(t.getUTCDate() - 1);
+    return t.toISOString().slice(0, 10);
+  }
+  function closeMins(d) { return EARLY_CLOSE[d] ? 13 * 60 : 16 * 60; }
+  function hhmm(m) { return String(Math.floor(m / 60)).padStart(2, "0") + ":" + String(m % 60).padStart(2, "0"); }
+  // latest trading day whose (close + afterMins, or fixed time atMins) has passed
+  function latestDay(ny, atFn) {
+    var d = ny.date;
+    for (var i = 0; i < 15; i++, d = prevDay(d)) {
+      if (!isTradingDay(d)) continue;
+      if (d < ny.date || ny.mins >= atFn(d)) return d;
+    }
+    return d;
+  }
+  // ISO timestamp -> "YYYY-MM-DD HH:MM" New York time, comparable as a string
+  function etStamp(iso) {
+    var t = new Date(iso);
+    if (isNaN(t)) return null;
+    var p = {};
+    nyParts.formatToParts(t).forEach(function (x) { p[x.type] = x.value; });
+    return p.year + "-" + p.month + "-" + p.day + " " + p.hour + ":" + p.minute;
+  }
+  function fmtStamp(iso) {
+    var t = new Date(iso);
+    if (isNaN(t)) return "unknown";
+    return t.toLocaleString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit", timeZone: "America/New_York" }) + " ET";
+  }
+  function fmtDay(d) {
+    return new Date(d + "T12:00:00Z").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" });
+  }
+
+  function checkFeed(name, data) {
+    var f = FEEDS[name], ny = nyNow(), problems = [];
+    if (!data) return [f.label + ": could not be loaded. Figures in that section are placeholders, not market data."];
+    if (data.source === "seed") { // what every fetch script writes when a run got nothing live
+      problems.push(f.label + ": the last refresh got no live data. Figures shown are previous or placeholder values.");
+    }
+    else {
+      var stuck = [];
+      (function walk(o, depth) {
+        if (!o || typeof o !== "object" || depth > 4) return;
+        if (o.live === false && (o.name || o.id || o.ticker)) stuck.push(o.ticker || o.name || o.id);
+        for (var k in o) if (o[k] && typeof o[k] === "object") walk(o[k], depth + 1);
+      })(data, 0);
+      if (stuck.length) problems.push(f.label + ": " + stuck.slice(0, 6).join(", ") + (stuck.length > 6 ? " and " + (stuck.length - 6) + " more" : "") +
+        " did not update in the last refresh (marked “delayed” or “static”).");
+    }
+    var stamp = etStamp(data.updated), when = data.updated;
+    if (f.policy === "intraday") {
+      when = data.quotesAsOf || data.updated;
+      stamp = etStamp(when);
+      // through 40 min after the close, until the post-close refresh lands
+      var open = isTradingDay(ny.date) && ny.mins >= 9 * 60 + 30 && ny.mins < closeMins(ny.date) + 40;
+      if (open) {
+        var age = (Date.now() - new Date(when).getTime()) / 60000;
+        if (!(age <= 50)) problems.push(f.label + ": last quote " + fmtStamp(when) + ". These refresh every 30 minutes while the market is open, so the prices shown are out of date.");
+      } else {
+        var last = latestDay(ny, function (d) { return closeMins(d); });
+        if (!stamp || stamp < last + " " + hhmm(closeMins(last) - 5)) {
+          problems.push(f.label + ": last quote " + fmtStamp(when) + ", before the " + fmtDay(last) + " close. The prices shown are out of date.");
+        }
+      }
+    } else if (f.policy === "morning") {
+      var dm = latestDay(ny, function () { return 10 * 60 + 30; });
+      if (!stamp || stamp < dm + " 06:00") problems.push(f.label + ": last refreshed " + fmtStamp(data.updated) + "; expected by 10:30 AM ET on " + fmtDay(dm) + ".");
+    } else if (f.policy === "eod") {
+      var de = latestDay(ny, function () { return 21 * 60; });
+      if (!stamp || stamp < de + " " + hhmm(closeMins(de))) problems.push(f.label + ": last refreshed " + fmtStamp(data.updated) + "; should include the " + fmtDay(de) + " close.");
+    } else if (f.policy === "session") {
+      var ds = latestDay(ny, function () { return 18 * 60 + 30; });
+      var have = String(data[f.dateField] || "").slice(0, 10);
+      if (!have || have < ds) problems.push(f.label + ": data is from " + (have ? fmtDay(have) : "an unknown date") + "; the " + fmtDay(ds) + " close should be in by now.");
+    } else if (f.policy === "weekly") {
+      var ref = f.dateField && data[f.dateField] ? data[f.dateField] + "T20:00:00Z" : data.updated;
+      if (!(Date.now() - new Date(ref).getTime() <= 8 * 86400000)) problems.push(f.label + ": last updated " + fmtStamp(ref) + ", more than a week ago.");
+    }
+    return problems;
+  }
+
+  var pageName = (location.pathname.split("/").pop() || "index.html").toLowerCase();
+  var pageFeeds = PAGE_FEEDS[pageName] || [];
+  var healthBanner = null;
+  function showHealth(problems) {
+    var stampEl = document.querySelector(".refresh-stamp");
+    if (stampEl) stampEl.classList.toggle("stale", problems.length > 0);
+    if (!problems.length) { if (healthBanner) healthBanner.hidden = true; return; }
+    if (!healthBanner) {
+      healthBanner = document.createElement("div");
+      healthBanner.className = "stress-banner data-health";
+      healthBanner.setAttribute("role", "alert");
+      var page = document.querySelector(".page");
+      if (page) page.insertBefore(healthBanner, page.firstChild);
+    }
+    healthBanner.hidden = false;
+    healthBanner.innerHTML = '<span class="stress-banner-label">Data delayed</span><div class="stress-banner-body">' +
+      problems.map(function (p) { return "<div>" + esc(p) + "</div>"; }).join("") + "</div>";
+  }
+  function checkHealth() {
+    if (!pageFeeds.length) return;
+    Promise.all(pageFeeds.map(function (name) {
+      return fetch("data/" + name + "?h=" + Date.now(), { cache: "no-store" })
+        .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+        .then(function (d) { return checkFeed(name, d); }, function () { return checkFeed(name, null); });
+    })).then(function (lists) { showHealth([].concat.apply([], lists)); });
+  }
+  checkHealth();
+  setInterval(function () { if (document.visibilityState === "visible") checkHealth(); }, 5 * 60000);
+  window.MDHealth = { check: checkFeed, run: checkHealth };
+
   // ---------- quote tape ----------
 
   var topbar = document.querySelector(".topbar");

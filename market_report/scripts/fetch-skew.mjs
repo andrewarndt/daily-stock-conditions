@@ -165,7 +165,10 @@ async function main() {
     const curve = buildCurve(chainByExpiry.get(expiry), spot);
     if (curve.length < BUCKET_PCTS.length) throw new Error(`only resolved ${curve.length}/${BUCKET_PCTS.length} strike buckets`);
 
-    const asof = String(json.timestamp || "").slice(0, 10) || today.toISOString().slice(0, 10);
+    // Cboe's timestamp is UTC; a run after ~7 PM ET carries the next day's UTC
+    // date (Friday's close was labeled Saturday 2026-11-07). Use the New York date.
+    const stampMs = Date.parse(String(json.timestamp || "").replace(" ", "T") + (/[zZ]|[+-]\d\d:?\d\d$/.test(String(json.timestamp || "")) ? "" : "Z"));
+    const asof = new Date(Number.isFinite(stampMs) ? stampMs : today.getTime()).toLocaleDateString("en-CA", { timeZone: "America/New_York" });
     const point = { date: asof, expiry, spot, buckets: curve };
     const history = mergeHistory(previous?.history, point);
 

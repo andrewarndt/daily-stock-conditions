@@ -29,7 +29,11 @@ $runs = @()
 # Overview (quote tape, index tiles): every half hour through the session and just after the close.
 if ($mins -ge 9 * 60 -and $mins -le 17 * 60) { $runs += "refresh-overview.yml" }
 # Morning releases
-if (In-Slot 7 0)  { $runs += "refresh-fed-watch.yml"; $runs += "refresh-aaii.yml" }
+if (In-Slot 7 0)  {
+  $runs += "refresh-fed-watch.yml"; $runs += "refresh-aaii.yml"
+  # Cboe posts some index history files hours after the close; re-run so last night's gaps fill in
+  $runs += "refresh-volatility.yml"; $runs += "refresh-skew.yml"; $runs += "refresh-yields.yml"
+}
 if (In-Slot 8 0)  { $runs += "refresh-fear-greed.yml"; $runs += "refresh-putcall.yml" }
 if (In-Slot 9 0)  { $runs += "refresh-economic.yml"; $runs += "refresh-consumer-sentiment.yml" }
 if (In-Slot 9 30) { $runs += "refresh-fed-dashboard.yml" }
@@ -45,3 +49,12 @@ foreach ($w in ($runs | Select-Object -Unique)) {
   $out = & gh workflow run $w --repo $repo 2>&1
   Add-Content -Path $log -Value ("{0:yyyy-MM-dd HH:mm} {1} exit={2} {3}" -f $now, $w, $LASTEXITCODE, ($out -join " "))
 }
+
+# Record any refresh workflow that failed in the last 2 hours (the site's own
+# "Data delayed" banner covers what visitors see; this is for the owner).
+try {
+  $failed = & gh run list --repo $repo --limit 30 --json workflowName,conclusion,createdAt,url 2>$null | ConvertFrom-Json |
+    Where-Object { $_.conclusion -eq "failure" -and ([datetime]$_.createdAt) -gt (Get-Date).ToUniversalTime().AddHours(-2) }
+  foreach ($f in $failed) { Add-Content -Path $log -Value ("{0:yyyy-MM-dd HH:mm} FAILED {1} {2}" -f $now, $f.workflowName, $f.url) }
+} catch { }
+

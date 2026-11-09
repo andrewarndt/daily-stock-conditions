@@ -185,10 +185,17 @@ async function main() {
     }
   }
 
+  // Cboe updates each history file on its own schedule (2026-11-06: VIX9D and
+  // VIX3M had Friday's close at 8 PM ET, VIX did not), so taking each file's
+  // last row mixed two sessions on one curve. Use the latest date every
+  // tenor has; a tenor missing that date falls back to its own last row.
+  const termDates = TERM_STRUCTURE_DEFS.map((d) => fetched[d.symbol]).filter(Boolean)
+    .map((obs) => obs[obs.length - 1].date.getTime());
+  const commonTime = termDates.length ? Math.min(...termDates) : null;
   const termStructure = TERM_STRUCTURE_DEFS.map((def) => {
     const obs = fetched[def.symbol];
     if (obs) {
-      const last = obs[obs.length - 1];
+      const last = obs.filter((o) => commonTime === null || o.date.getTime() <= commonTime).pop() || obs[obs.length - 1];
       return {
         id: def.id, tenorLabel: def.tenorLabel, name: def.name,
         value: last.value,
