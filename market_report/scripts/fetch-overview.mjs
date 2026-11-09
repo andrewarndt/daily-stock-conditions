@@ -263,7 +263,7 @@ async function fetchYahooCommodity(id, def, previous) {
     const item = {
       id, name: def.name, ticker: def.ticker, live: true,
       value: price,
-      change: changeType === "abs" ? price - prevClose : ((price - prevClose) / prevClose) * 100,
+      change: changeType === "abs" || changeType === "pt" ? price - prevClose : ((price - prevClose) / prevClose) * 100,
       changeType,
       asof: Number.isFinite(meta?.regularMarketTime) ? new Date(meta.regularMarketTime * 1000).toISOString() : null
     };
@@ -275,7 +275,17 @@ async function fetchYahooCommodity(id, def, previous) {
   }
 }
 
+// 10-year yield: Cboe's ^TNX via Yahoo first -- intraday and same-day, where
+// FRED's DGS10 posts a business day or more late (on Monday 2026-11-09 it
+// still ended at Thursday 11-05). The two agree on overlapping days
+// (11-05: ^TNX 4.837, DGS10 4.84). FRED stays as the fallback.
 async function fetchTreasuryYield(previous) {
+  const tnx = await fetchYahooCommodity("ust10y", { name: "10-Yr Treasury", symbol: "^TNX", changeType: "pt", unit: "%" }, {});
+  if (tnx && tnx.live) {
+    tnx.change = Number(tnx.change.toFixed(3));
+    delete tnx.ticker;
+    return tnx;
+  }
   const prev = previous.ust10y;
   if (!FRED_API_KEY) {
     console.warn("[fred] no API key set, keeping previous value for ust10y");
