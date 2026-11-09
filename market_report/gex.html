@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SS82YDJ0GN"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-SS82YDJ0GN');
+</script>
+<title>GEX Levels — Market Desk</title>
+<meta name="description" content="Dealer gamma exposure (GEX) profiles, call and put walls, gamma flip, and options-implied daily, weekly and monthly moves for SPY, QQQ, IWM, DIA and every liquid S&amp;P 500 / Nasdaq-100 stock.">
+<link rel="canonical" href="https://4aholdingscompany.com/market_report/gex.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="GEX Levels — Market Desk">
+<meta property="og:description" content="Dealer gamma exposure profiles, walls, gamma flip and options-implied moves for the major index ETFs and liquid S&amp;P 500 / Nasdaq-100 stocks.">
+<meta property="og:url" content="https://4aholdingscompany.com/market_report/gex.html">
+<meta property="og:image" content="https://4aholdingscompany.com/images/logo-mark.png">
+<meta name="twitter:card" content="summary">
+<link rel="icon" type="image/png" href="/favicon.png">
+<script>try{var t=localStorage.getItem("md-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="assets/style.css?v=11">
+<style>
+  /* ---------- GEX page only ---------- */
+  .gex-views { display: flex; gap: 0; border: 1px solid var(--line); background: var(--paper-raised); }
+  .gex-view-btn {
+    font-family: var(--font-mono); font-size: 0.74rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-soft); background: transparent; border: none; border-right: 1px solid var(--line);
+    padding: 0.6rem 1.1rem; cursor: pointer;
+  }
+  .gex-view-btn:hover { color: var(--ink); }
+  .gex-view-btn.active { color: var(--on-accent); background: var(--accent); }
+  .gex-view-btn .count { font-weight: 500; opacity: 0.75; margin-left: 0.4rem; }
+  [data-view][hidden] { display: none !important; }
+
+  .idx-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  @media (max-width: 1250px) { .idx-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 640px) { .idx-grid { grid-template-columns: minmax(0, 1fr); } }
+  .idx-card {
+    padding: 0.7rem 0.8rem 0.75rem; min-width: 0; cursor: pointer;
+    box-shadow: 1px 0 0 var(--line), 0 1px 0 var(--line); border-top: 2px solid transparent;
+  }
+  .idx-card:hover { background: var(--row-hover); }
+  .idx-card.selected { border-top-color: var(--accent); }
+  .idx-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; }
+  .idx-name { font-family: var(--font-mono); font-size: 0.68rem; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.05em; }
+  .idx-sym { font-family: var(--font-mono); font-weight: 700; color: var(--accent); }
+  .idx-spot { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 1.35rem; color: var(--ink-strong); line-height: 1.2; margin-top: 0.15rem; }
+  .regime {
+    display: inline-block; font-family: var(--font-mono); font-size: 0.6rem; font-weight: 700; letter-spacing: 0.06em;
+    text-transform: uppercase; padding: 0.05rem 0.35rem; border: 1px solid currentColor; white-space: nowrap;
+  }
+  .regime.positive { color: var(--up); background: var(--up-bg); }
+  .regime.negative { color: var(--down); background: var(--down-bg); }
+  .idx-card table { font-size: 0.76rem; margin-top: 0.55rem; }
+  .idx-card th, .idx-card td { padding: 0.28rem 0.35rem; position: static; }
+  .idx-card th:first-child, .idx-card td:first-child { padding-left: 0; }
+  .idx-card th:last-child, .idx-card td:last-child { padding-right: 0; }
+  .idx-card tbody tr:nth-child(even) td, .idx-card tbody tr:hover td { background: none; }
+  .idx-levels { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.3rem; margin-top: 0.6rem; padding-top: 0.5rem; border-top: 1px solid var(--line); }
+  .lvl-label { font-family: var(--font-mono); font-size: 0.58rem; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.05em; }
+  .lvl-val { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 0.8rem; color: var(--ink-strong); }
+  .lvl-val.call { color: var(--up); } .lvl-val.put { color: var(--down); } .lvl-val.flip { color: var(--accent); }
+
+  .flag-tag { font-family: var(--font-mono); font-size: 0.6rem; color: var(--accent); margin-left: 0.2rem; cursor: help; }
+
+  .prof-controls { display: flex; flex-wrap: wrap; gap: 0.5rem 0.9rem; align-items: center; padding: 0.6rem 0.7rem 0; }
+  .prof-controls .weight-toggle { margin-bottom: 0; }
+  .ctl-label { font-family: var(--font-mono); font-size: 0.6rem; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.08em; margin-right: 0.35rem; }
+  .ctl { display: inline-flex; align-items: center; }
+  .prof-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.3rem 1.2rem; padding: 0.6rem 0.7rem 0; }
+  .prof-title { font-family: var(--font-mono); font-size: 1.05rem; font-weight: 700; color: var(--ink-strong); }
+  .prof-stat { font-family: var(--font-mono); font-size: 0.72rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  .prof-stat b { color: var(--ink-strong); font-weight: 600; }
+  .prof-stat b.call { color: var(--up); } .prof-stat b.put { color: var(--down); } .prof-stat b.flip { color: var(--accent); }
+  .prof-chart { position: relative; padding: 0.4rem 0.4rem 0.2rem; }
+  .prof-chart svg { display: block; width: 100%; }
+  .prof-empty { padding: 2rem 0.7rem; color: var(--ink-soft); font-family: var(--font-mono); font-size: 0.75rem; }
+  .prof-tip {
+    position: absolute; pointer-events: none; z-index: 5; background: var(--panel-head); border: 1px solid var(--line-strong);
+    font-family: var(--font-mono); font-size: 0.68rem; font-variant-numeric: tabular-nums; color: var(--ink); padding: 0.4rem 0.55rem;
+    white-space: nowrap; box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+  }
+  .prof-tip .k { color: var(--ink-soft); display: inline-block; min-width: 4.8rem; }
+  .prof-tip .t { color: var(--accent); font-weight: 700; margin-bottom: 0.15rem; }
+  svg .bar-up { fill: var(--up); } svg .bar-down { fill: var(--down); }
+  svg .bar-soft-up { fill: var(--up); opacity: 0.45; } svg .bar-soft-down { fill: var(--down); opacity: 0.45; }
+  svg .sd1 { fill: var(--accent); opacity: 0.09; }
+  svg .sd2 { fill: none; stroke: var(--accent); stroke-width: 1; stroke-dasharray: 2 3; opacity: 0.55; }
+  svg .zero { stroke: var(--line-strong); stroke-width: 1; }
+  svg .mk-spot { stroke: var(--ink); stroke-width: 1.25; }
+  svg .mk-flip { stroke: var(--accent); stroke-width: 1.25; stroke-dasharray: 5 3; }
+  svg .mk-call { stroke: var(--up); stroke-width: 1.25; stroke-dasharray: 2 2; }
+  svg .mk-put { stroke: var(--down); stroke-width: 1.25; stroke-dasharray: 2 2; }
+  svg .mk-text { font-family: var(--font-mono); font-size: 10.5px; font-weight: 600; }
+  svg .mk-text.spot { fill: var(--ink); } svg .mk-text.flip { fill: var(--accent); }
+  svg .mk-text.call { fill: var(--up); } svg .mk-text.put { fill: var(--down); }
+  svg .hover-col { fill: var(--ink); opacity: 0; }
+  svg .hover-col.on { opacity: 0.07; }
+  svg .gex-axis { fill: var(--ink-soft); font-family: var(--font-mono); font-size: 10px; }
+  .swatch-line { width: 0.875rem; height: 0; border-top: 2px dashed currentColor; display: inline-block; }
+
+  .screener-bar { display: flex; flex-wrap: wrap; gap: 0.5rem 0.9rem; align-items: center; padding: 0.6rem 0.7rem; border-bottom: 1px solid var(--line); }
+  .gex-search {
+    font-family: var(--font-mono); font-size: 0.8rem; color: var(--ink-strong); background: var(--paper);
+    border: 1px solid var(--line-strong); padding: 0.4rem 0.6rem; width: 15rem; max-width: 100%; text-transform: uppercase;
+  }
+  .gex-search::placeholder { text-transform: none; color: var(--ink-faint); }
+  .gex-search:focus { outline: none; border-color: var(--accent); }
+  .screener-count { font-family: var(--font-mono); font-size: 0.66rem; color: var(--ink-soft); margin-left: auto; }
+  .screener-wrap { max-height: 70vh; overflow: auto; }
+  #screener th { cursor: pointer; user-select: none; }
+  #screener th:hover { color: var(--ink); }
+  #screener th.sorted { color: var(--accent); }
+  #screener tbody tr { cursor: pointer; }
+  #screener tbody tr.selected td { background: var(--accent-soft); }
+  #screener td.sym { font-family: var(--font-mono); font-weight: 700; color: var(--accent); }
+  #screener td.range { font-family: var(--font-mono); font-variant-numeric: tabular-nums; color: var(--ink-soft); font-size: 0.74rem; text-align: right; }
+  .mem { font-family: var(--font-mono); font-size: 0.56rem; color: var(--ink-soft); border: 1px solid var(--line-strong); padding: 0 0.25rem; margin-left: 0.3rem; vertical-align: 1px; font-weight: 500; }
+  .lc { text-transform: none; }
+  .gex-msg { padding: 0.9rem 0.7rem; color: var(--ink-soft); font-size: 0.8rem; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand-row">
+      <a class="brand" href="index.html">Market <span>Desk</span></a>
+      <div class="top-meta">
+        <span class="notice" id="live-notice">Loading GEX data&hellip;</span>
+        <span class="refresh-stamp"><span class="dot"></span>Last refresh: <span id="refresh-time">&mdash;</span></span>
+      </div>
+    </div>
+    <nav class="tabs">
+      <a href="index.html" class="tab">Overview</a>
+      <a href="sentiment.html" class="tab">Sentiment</a>
+      <a href="earnings.html" class="tab">Earnings</a>
+      <a href="sector-ratios.html" class="tab">Sector Ratios</a>
+      <a href="gex.html" class="tab active">GEX Levels</a>
+      <a href="fed-economic.html" class="tab">Fed &amp; Economic</a>
+      <a href="bonds.html" class="tab">Bonds</a>
+    </nav>
+  </div>
+</div>
+
+<div class="page">
+  <div class="page-head">
+    <h1>GEX Levels</h1>
+    <p id="page-sub">Dealer gamma exposure by strike, with options-implied daily, weekly and monthly moves.</p>
+  </div>
+
+  <div class="gex-views" role="tablist" aria-label="GEX views">
+    <button type="button" class="gex-view-btn active" role="tab" data-target="indices" aria-selected="true">Index ETFs</button>
+    <button type="button" class="gex-view-btn" role="tab" data-target="stocks" aria-selected="false">Stocks<span class="count" id="stock-count"></span></button>
+  </div>
+
+  <!-- ===== Index ETFs ===== -->
+  <section data-view="indices">
+    <div class="section-head">
+      <h2>Expected Moves &mdash; Major Indices</h2>
+      <span class="section-note" id="idx-asof">Options-implied 1&sigma; moves from the close</span>
+    </div>
+    <div class="idx-grid" id="idx-grid"><div class="gex-msg">Loading&hellip;</div></div>
+  </section>
+
+  <section data-view="indices">
+    <div class="section-head">
+      <h2>GEX Profile</h2>
+      <span class="section-note">Click an index above to switch</span>
+    </div>
+    <div id="idx-profile"></div>
+  </section>
+
+  <!-- ===== Stocks ===== -->
+  <section data-view="stocks" hidden>
+    <div class="section-head">
+      <h2>Stock GEX Profile</h2>
+      <span class="section-note">Pick a name in the screener below, or search</span>
+    </div>
+    <div id="stock-profile"><div class="prof-empty">Search for a symbol or click a row below.</div></div>
+  </section>
+
+  <section data-view="stocks" hidden>
+    <div class="section-head">
+      <h2>Screener</h2>
+      <span class="section-note" id="screener-note">S&amp;P 500 + Nasdaq-100 names averaging &ge; 500 option contracts/day</span>
+    </div>
+    <div class="screener-bar">
+      <input type="search" class="gex-search" id="gex-search" placeholder="Search symbol, e.g. NVDA" autocomplete="off" spellcheck="false" aria-label="Search symbol">
+      <span class="ctl"><span class="ctl-label">Index</span>
+        <span class="weight-toggle" id="f-index">
+          <button type="button" class="weight-toggle-btn active" data-v="">All</button>
+          <button type="button" class="weight-toggle-btn" data-v="sp500">S&amp;P 500</button>
+          <button type="button" class="weight-toggle-btn" data-v="ndx">Nasdaq-100</button>
+        </span></span>
+      <span class="ctl"><span class="ctl-label">Regime</span>
+        <span class="weight-toggle" id="f-regime">
+          <button type="button" class="weight-toggle-btn active" data-v="">All</button>
+          <button type="button" class="weight-toggle-btn" data-v="positive">+ Gamma</button>
+          <button type="button" class="weight-toggle-btn" data-v="negative">&minus; Gamma</button>
+        </span></span>
+      <span class="screener-count" id="screener-count"></span>
+    </div>
+    <div class="table-wrap screener-wrap">
+      <table id="screener">
+        <thead><tr id="screener-head"></tr></thead>
+        <tbody id="screener-body"><tr><td class="muted">Loading&hellip;</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    <p><strong>GEX (gamma exposure)</strong> estimates how much stock option dealers would have to buy or sell for each 1% move in the underlying, assuming they are long the calls and short the puts that customers hold: Cboe open interest &times; Black-Scholes gamma (from Cboe implied vol) &times; 100 &times; spot&sup2; &times; 1%, calls positive, puts negative. <strong>Call wall</strong> = strike with the largest positive net GEX; <strong>put wall</strong> = most negative; <strong>gamma flip</strong> = strike where cumulative net GEX (from the lowest strike up) bottoms out. Spot above the flip is a positive-gamma regime (dealer hedging tends to dampen moves); below it, negative gamma (hedging tends to amplify them). &ldquo;Whole book&rdquo; sums every listed expiry; &ldquo;Next expiry&rdquo; uses only the nearest one.</p>
+    <p><strong>Expected moves</strong> are 1&sigma; = at-the-money implied vol &times; &radic;time, solved from closing quote mids; bands are the close &plusmn; 1/2/3&sigma; and ignore skew. Day = to the next session&rsquo;s close; Week = this week&rsquo;s last expiry; Month = the standard third-Friday monthly. <span class="flag-tag">est</span> = no expiry listed that soon, so the nearest expiry&rsquo;s IV is scaled by &radic;time (most single stocks on the daily move). <span class="flag-tag">~</span> = the at-the-money straddle quoted wide (over 20% of mid), so treat the move as approximate. Earnings inside the window are included in the move.</p>
+    <p>Data: Cboe delayed end-of-day option quotes and open interest, OCC cleared volume for the 500-contract filter (20-session average), computed after each weekday close. The Dow is shown through DIA, its tracking ETF.</p>
+    <p class="disclaimer">For informational purposes only, not investment advice. Data comes from the third-party sources named on each tab and may be delayed or contain errors.</p>
+  </footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var DATA = "data/gex/";
+  var INDEX_ORDER = ["SPY", "QQQ", "IWM", "DIA"];
+  var INDEX_NAMES = { SPY: "S&P 500", QQQ: "Nasdaq-100", IWM: "Russell 2000", DIA: "Dow Jones" };
+  var HZ = [["day", "Day"], ["week", "Week"], ["month", "Month"]];
+
+  var index = null;            // index.json
+  var docs = {};               // symbol -> tickers/<SYM>.json (cached)
+  var bySymbol = {};
+
+  // ---------- formatting ----------
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function px(v, d) {
+    if (v == null || !isFinite(v)) return "—";
+    d = d == null ? (v >= 1000 ? 0 : 2) : d;
+    return v.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+  }
+  function strike(v) { return v == null ? "—" : (Math.round(v) === v ? v.toLocaleString("en-US") : px(v, v % 0.5 === 0 ? 1 : 2)); }
+  function money(v) {
+    if (v == null || !isFinite(v)) return "—";
+    var a = Math.abs(v), s = v < 0 ? "−" : "";
+    if (a >= 1e9) return s + "$" + (a / 1e9).toFixed(a >= 1e10 ? 1 : 2) + "B";
+    if (a >= 1e6) return s + "$" + (a / 1e6).toFixed(a >= 1e8 ? 0 : 1) + "M";
+    if (a >= 1e3) return s + "$" + (a / 1e3).toFixed(0) + "K";
+    return s + "$" + a.toFixed(0);
+  }
+  function count(v) {
+    if (v == null) return "—";
+    if (v >= 1e6) return (v / 1e6).toFixed(2) + "M";
+    if (v >= 1e4) return (v / 1e3).toFixed(0) + "K";
+    if (v >= 1e3) return (v / 1e3).toFixed(1) + "K";
+    return v.toFixed(0);
+  }
+  function shortDate(iso) {
+    if (!iso) return "—";
+    return new Date(iso + "T12:00:00Z").toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
+  }
+  function flagTags(flags) {
+    flags = flags || [];
+    var out = "";
+    if (flags.indexOf("scaled") >= 0) out += '<span class="flag-tag" title="No expiry listed that soon: nearest expiry\'s IV scaled by √time">est</span>';
+    if (flags.indexOf("wide") >= 0) out += '<span class="flag-tag" title="At-the-money straddle quoted wide (>20% of mid); approximate">~</span>';
+    if (flags.indexOf("next-monthly") >= 0) out += '<span class="flag-tag" title="This month\'s monthly had no usable quotes; next month\'s used">nx</span>';
+    return out;
+  }
+  function regimeTag(lv) {
+    if (!lv) return '<span class="regime">n/a</span>';
+    return '<span class="regime ' + lv.regime + '" title="Spot ' + (lv.regime === "positive" ? "above" : "below") + ' the gamma flip">' +
+      (lv.regime === "positive" ? "+ Gamma" : "− Gamma") + "</span>";
+  }
+  // moves in the per-ticker files are named period_*; index.json has day/week/month
+  function moveOf(src, h) { return src.moves ? src.moves["period_" + h] : src[h]; }
+
+  // ---------- data ----------
+  function getJSON(path) {
+    return fetch(DATA + path + "?t=" + Date.now(), { cache: "no-store" })
+      .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); });
+  }
+  function getDoc(sym) {
+    if (docs[sym]) return Promise.resolve(docs[sym]);
+    return getJSON("tickers/" + encodeURIComponent(sym) + ".json").then(function (d) { docs[sym] = d; return d; });
+  }
+
+  // ---------- view switch (Index ETFs / Stocks), mirrored in the URL hash ----------
+  var view = "indices";
+  function setView(v, push) {
+    view = v;
+    document.querySelectorAll(".gex-view-btn").forEach(function (b) {
+      var on = b.getAttribute("data-target") === v;
+      b.classList.toggle("active", on);
+      b.setAttribute("aria-selected", on ? "true" : "false");
+    });
+    document.querySelectorAll("[data-view]").forEach(function (el) { el.hidden = el.getAttribute("data-view") !== v; });
+    if (push) setHash();
+    // charts measure their container, so draw after it becomes visible
+    (v === "indices" ? idxProfile : stockProfile).redraw();
+  }
+  function setHash() {
+    var h = view === "stocks" ? "stocks" + (stockProfile.symbol ? "/" + stockProfile.symbol : "") : "indices" + (idxProfile.symbol && idxProfile.symbol !== "SPY" ? "/" + idxProfile.symbol : "");
+    try { history.replaceState(null, "", "#" + h); } catch (e) { location.hash = h; }
+  }
+  document.querySelectorAll(".gex-view-btn").forEach(function (b) {
+    b.addEventListener("click", function () { setView(b.getAttribute("data-target"), true); });
+  });
+
+  // ---------- GEX profile chart (shared by both views) ----------
+  function makeProfile(root, onChange) {
+    var st = { book: "all", mode: "net", band: "week", range: "focus" };
+    var self = { symbol: null, doc: null };
+
+    function toggle(id, key, opts) {
+      return '<span class="ctl"><span class="ctl-label">' + id + '</span><span class="weight-toggle" data-key="' + key + '">' +
+        opts.map(function (o) { return '<button type="button" class="weight-toggle-btn' + (st[key] === o[0] ? " active" : "") + '" data-v="' + o[0] + '">' + o[1] + "</button>"; }).join("") +
+        "</span></span>";
+    }
+
+    function render() {
+      var d = self.doc;
+      if (!d) return;
+      var lv = d.levels[st.book] || d.levels.all;
+      var mv = moveOf(d, st.band);
+      var head =
+        '<div class="prof-head">' +
+          '<span class="prof-title">' + esc(d.symbol) + (d.name ? ' <span class="prof-stat">' + esc(d.name) + "</span>" : "") + "</span>" +
+          '<span class="prof-stat">Close <b>' + px(d.spot) + "</b></span>" +
+          (lv ? '<span class="prof-stat">Put wall <b class="put">' + strike(lv.putWall) + '</b></span>' +
+                '<span class="prof-stat">Flip <b class="flip">' + strike(lv.flip) + '</b></span>' +
+                '<span class="prof-stat">Call wall <b class="call">' + strike(lv.callWall) + '</b></span>' +
+                '<span class="prof-stat">Net GEX <b>' + money(lv.netGex) + '</b>/1%</span>' + regimeTag(lv) : "") +
+          HZ.map(function (h) {
+            var m = moveOf(d, h[0]);
+            return m ? '<span class="prof-stat">' + h[1] + " ±1σ <b>" + m.sdPct.toFixed(2) + "%</b>" + flagTags(m.flags) + "</span>" : "";
+          }).join("") +
+        "</div>";
+      var controls =
+        '<div class="prof-controls">' +
+          toggle("Expiries", "book", [["all", "Whole book"], ["nearest", "Next expiry" + (d.expiries && d.expiries.nearest ? " (" + shortDate(d.expiries.nearest) + ")" : "")]]) +
+          toggle("Bars", "mode", [["net", "Net"], ["split", "Calls / Puts"]]) +
+          toggle("Move band", "band", HZ) +
+          toggle("Range", "range", [["focus", "Focus"], ["full", "±25%"]]) +
+        "</div>";
+      var legend =
+        '<div class="legend" style="margin:0.4rem 0.7rem 0.6rem">' +
+          '<span class="legend-item"><span class="legend-swatch" style="background:var(--up)"></span>' + (st.mode === "net" ? "Net GEX &gt; 0" : "Call GEX") + "</span>" +
+          '<span class="legend-item"><span class="legend-swatch" style="background:var(--down)"></span>' + (st.mode === "net" ? "Net GEX &lt; 0" : "Put GEX") + "</span>" +
+          '<span class="legend-item"><span class="legend-swatch" style="background:var(--accent);opacity:0.35;height:0.6rem"></span>' +
+            (mv ? HZ.filter(function (h) { return h[0] === st.band; })[0][1] + " ±1σ (" + shortDate(mv.target) + "), dashed ±2σ" : "no move") + "</span>" +
+          '<span class="legend-item" style="color:var(--accent)"><span class="swatch-line"></span>Flip</span>' +
+          '<span class="legend-item" style="color:var(--up)"><span class="swatch-line"></span>Call wall</span>' +
+          '<span class="legend-item" style="color:var(--down)"><span class="swatch-line"></span>Put wall</span>' +
+          '<span class="legend-item">US$ per 1% move · session ' + esc(d.session) + "</span>" +
+        "</div>";
+      root.innerHTML = head + controls + '<div class="prof-chart"></div>' + legend;
+      root.querySelectorAll(".prof-controls .weight-toggle").forEach(function (g) {
+        g.addEventListener("click", function (e) {
+          var b = e.target.closest("button");
+          if (!b) return;
+          st[g.getAttribute("data-key")] = b.getAttribute("data-v");
+          render();
+        });
+      });
+      draw(root.querySelector(".prof-chart"), d, st);
+    }
+
+    self.show = function (sym) {
+      self.symbol = sym;
+      if (onChange) onChange(sym);
+      return getDoc(sym).then(function (d) {
+        if (self.symbol !== sym) return;
+        self.doc = d;
+        render();
+      }).catch(function (err) {
+        console.warn("GEX: could not load " + sym, err);
+        root.innerHTML = '<div class="prof-empty">No GEX profile for ' + esc(sym) + " in the latest run.</div>";
+      });
+    };
+    self.redraw = function () { if (self.doc && root.offsetParent !== null) render(); };
+    return self;
+  }
+
+  var SVGNS = "http://www.w3.org/2000/svg";
+  function el(tag, attrs, parent) {
+    var n = document.createElementNS(SVGNS, tag);
+    for (var k in attrs) n.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(n);
+    return n;
+  }
+  function niceStep(span, n) {
+    var raw = span / n, mag = Math.pow(10, Math.floor(Math.log10(raw))), f = raw / mag;
+    return (f < 1.5 ? 1 : f < 3 ? 2 : f < 7 ? 5 : 10) * mag;
+  }
+
+  function draw(box, d, st) {
+    var p = d.profiles[st.book] || d.profiles.all;
+    if (!p || !p.strike.length) { box.innerHTML = '<div class="prof-empty">No open interest to chart.</div>'; return; }
+    var lv = d.levels[st.book] || d.levels.all || {};
+    var mv = moveOf(d, st.band);
+    var S = d.spot;
+
+    // range: focus = the wider of the monthly ±2σ band and spot ±5%, widened to keep the walls/flip in view
+    var lo = p.strike[0], hi = p.strike[p.strike.length - 1];
+    if (st.range === "focus") {
+      var mm = moveOf(d, "month") || mv;
+      var flo = Math.min(S * 0.95, mm ? mm.bands["2"][0] : S * 0.9), fhi = Math.max(S * 1.05, mm ? mm.bands["2"][1] : S * 1.1);
+      [lv.callWall, lv.putWall, lv.flip].forEach(function (k) { if (k != null) { flo = Math.min(flo, k); fhi = Math.max(fhi, k); } });
+      var pad = (fhi - flo) * 0.03;
+      lo = Math.max(lo, flo - pad); hi = Math.min(hi, fhi + pad);
+    }
+    var idx = [];
+    for (var i = 0; i < p.strike.length; i++) if (p.strike[i] >= lo && p.strike[i] <= hi) idx.push(i);
+    if (!idx.length) { box.innerHTML = '<div class="prof-empty">No strikes in range.</div>'; return; }
+
+    var W = Math.max(300, box.clientWidth - 8);
+    var small = W < 560;
+    var H = small ? 300 : Math.round(Math.min(440, Math.max(320, W * 0.32)));
+    var padL = small ? 50 : 62, padR = 10, padT = 34, padB = 26;
+    var xs = idx.map(function (i) { return p.strike[i]; });
+    var x0 = Math.min(xs[0], lo), x1 = Math.max(xs[xs.length - 1], hi);
+    if (x1 === x0) { x0 -= 1; x1 += 1; }
+    var X = function (v) { return padL + (v - x0) / (x1 - x0) * (W - padL - padR); };
+
+    var up, dn;
+    if (st.mode === "net") {
+      up = idx.map(function (i) { return Math.max(0, p.netGex[i]); });
+      dn = idx.map(function (i) { return Math.min(0, p.netGex[i]); });
+    } else {
+      up = idx.map(function (i) { return p.callGex[i]; });
+      dn = idx.map(function (i) { return p.putGex[i]; });
+    }
+    var ymax = Math.max.apply(null, up.concat([0])), ymin = Math.min.apply(null, dn.concat([0]));
+    if (ymax === ymin) ymax = 1;
+    var ypad = (ymax - ymin) * 0.06;
+    ymax += ymax > 0 ? ypad : 0; ymin -= ymin < 0 ? ypad : 0;
+    var Y = function (v) { return padT + (ymax - v) / (ymax - ymin) * (H - padT - padB); };
+
+    // bar width from the typical (median) strike spacing in view; a few odd half-dollar strikes shouldn't thin every bar
+    var gaps = [];
+    for (var j = 1; j < xs.length; j++) gaps.push(xs[j] - xs[j - 1]);
+    gaps.sort(function (a, b) { return a - b; });
+    var gap = gaps.length ? gaps[Math.floor(gaps.length / 2)] : (x1 - x0) / 20;
+    var bw = Math.max(1.5, Math.min(28, (X(x0 + gap) - X(x0)) * 0.72));
+
+    box.innerHTML = "";
+    var svg = el("svg", { width: W, height: H, viewBox: "0 0 " + W + " " + H, role: "img", "aria-label": d.symbol + " GEX profile by strike" }, box);
+
+    // move bands
+    if (mv) {
+      var b1 = mv.bands["1"], b2 = mv.bands["2"];
+      var c1a = Math.max(X(b1[0]), padL), c1b = Math.min(X(b1[1]), W - padR);
+      if (c1b > c1a) el("rect", { x: c1a, y: padT, width: c1b - c1a, height: H - padT - padB, class: "sd1" }, svg);
+      [b2[0], b2[1]].forEach(function (v) {
+        if (v >= x0 && v <= x1) el("line", { x1: X(v), x2: X(v), y1: padT, y2: H - padB, class: "sd2" }, svg);
+      });
+    }
+
+    // y grid + labels
+    var step = niceStep(ymax - ymin, small ? 4 : 5);
+    for (var t = Math.ceil(ymin / step) * step; t <= ymax + 1e-9; t += step) {
+      var yy = Y(t);
+      el("line", { x1: padL, x2: W - padR, y1: yy, y2: yy, class: Math.abs(t) < step / 1e6 ? "zero" : "gridline" }, svg);
+      el("text", { x: padL - 6, y: yy + 3.5, "text-anchor": "end", class: "gex-axis" }, svg).textContent = money(Math.abs(t) < step / 1e6 ? 0 : t);
+    }
+    // x labels
+    var xstep = niceStep(x1 - x0, small ? 5 : 10);
+    for (var xv = Math.ceil(x0 / xstep) * xstep; xv <= x1 + 1e-9; xv += xstep) {
+      el("text", { x: X(xv), y: H - padB + 15, "text-anchor": "middle", class: "gex-axis" }, svg).textContent = strike(+xv.toFixed(4));
+    }
+
+    // bars
+    var Y0 = Y(0);
+    idx.forEach(function (i, k) {
+      var cx = X(p.strike[i]);
+      var soft = st.mode === "split";
+      if (up[k] > 0) el("rect", { x: cx - bw / 2, y: Y(up[k]), width: bw, height: Math.max(0.5, Y0 - Y(up[k])), class: soft ? "bar-soft-up" : "bar-up" }, svg);
+      if (dn[k] < 0) el("rect", { x: cx - bw / 2, y: Y0, width: bw, height: Math.max(0.5, Y(dn[k]) - Y0), class: soft ? "bar-soft-down" : "bar-down" }, svg);
+    });
+    if (st.mode === "split") { // net as a thin tick on top of the call/put bars
+      idx.forEach(function (i) {
+        var v = p.netGex[i];
+        if (!v) return;
+        el("rect", { x: X(p.strike[i]) - bw / 2, y: Y(v) - 1, width: bw, height: 2, class: v > 0 ? "bar-up" : "bar-down" }, svg);
+      });
+    }
+
+    // level markers, labels staggered when they would collide
+    var marks = [
+      { v: S, cls: "spot", label: "Spot " + px(S) },
+      { v: lv.flip, cls: "flip", label: "Flip " + strike(lv.flip) },
+      { v: lv.callWall, cls: "call", label: "Call " + strike(lv.callWall) },
+      { v: lv.putWall, cls: "put", label: "Put " + strike(lv.putWall) }
+    ].filter(function (m) { return m.v != null && m.v >= x0 && m.v <= x1; })
+     .sort(function (a, b) { return a.v - b.v; });
+    var rowsEnd = [-1e9, -1e9, -1e9];
+    marks.forEach(function (m) {
+      var mx = X(m.v), wlab = m.label.length * 6.4 + 6;
+      var row = 0;
+      while (row < 2 && rowsEnd[row] > mx - wlab / 2) row++;
+      rowsEnd[row] = mx + wlab / 2;
+      el("line", { x1: mx, x2: mx, y1: padT - 2 - (1 - row) * 0 , y2: H - padB, class: "mk-" + m.cls }, svg);
+      var tx = Math.min(Math.max(mx, padL + wlab / 2), W - padR - wlab / 2);
+      el("text", { x: tx, y: 12 + row * 12, "text-anchor": "middle", class: "mk-text " + m.cls }, svg).textContent = m.label;
+    });
+
+    // hover
+    var tip = document.createElement("div");
+    tip.className = "prof-tip"; tip.hidden = true;
+    box.appendChild(tip);
+    var cols = idx.map(function (i, k) {
+      var cx = X(p.strike[i]);
+      var left = k ? (X(p.strike[idx[k - 1]]) + cx) / 2 : padL;
+      var right = k < idx.length - 1 ? (X(p.strike[idx[k + 1]]) + cx) / 2 : W - padR;
+      return el("rect", { x: left, y: padT, width: Math.max(1, right - left), height: H - padT - padB, class: "hover-col", "data-k": k }, svg);
+    });
+    var lastOn = null;
+    function hide() { tip.hidden = true; if (lastOn) lastOn.classList.remove("on"); lastOn = null; }
+    svg.addEventListener("mouseleave", hide);
+    svg.addEventListener("mousemove", function (e) {
+      var r = e.target.getAttribute && e.target.getAttribute("data-k");
+      if (r == null) return hide();
+      var k = +r, i = idx[k];
+      if (lastOn) lastOn.classList.remove("on");
+      lastOn = cols[k]; lastOn.classList.add("on");
+      tip.innerHTML = '<div class="t">Strike ' + strike(p.strike[i]) + " · " + ((p.strike[i] / S - 1) * 100).toFixed(1) + "% from spot</div>" +
+        '<div><span class="k">Net GEX</span>' + money(p.netGex[i]) + "</div>" +
+        '<div><span class="k">Call GEX</span>' + money(p.callGex[i]) + "</div>" +
+        '<div><span class="k">Put GEX</span>' + money(p.putGex[i]) + "</div>" +
+        '<div><span class="k">Call OI</span>' + p.callOi[i].toLocaleString("en-US") + "</div>" +
+        '<div><span class="k">Put OI</span>' + p.putOi[i].toLocaleString("en-US") + "</div>";
+      tip.hidden = false;
+      var br = box.getBoundingClientRect();
+      var mx = e.clientX - br.left, my = e.clientY - br.top;
+      var tw = tip.offsetWidth, th = tip.offsetHeight;
+      tip.style.left = (mx + 14 + tw > br.width ? mx - tw - 14 : mx + 14) + "px";
+      tip.style.top = Math.max(0, Math.min(my - th / 2, br.height - th)) + "px";
+    });
+  }
+
+  // ---------- Index ETFs view ----------
+  var idxProfile = makeProfile(document.getElementById("idx-profile"), function (sym) {
+    document.querySelectorAll(".idx-card").forEach(function (c) { c.classList.toggle("selected", c.getAttribute("data-sym") === sym); });
+    if (view === "indices") setHash();
+  });
+
+  function renderIndices() {
+    var grid = document.getElementById("idx-grid");
+    var have = INDEX_ORDER.filter(function (s) { return bySymbol[s]; });
+    if (!have.length) {
+      grid.innerHTML = '<div class="gex-msg">The index ETFs (SPY, QQQ, IWM, DIA) are not in this data run yet. They are added from the next weekday close.</div>';
+      document.getElementById("idx-profile").innerHTML = "";
+      return false;
+    }
+    grid.innerHTML = have.map(function (sym) {
+      var t = bySymbol[sym], g = t.gex || {};
+      var rows = HZ.map(function (h) {
+        var m = t[h[0]];
+        if (!m) return '<tr><td class="muted">' + h[1] + '</td><td class="num muted" colspan="4">—</td></tr>';
+        var sd = t.spot * m.sdPct / 100;
+        return "<tr><td>" + h[1] + flagTags(m.flags) + '</td><td class="num muted">' + shortDate(m.target) + "</td>" +
+          '<td class="num">±' + m.sdPct.toFixed(2) + '%</td><td class="num">±' + px(sd) + "</td>" +
+          '<td class="num">' + px(m.bands["1"][0]) + "–" + px(m.bands["1"][1]) + "</td></tr>";
+      }).join("");
+      return '<div class="idx-card" data-sym="' + sym + '" tabindex="0" role="button" aria-label="Show ' + sym + ' GEX profile">' +
+        '<div class="idx-top"><div><div class="idx-name">' + (t.name || INDEX_NAMES[sym]) + ' · <span class="idx-sym">' + sym + "</span></div>" +
+        '<div class="idx-spot">' + px(t.spot) + "</div></div>" + regimeTag(t.gex) + "</div>" +
+        '<table><thead><tr><th>Move</th><th class="num">Expiry</th><th class="num">1<span class="lc">σ</span> %</th><th class="num">1<span class="lc">σ</span> $</th><th class="num">1<span class="lc">σ</span> range</th></tr></thead><tbody>' + rows + "</tbody></table>" +
+        '<div class="idx-levels">' +
+          '<div><div class="lvl-label">Put wall</div><div class="lvl-val put">' + strike(g.putWall) + "</div></div>" +
+          '<div><div class="lvl-label">Flip</div><div class="lvl-val flip">' + strike(g.flip) + "</div></div>" +
+          '<div><div class="lvl-label">Call wall</div><div class="lvl-val call">' + strike(g.callWall) + "</div></div>" +
+          '<div><div class="lvl-label">Net GEX/1%</div><div class="lvl-val">' + money(g.netGex) + "</div></div>" +
+        "</div></div>";
+    }).join("");
+    grid.querySelectorAll(".idx-card").forEach(function (c) {
+      var go = function () { idxProfile.show(c.getAttribute("data-sym")); };
+      c.addEventListener("click", go);
+      c.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
+    });
+    return have;
+  }
+
+  // ---------- Stocks view ----------
+  var stockProfile = makeProfile(document.getElementById("stock-profile"), function (sym) {
+    document.querySelectorAll("#screener-body tr").forEach(function (r) { r.classList.toggle("selected", r.getAttribute("data-sym") === sym); });
+    if (view === "stocks") setHash();
+  });
+
+  var COLS = [
+    ["symbol", "Symbol", false], ["spot", "Close", true], ["avgContracts", "Avg contracts/day", true],
+    ["day", "Day ±1σ", true], ["week", "Week ±1σ", true], ["weekRange", "Week 1σ range", true],
+    ["month", "Month ±1σ", true], ["monthRange", "Month 1σ range", true],
+    ["putWall", "Put wall", true], ["flip", "Flip", true], ["callWall", "Call wall", true],
+    ["flipDist", "Spot vs flip", true], ["regime", "Regime", false], ["netGex", "Net GEX/1%", true]
+  ];
+  var sortKey = "avgContracts", sortDir = -1, fIndex = "", fRegime = "";
+  function sortVal(t, k) {
+    var g = t.gex || {};
+    switch (k) {
+      case "symbol": return t.symbol;
+      case "day": case "week": case "month": return t[k] ? t[k].sdPct : null;
+      case "weekRange": return t.week ? t.week.bands["1"][0] : null;
+      case "monthRange": return t.month ? t.month.bands["1"][0] : null;
+      case "putWall": case "flip": case "callWall": case "netGex": return g[k];
+      case "flipDist": return g.flip ? (t.spot / g.flip - 1) : null;
+      case "regime": return g.regime || "";
+      default: return t[k];
+    }
+  }
+  function renderScreener() {
+    var q = document.getElementById("gex-search").value.trim().toUpperCase();
+    var rows = index.tickers.filter(function (t) {
+      return !t.etf && (!q || t.symbol.indexOf(q) === 0 || t.symbol.indexOf(q) >= 0) &&
+        (!fIndex || t[fIndex]) && (!fRegime || (t.gex && t.gex.regime === fRegime));
+    });
+    rows.sort(function (a, b) {
+      if (q) { var ea = a.symbol === q ? 0 : a.symbol.indexOf(q) === 0 ? 1 : 2, eb = b.symbol === q ? 0 : b.symbol.indexOf(q) === 0 ? 1 : 2; if (ea !== eb) return ea - eb; }
+      var A = sortVal(a, sortKey), B = sortVal(b, sortKey);
+      if (A == null && B == null) return 0; if (A == null) return 1; if (B == null) return -1;
+      return (A > B ? 1 : A < B ? -1 : 0) * sortDir;
+    });
+    document.getElementById("screener-head").innerHTML = COLS.map(function (c) {
+      return '<th data-k="' + c[0] + '" class="' + (c[2] ? "num" : "") + (sortKey === c[0] ? " sorted" : "") + '">' + c[1].replace(/σ/g, '<span class="lc">σ</span>') + (sortKey === c[0] ? (sortDir > 0 ? " ▲" : " ▼") : "") + "</th>";
+    }).join("");
+    var sel = stockProfile.symbol;
+    document.getElementById("screener-body").innerHTML = rows.map(function (t) {
+      var g = t.gex || {}, fd = g.flip ? (t.spot / g.flip - 1) * 100 : null;
+      var mvCell = function (m) { return m ? '<td class="num">' + m.sdPct.toFixed(2) + "%" + flagTags(m.flags) + "</td>" : '<td class="num muted">—</td>'; };
+      var rng = function (m) { return m ? '<td class="range">' + px(m.bands["1"][0]) + "–" + px(m.bands["1"][1]) + "</td>" : '<td class="range">—</td>'; };
+      return '<tr data-sym="' + esc(t.symbol) + '"' + (t.symbol === sel ? ' class="selected"' : "") + ">" +
+        '<td class="sym">' + esc(t.symbol) + (t.sp500 ? '<span class="mem">SPX</span>' : "") + (t.ndx ? '<span class="mem">NDX</span>' : "") + "</td>" +
+        '<td class="num">' + px(t.spot) + "</td>" +
+        '<td class="num">' + count(t.avgContracts) + "</td>" +
+        mvCell(t.day) + mvCell(t.week) + rng(t.week) + mvCell(t.month) + rng(t.month) +
+        '<td class="num change down">' + strike(g.putWall) + "</td>" +
+        '<td class="num" style="color:var(--accent)">' + strike(g.flip) + "</td>" +
+        '<td class="num change up">' + strike(g.callWall) + "</td>" +
+        '<td class="num ' + (fd == null ? "muted" : "") + '">' + (fd == null ? "—" : (fd >= 0 ? "+" : "") + fd.toFixed(1) + "%") + "</td>" +
+        "<td>" + regimeTag(t.gex) + "</td>" +
+        '<td class="num">' + money(g.netGex) + "</td></tr>";
+    }).join("") || '<tr><td colspan="' + COLS.length + '" class="muted">No symbols match.</td></tr>';
+    var total = index.tickers.filter(function (t) { return !t.etf; }).length;
+    document.getElementById("screener-count").textContent = rows.length === total ? total + " names" : rows.length + " of " + total + " names";
+    return rows;
+  }
+
+  document.getElementById("screener-head").addEventListener("click", function (e) {
+    var th = e.target.closest("th");
+    if (!th) return;
+    var k = th.getAttribute("data-k");
+    sortDir = sortKey === k ? -sortDir : (k === "symbol" || k === "regime" ? 1 : -1);
+    sortKey = k;
+    renderScreener();
+  });
+  document.getElementById("screener-body").addEventListener("click", function (e) {
+    var tr = e.target.closest("tr[data-sym]");
+    if (!tr) return;
+    stockProfile.show(tr.getAttribute("data-sym"));
+    var sec = document.getElementById("stock-profile").closest("section");
+    if (sec.getBoundingClientRect().top < 0) sec.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+  var searchEl = document.getElementById("gex-search");
+  searchEl.addEventListener("input", function () { if (index) renderScreener(); });
+  searchEl.addEventListener("keydown", function (e) {
+    if (e.key !== "Enter" || !index) return;
+    var rows = renderScreener();
+    if (rows.length) stockProfile.show(rows[0].symbol);
+  });
+  [["f-index", function (v) { fIndex = v; }], ["f-regime", function (v) { fRegime = v; }]].forEach(function (f) {
+    var g = document.getElementById(f[0]);
+    g.addEventListener("click", function (e) {
+      var b = e.target.closest("button");
+      if (!b) return;
+      g.querySelectorAll("button").forEach(function (x) { x.classList.toggle("active", x === b); });
+      f[1](b.getAttribute("data-v"));
+      if (index) renderScreener();
+    });
+  });
+
+  // redraw charts on resize (they size to their container)
+  var rt = null;
+  window.addEventListener("resize", function () {
+    clearTimeout(rt);
+    rt = setTimeout(function () { idxProfile.redraw(); stockProfile.redraw(); }, 150);
+  });
+
+  // ---------- boot ----------
+  getJSON("index.json").then(function (d) {
+    index = d;
+    d.tickers.forEach(function (t) { bySymbol[t.symbol] = t; });
+    var stocks = d.tickers.filter(function (t) { return !t.etf; });
+    document.getElementById("stock-count").textContent = stocks.length;
+    var built = new Date(d.built);
+    if (!isNaN(built)) {
+      document.getElementById("refresh-time").textContent = built.toLocaleString("en-US", {
+        month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", timeZone: "America/New_York"
+      }) + " ET";
+    }
+    document.getElementById("live-notice").textContent = "Cboe end-of-day options · " + shortDate(d.session) + " close";
+    document.getElementById("idx-asof").textContent = "Options-implied 1σ moves from the " + shortDate(d.session) + " close";
+    document.getElementById("screener-note").textContent = "S&P 500 + Nasdaq-100 names averaging ≥ 500 option contracts/day · " + shortDate(d.session) + " close";
+
+    var have = renderIndices();
+    renderScreener();
+
+    // initial state from the hash: #indices[/SYM] or #stocks[/SYM]
+    var h = decodeURIComponent((location.hash || "").replace(/^#/, "")).split("/");
+    var v = h[0] === "stocks" ? "stocks" : "indices", sym = (h[1] || "").toUpperCase();
+    if (have) idxProfile.show(v === "indices" && have.indexOf(sym) >= 0 ? sym : have[0]);
+    var firstStock = stocks.slice().sort(function (a, b) { return b.avgContracts - a.avgContracts; })[0];
+    var pick = v === "stocks" && bySymbol[sym] && !bySymbol[sym].etf ? sym : (firstStock && firstStock.symbol);
+    if (pick) stockProfile.show(pick);
+    if (v === "stocks" && sym) searchEl.value = "";
+    setView(v, false);
+  }).catch(function (err) {
+    console.warn("GEX: could not load data/gex/index.json", err);
+    document.getElementById("live-notice").textContent = "GEX data unavailable";
+    document.getElementById("idx-grid").innerHTML = '<div class="gex-msg">GEX data could not be loaded. It is published after each weekday close; try again shortly.</div>';
+    document.getElementById("screener-body").innerHTML = '<tr><td class="muted">GEX data could not be loaded.</td></tr>';
+  });
+
+  // theme switch: colors come from CSS classes, so only the tooltip-free redraw is needed for consistency
+  new MutationObserver(function () { idxProfile.redraw(); stockProfile.redraw(); })
+    .observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+})();
+</script>
+<script src="assets/desk.js?v=3" defer></script>
+<script src="/assets/site-links.js?v=2" defer></script>
+</body>
+</html>
