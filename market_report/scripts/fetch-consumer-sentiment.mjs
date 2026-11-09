@@ -39,8 +39,48 @@ async function loadPrevious() {
   }
 }
 
+// Primary source: the University of Michigan's own monthly table. FRED's
+// UMCSENT runs a month behind it (UMich's licensing delays FRED's copy): on
+// 2026-11-09 FRED's latest was September while UMich already had October.
+// FRED stays as the fallback below.
+const UMICH_CSV = "https://www.sca.isr.umich.edu/files/tbmics.csv";
+const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+async function fromUmich() {
+  const res = await fetch(UMICH_CSV, { headers: { "User-Agent": "Mozilla/5.0 (Market Desk)" } });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const rows = (await res.text()).split(/\r?\n/)
+    .map((l) => l.split(",").map((c) => c.trim().replace(/^"|"$/g, "")))
+    .filter((r) => r.length >= 3 && MONTHS.includes(r[0]) && /^\d{4}$/.test(r[1]) && r[2] !== "" && Number.isFinite(Number(r[2])))
+    .map((r) => ({ month: MONTHS.indexOf(r[0]) + 1, year: Number(r[1]), value: Number(r[2]) }));
+  if (rows.length < 2) throw new Error("not enough rows in UMich table");
+  rows.sort((x, y) => x.year - y.year || x.month - y.month);
+  const last = rows.slice(-TREND_MONTHS);
+  const latest = rows[rows.length - 1];
+  const prior = rows[rows.length - 2];
+  return {
+    updated: new Date().toISOString(),
+    source: "live",
+    live: true,
+    value: latest.value,
+    prior: prior.value,
+    asof: `${latest.year}-${String(latest.month).padStart(2, "0")}-01`,
+    trend: last.map((r) => r.value),
+    trendLabels: last.map((r) => MONTHS[r.month - 1].slice(0, 3))
+  };
+}
+
 async function main() {
   const previous = await loadPrevious();
+
+  try {
+    const out = await fromUmich();
+    await writeFile(OUT_PATH, JSON.stringify(out, null, 2) + "\n", "utf8");
+    console.log(`Wrote ${OUT_PATH}: value=${out.value} as of ${out.asof} (UMich), live.`);
+    return;
+  } catch (err) {
+    console.warn(`[umich] ${err.message}; falling back to FRED ${SERIES_ID}`);
+  }
 
   if (!FRED_API_KEY) {
     console.warn("[fred] no API key set, keeping previous value");

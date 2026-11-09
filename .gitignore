@@ -4,3 +4,5 @@
 
 # Full-resolution wildlife originals -- never published (site uses watermarked copies in wildlife/assets/web/)
 /Wildlife Photos/
+
+scripts/dispatch-refresh.log

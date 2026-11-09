@@ -231,7 +231,7 @@
     var live = [], stale = [];
     (liveStatus.gauge ? live : stale).push("the Market Sentiment gauge (CNN's Fear & Greed Index)");
     (liveStatus.putcall ? live : stale).push("the Put/Call Ratio (Cboe's Total Put/Call Ratio)");
-    (liveStatus.consumerSentiment ? live : stale).push("Consumer Sentiment (FRED's UMCSENT)");
+    (liveStatus.consumerSentiment ? live : stale).push("Consumer Sentiment (University of Michigan)");
 
     var text;
     if (!stale.length) {
