@@ -101,7 +101,10 @@ const TASKS = [
     due: (now, d) => {
       const q = d.quotesAsOf || d.updated;
       if (isTradingDay(now.date) && now.mins >= 9 * 60 + 25 && now.mins <= closeMins(now.date) + 10) {
-        return ageMin(d.updated) >= 25 ? "intraday quotes older than 25 min" : null;
+        // The 09:25 run only has pre-market prints (11-10: last trade 08:20), so pull again as soon as the bell rings
+        // instead of waiting out the cadence; then every 15 min.
+        if (now.mins >= 9 * 60 + 32 && stamp(q) < `${now.date} 09:30`) return "first quotes after the open";
+        return ageMin(d.updated) >= 15 ? "intraday quotes older than 15 min" : null;
       }
       const last = lastSession(now, (day) => closeMins(day) + 5);
       return stamp(q) < `${last} ${hm(closeMins(last) - 5)}` ? `missing the ${last} close` : null;
