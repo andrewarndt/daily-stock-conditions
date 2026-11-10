@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-09T23:31:25.870Z",
+  "updated": "2026-11-10T14:30:45.585Z",
   "source": "live",
   "series": [
     {
@@ -10,7 +10,7 @@
       "unit": "%",
       "value": 4,
       "prior": 4,
-      "asof": "2026-11-09",
+      "asof": "2026-11-10",
       "live": true
     },
     {
@@ -21,7 +21,7 @@
       "unit": "%",
       "value": 3.75,
       "prior": 3.75,
-      "asof": "2026-11-09",
+      "asof": "2026-11-10",
       "live": true
     },
     {
@@ -32,7 +32,7 @@
       "unit": "%",
       "value": 3.88,
       "prior": 3.88,
-      "asof": "2026-11-06",
+      "asof": "2026-11-09",
       "live": true
     },
     {
@@ -41,9 +41,9 @@
       "seriesId": "SOFR",
       "name": "SOFR",
       "unit": "%",
-      "value": 3.89,
-      "prior": 3.92,
-      "asof": "2026-11-06",
+      "value": 3.88,
+      "prior": 3.89,
+      "asof": "2026-11-09",
       "live": true
     },
     {
