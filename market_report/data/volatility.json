@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-10T22:26:20.291Z",
+  "updated": "2026-11-10T22:56:35.563Z",
   "source": "live",
   "labels": [
     "Jun",
@@ -31,10 +31,10 @@
         17.53,
         18.37,
         20.78,
-        20.85
+        20.64
       ],
       "live": true,
-      "asof": "2026-11-09"
+      "asof": "2026-11-10"
     },
     "vixeq": {
       "name": "Avg constituent IV",
