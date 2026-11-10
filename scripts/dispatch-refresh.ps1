@@ -28,6 +28,14 @@ try {
   & gh workflow run market-session.yml --repo $repo 2>&1 | Out-Null
 }
 
+# Hourly (the :00 run): start the independent health check too. GitHub
+# dropped all of its own scheduled triggers from 02:12 to 13:13 ET on
+# 2026-11-10, so this keeps the "loop is down / data is late" alarm alive.
+if ($now.Minute -lt 15) {
+  $out = & gh workflow run market-health.yml --repo $repo 2>&1
+  if ($LASTEXITCODE -ne 0) { Log ("health check start failed exit={0} {1}" -f $LASTEXITCODE, ($out -join " ")) }
+}
+
 # Record any Market Desk workflow that failed in the last 2 hours.
 try {
   $failed = & gh run list --repo $repo --limit 30 --json workflowName,conclusion,createdAt,url 2>$null | ConvertFrom-Json |
