@@ -280,10 +280,29 @@ function syncAlert(problems) {
     console.error("alert update failed:", (err.stderr || err.message || "").toString().split("\n")[0]);
   }
 }
-async function healthAndAlert(extra) {
-  // The HEALTH rules already include grace (e.g. quotes > 60 min old, closes
-  // due hours after the bell), so anything they report is alert-worthy.
-  syncAlert([...(await healthCheck()), ...extra]);
+// Only problems that have lasted ALERT_AFTER_MIN reach the issue (and the
+// owner's inbox): a blip the loop fixes on its next pass never emails. The
+// site's "Data delayed" banner still shows right away. Keyed by feed label,
+// since the message text carries changing timestamps.
+const ALERT_AFTER_MIN = 30;
+const firstSeen = new Map();
+async function healthAndAlert(extra, persist = true) {
+  const all = [...(await healthCheck()), ...extra], now = Date.now(), keep = [];
+  const labels = new Set(all.map((p) => p.split(":")[0]));
+  for (const k of [...firstSeen.keys()]) if (!labels.has(k)) firstSeen.delete(k);
+  for (const p of all) {
+    const k = p.split(":")[0];
+    if (!firstSeen.has(k)) firstSeen.set(k, now);
+    if (!persist || (now - firstSeen.get(k)) / 60000 >= ALERT_AFTER_MIN) keep.push(p);
+    else console.log(`(not alerting yet, first seen ${Math.round((now - firstSeen.get(k)) / 60000)} min ago) ${p}`);
+  }
+  syncAlert(keep);
+}
+function loopRunning() {
+  try {
+    const runs = JSON.parse(sh("gh", ["run", "list", "--workflow", "market-session.yml", "--limit", "5", "--json", "status"]) || "[]");
+    return runs.some((r) => ["in_progress", "queued", "pending", "waiting", "requested"].includes(r.status));
+  } catch { return false; }
 }
 
 // ---------- run ----------
@@ -345,8 +364,11 @@ async function tick() {
 
 const HEALTH_ONLY = process.argv.includes("--health-only");
 if (HEALTH_ONLY) {
-  // used by market-health.yml: check, alert, and restart the loop if it isn't running
-  await healthAndAlert([]);
+  // used by market-health.yml: restart the loop if it isn't running. While a
+  // loop run is live it owns the alert (with its 30-min persistence), so this
+  // hourly check only alerts when the loop itself is down.
+  if (!process.env.GITHUB_ACTIONS || !loopRunning()) await healthAndAlert([], false);
+  else console.log("loop is running; it handles alerts");
   ensureSuccessor(true);
   process.exit(0);
 }
@@ -374,7 +396,7 @@ const started = Date.now();
 let ticks = 0;
 for (;;) {
   await tick();
-  if (ticks++ % 15 === 0 || validationProblems.size) await healthAndAlert([...validationProblems.values()]);
+  if (ticks++ % 5 === 0 || validationProblems.size) await healthAndAlert([...validationProblems.values()]);
   if (ONCE) break;
   const now = ny();
   if ((Date.now() - started) / 60000 > MAX_MINUTES || now.mins > END_ET) break;
