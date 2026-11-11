@@ -1,10 +1,11 @@
 name: Market session loop
 
 # One long-running job keeps every GitHub-fed Market Desk file current
-# through the day (market_report/scripts/session-loop.mjs decides what is
-# due from each file's own dates). A run lasts up to ~5.75 h; several
-# triggers a day, plus the local "Market Desk Refresh Dispatch" task, make
-# sure one is always running even when GitHub drops scheduled triggers.
+# (market_report/scripts/session-loop.mjs decides what is due from each
+# file's own dates). A run lasts ~5.75 h and starts its own successor, 24/7,
+# so the chain never waits on a cron. The crons below, the half-hourly
+# health check and the local "Market Desk Refresh Dispatch" task only
+# restart the chain if it ever breaks (GitHub drops scheduled triggers).
 # Overlapping triggers queue behind the running loop instead of doubling it.
 
 on:

@@ -7,9 +7,12 @@
  * Why: GitHub's scheduled triggers are best-effort. In Oct-Nov 2026 the
  * "every 30 min" overview cron really fired about twice a day, and on Monday
  * 2026-11-09 no scheduled run fired at all by mid-afternoon, so the site
- * showed Friday's prices. One run of this loop covers ~5.75 hours; the
- * workflow is triggered several times a day (and by the local dispatcher) so
- * a missed trigger is picked up by the next one.
+ * showed Friday's prices. One run of this loop covers ~5.75 hours and starts
+ * its own successor before it exits, around the clock (nights and weekends
+ * too: the due rules leave idle hours idle). On 2026-11-11 the old
+ * "stop at 11:30 PM, let the 6 AM cron restart it" design left the site with
+ * no loop until 11:20 AM, because GitHub dropped every morning cron. Crons,
+ * the hourly health check and the local dispatcher only restart a broken chain.
  *
  * How: every minute, each task decides from the DATA (its file's own dates)
  * and the New York clock whether it is due -- not from when it last ran --
@@ -17,7 +20,9 @@
  * until the expected data shows up. Each run's changed file is committed and
  * pushed on its own.
  *
- * Usage: node market_report/scripts/session-loop.mjs [--once] [--dry-run]
+ * Usage: node market_report/scripts/session-loop.mjs [--once] [--dry-run] [--only=<task id>] [--health-only]
+ * Outside GitHub Actions it refuses to publish unless the feed API keys are set (a keyless local run once
+ * pushed FRED panels as "not live"); start real runs with `gh workflow run market-session.yml`.
  */
 
 import { readFile } from "node:fs/promises";
@@ -34,7 +39,20 @@ const DRY = process.argv.includes("--dry-run");
 // due check, validation and cross-checks as the loop instead of publishing a raw fetch.
 const ONLY = (process.argv.find((a) => a.startsWith("--only=")) || "").slice(7);
 const MAX_MINUTES = 345; // Actions jobs stop at 6 h; leave room to push
-const END_ET = 23 * 60 + 30; // nothing left to fetch after 11:30 PM ET
+
+if (process.argv.includes("--help") || process.argv.includes("-h")) {
+  console.log("usage: node market_report/scripts/session-loop.mjs [--once] [--dry-run] [--only=<task id>] [--health-only]\n" +
+    "Publishes (commits + pushes) unless --dry-run. Real runs: gh workflow run market-session.yml");
+  process.exit(0);
+}
+const KEYS = ["ALPACA_API_KEY_ID", "ALPACA_API_SECRET_KEY", "TWELVEDATA_API_KEY", "FRED_API_KEY"];
+const missingKeys = KEYS.filter((k) => !process.env[k]);
+// Local runs only: in Actions a missing secret degrades just its feeds (alerted), and must not break the chain.
+if (!process.env.GITHUB_ACTIONS && !DRY && !process.argv.includes("--health-only") && missingKeys.length) {
+  console.error(`refusing to publish without ${missingKeys.join(", ")}: feeds would go out as "not live".\n` +
+    "Use --dry-run locally, or start a real run with: gh workflow run market-session.yml");
+  process.exit(1);
+}
 
 // NYSE full-day holidays and 1:00 PM early closes (same list as assets/desk.js). Extend each year.
 const HOLIDAYS = new Set([
@@ -380,13 +398,11 @@ if (HEALTH_ONLY) {
   process.exit(0);
 }
 
-// Start the next loop run before this one ends, while the day still has work
-// left (GITHUB_TOKEN may trigger workflow_dispatch). With concurrency the new
-// run waits until this one exits.
+// Start the next loop run before this one ends (GITHUB_TOKEN may trigger
+// workflow_dispatch); with concurrency the new run waits until this one exits.
+// Always, at any hour: the chain must never depend on a cron to restart it.
 function ensureSuccessor(onlyIfIdle) {
   if (DRY || !process.env.GITHUB_ACTIONS) return;
-  const now = ny();
-  if (!isTradingDay(now.date) || now.mins > 22 * 60 + 30 || now.mins < 6 * 60) return;
   try {
     if (onlyIfIdle) {
       const runs = JSON.parse(sh("gh", ["run", "list", "--workflow", "market-session.yml", "--limit", "5", "--json", "status"]) || "[]");
@@ -414,8 +430,7 @@ for (;;) {
   await tick();
   if (ticks++ % 5 === 0 || validationProblems.size) await healthAndAlert([...validationProblems.values()]);
   if (ONCE) break;
-  const now = ny();
-  if ((Date.now() - started) / 60000 > MAX_MINUTES || now.mins > END_ET) break;
+  if ((Date.now() - started) / 60000 > MAX_MINUTES) break;
   await new Promise((r) => setTimeout(r, 60000));
 }
 await healthAndAlert([...validationProblems.values()]);

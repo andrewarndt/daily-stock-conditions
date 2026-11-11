@@ -2,10 +2,11 @@
 #
 # The data is kept current by one long-running GitHub Actions job,
 # .github/workflows/market-session.yml (market_report/scripts/session-loop.mjs),
-# which GitHub starts several times a day. GitHub's scheduled triggers are
-# best-effort (on 2026-11-09 none fired by mid-afternoon), so this script,
-# run by the Windows task "Market Desk Refresh Dispatch" every 30 minutes on
-# weekdays 07:00-17:30, starts the loop whenever no run is active or queued.
+# which chains itself 24/7 (each run starts the next). This script is the
+# off-GitHub backstop: run by the Windows task "Market Desk Refresh Dispatch"
+# every 30 minutes, every day, whether or not anyone is logged in (it runs
+# with the user's stored password so gh can read its keyring login), it
+# restarts the chain whenever no run is active or queued.
 # The loop decides what to fetch from the data itself, so an extra start is
 # harmless. Log: scripts/dispatch-refresh.log (not committed).
 

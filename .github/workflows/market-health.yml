@@ -2,12 +2,12 @@ name: Market data health check
 
 # Independent of the session loop: checks every Market Desk feed against its
 # schedule, opens/updates/closes the "Market Desk data alert" issue, and
-# starts the session loop if no run is active during market hours.
+# restarts the session-loop chain whenever no run is active (any hour, any day).
 
 on:
   schedule:
-    - cron: "17 12-23 * * 1-5"
-    - cron: "17 0-3 * * 2-6"
+    - cron: "17 * * * *"
+    - cron: "47 * * * *"
   workflow_dispatch: {}
 
 permissions:
