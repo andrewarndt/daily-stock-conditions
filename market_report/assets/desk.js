@@ -201,14 +201,15 @@
     "fed-dashboard.json": { label: "Fed dashboard", policy: "morning" },
     "yields.json": { label: "Treasury yields", policy: "eod" },
     "credit.json": { label: "Credit (HYG)", policy: "eod" },
-    "gex/index.json": { label: "GEX levels", policy: "session", dateField: "session" }
+    "gex/index.json": { label: "GEX levels", policy: "session", dateField: "session" },
+    "gex-spot.json": { label: "GEX live prices", policy: "intraday", maxAge: 20, every: "5 minutes" }
   };
   var PAGE_FEEDS = {
     "index.html": ["overview.json", "economic.json", "breadth.json"],
     "sentiment.html": ["fear-greed.json", "putcall.json", "consumer-sentiment.json", "aaii.json", "cot.json", "sentiment-report.json"],
     "earnings.html": ["earnings.json"],
     "sector-ratios.html": ["sector-ratios.json", "volatility.json", "skew.json"],
-    "gex.html": ["gex/index.json"],
+    "gex.html": ["gex/index.json", "gex-spot.json"],
     "fed-economic.html": ["economic.json", "fed-watch.json"],
     "bonds.html": ["yields.json", "credit.json", "fed-dashboard.json", "overview.json"]
   };
@@ -273,7 +274,7 @@
       var open = isTradingDay(ny.date) && ny.mins >= 9 * 60 + 30 && ny.mins < closeMins(ny.date) + 40;
       if (open) {
         var age = (Date.now() - new Date(when).getTime()) / 60000;
-        if (!(age <= 50)) problems.push(f.label + ": last quote " + fmtStamp(when) + ". These refresh every 30 minutes while the market is open, so the prices shown are out of date.");
+        if (!(age <= (f.maxAge || 50))) problems.push(f.label + ": last quote " + fmtStamp(when) + ". These refresh every " + (f.every || "15 minutes") + " while the market is open, so the prices shown are out of date.");
       } else {
         var last = latestDay(ny, function (d) { return closeMins(d); });
         if (!stamp || stamp < last + " " + hhmm(closeMins(last) - 5)) {

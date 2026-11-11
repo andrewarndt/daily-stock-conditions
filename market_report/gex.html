@@ -69,6 +69,11 @@
   .gb-name { font-family: var(--font-mono); font-size: 0.72rem; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.15rem; }
   .gb-close { font-family: var(--font-mono); font-size: 1.15rem; color: var(--ink-strong); margin-top: 0.35rem; font-variant-numeric: tabular-nums; }
   .gb-close .regime { margin-left: 0.5rem; vertical-align: 2px; }
+  .gb-close .chg { font-size: 0.82rem; margin-left: 0.4rem; }
+  .gb-close .chg.up { color: var(--up); } .gb-close .chg.down { color: var(--down); }
+  .gb-sub { font-family: var(--font-mono); font-size: 0.68rem; color: var(--ink-soft); margin-top: 0.2rem; letter-spacing: 0.02em; }
+  .gb-sub .old { color: var(--down); }
+  td.stale-px { color: var(--ink-soft); font-style: italic; }
   .gb-label { font-family: var(--font-mono); font-size: 0.66rem; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.08em; }
   .gb-label .exp { text-transform: none; letter-spacing: 0; color: var(--ink-faint); margin-left: 0.3rem; }
   .gb-pct { font-family: var(--font-mono); font-size: 1.45rem; font-weight: 600; color: var(--ink-strong); margin-top: 0.15rem; font-variant-numeric: tabular-nums; }
@@ -227,7 +232,7 @@
   <footer>
     <p><strong>GEX (gamma exposure)</strong> estimates how much stock option dealers would have to buy or sell for each 1% move in the underlying, assuming they are long the calls and short the puts that customers hold: Cboe open interest &times; Black-Scholes gamma (from Cboe implied vol) &times; 100 &times; spot&sup2; &times; 1%, calls positive, puts negative. <strong>Call wall</strong> = strike with the largest positive net GEX; <strong>put wall</strong> = most negative; <strong>gamma flip</strong> = strike where cumulative net GEX (from the lowest strike up) bottoms out. Spot above the flip is a positive-gamma regime (dealer hedging tends to dampen moves); below it, negative gamma (hedging tends to amplify them). &ldquo;Whole book&rdquo; sums every listed expiry; &ldquo;Next expiry&rdquo; uses only the nearest one.</p>
     <p><strong>Expected moves</strong> are 1&sigma; = at-the-money implied vol &times; &radic;time, solved from closing quote mids; ranges are the close &plusmn; 1&sigma; and ignore skew. Day = to the next session&rsquo;s close; Week = this week&rsquo;s last expiry; Month = the standard third-Friday monthly. <span class="flag-tag">est</span> = no expiry listed that soon, so the nearest expiry&rsquo;s IV is scaled by &radic;time (most single stocks on the daily move). <span class="flag-tag">~</span> = the at-the-money straddle quoted wide (over 20% of mid), so treat the move as approximate. Earnings inside the window are included in the move.</p>
-    <p>Data: Cboe delayed end-of-day option quotes and open interest, OCC cleared volume for the 500-contract filter (20-session average), computed after each weekday close. The Dow is shown through DIA, its tracking ETF.</p>
+    <p>Data: Cboe delayed end-of-day option quotes and open interest, OCC cleared volume for the 500-contract filter (20-session average), computed after each weekday close. The Dow is shown through DIA, its tracking ETF. During the cash session, <strong>Last</strong> and <strong>Chg</strong> (vs that close) update every 5 minutes from the IEX exchange feed, cross-checked against Yahoo Finance; the regime and price-vs-flip use the last price, while walls, flip and expected moves stay as computed at the close. A last price in italics has not traded on IEX for 20+ minutes.</p>
     <p class="disclaimer">For informational purposes only, not investment advice. Data comes from the third-party sources named on each tab and may be delayed or contain errors.</p>
   </footer>
 </div>
@@ -282,11 +287,35 @@
     if (flags.indexOf("next-monthly") >= 0) out += '<span class="flag-tag" title="This month\'s monthly had no usable quotes; next month\'s used">nx</span>';
     return out;
   }
-  function regimeTag(lv) {
-    if (!lv) return "";
-    return '<span class="regime ' + lv.regime + '" title="Spot ' + (lv.regime === "positive" ? "above" : "below") + ' the gamma flip">' +
-      (lv.regime === "positive" ? "+ Gamma" : "− Gamma") + "</span>";
+  // regime = price vs gamma flip; with a live price, measured from where the name trades now
+  function regimeOf(lv, price) {
+    if (!lv) return null;
+    return price != null && lv.flip != null ? (price >= lv.flip ? "positive" : "negative") : lv.regime;
   }
+  function regimeTag(lv, price) {
+    var r = regimeOf(lv, price);
+    if (!r) return "";
+    return '<span class="regime ' + r + '" title="' + (price != null ? "Last price" : "Close") + " " + (r === "positive" ? "above" : "below") + ' the gamma flip">' +
+      (r === "positive" ? "+ Gamma" : "− Gamma") + "</span>";
+  }
+  function pct(v) { return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(2) + "%"; }
+  function clock(sec) {
+    return new Date(sec * 1000).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: "America/New_York" });
+  }
+
+  // ---------- live prices (data/gex-spot.json, every 5 min in the cash session) ----------
+  // Used only when they are newer than the GEX close: before the open and after the evening GEX run,
+  // the close in index.json is the latest price, so nothing "live" is shown.
+  var live = null;
+  function lastPx(sym) {
+    if (!live || !index || !live.prices || !(live.session > index.session)) return null;
+    var v = live.prices[sym], t = bySymbol[sym];
+    if (!v || !t) return null;
+    // a name whose last print is 20+ min older than the feed's run (thin IEX trading) is shown as such
+    var behind = (Date.parse(live.quotesAsOf || live.updated) / 1000 - v[1]) / 60;
+    return { p: v[0], t: v[1], chg: t.spot ? (v[0] / t.spot - 1) * 100 : null, old: behind > 20 };
+  }
+  function nowPx(sym) { var l = lastPx(sym); return l ? l.p : (bySymbol[sym] || {}).spot; }
   function moveOf(src, h) { return src.moves ? src.moves["period_" + h] : src[h]; }
   function nameOf(t) { return t.name || ETF_NAMES[t.symbol] || [t.sp500 ? "S&P 500" : "", t.ndx ? "Nasdaq-100" : ""].filter(Boolean).join(" · "); }
 
@@ -318,7 +347,7 @@
     var o = pickerOptions(q);
     pItems = o.etfs.concat(o.stocks);
     var row = function (t, i) {
-      return '<li role="option" data-i="' + i + '" data-sym="' + esc(t.symbol) + '"><span class="ps">' + esc(t.symbol) + '</span><span class="pn">' + esc(nameOf(t)) + '</span><span class="pp">' + px(t.spot) + "</span></li>";
+      return '<li role="option" data-i="' + i + '" data-sym="' + esc(t.symbol) + '"><span class="ps">' + esc(t.symbol) + '</span><span class="pn">' + esc(nameOf(t)) + '</span><span class="pp">' + px(nowPx(t.symbol)) + "</span></li>";
     };
     var html = "";
     if (o.etfs.length) html += '<li class="group">Index ETFs</li>' + o.etfs.map(row).join("");
@@ -402,9 +431,17 @@
         '<div class="gb-range">' + px(m.bands["1"][0]) + " – " + px(m.bands["1"][1]) + ' <span>(2<span class="lc">σ</span> ' + px(m.bands["2"][0]) + " – " + px(m.bands["2"][1]) + ")</span></div></div>";
     }).join("");
     var lvl = function (label, v, cls) { return '<div class="gb-lv"><div class="gb-label">' + label + '</div><div class="v ' + (cls || "") + '">' + v + "</div></div>"; };
+    var L = lastPx(d.symbol), priceHtml;
+    if (L) {
+      priceHtml = '<div class="gb-close">' + px(L.p) + (L.chg != null ? '<span class="chg ' + (L.chg >= 0 ? "up" : "down") + '">' + pct(L.chg) + "</span>" : "") + regimeTag(lv, L.p) + "</div>" +
+        '<div class="gb-sub"' + (L.old ? ' title="No trade on the IEX feed in the last 20+ minutes"' : "") + ">Last " +
+          (L.old ? '<span class="old">' + clock(L.t) + " ET</span>" : clock(L.t) + " ET") + " · close " + px(d.spot) + "</div>";
+    } else {
+      priceHtml = '<div class="gb-close">' + px(d.spot) + regimeTag(lv) + '</div><div class="gb-sub">' + shortDate(d.session) + " close</div>";
+    }
     document.getElementById("gex-banner").innerHTML =
       '<div class="gb-id"><div class="gb-sym">' + esc(d.symbol) + '</div><div class="gb-name">' + esc(nameOf(bySymbol[d.symbol] || d)) + "</div>" +
-        '<div class="gb-close">' + px(d.spot) + regimeTag(lv) + "</div></div>" +
+        priceHtml + "</div>" +
       moves +
       '<div class="gb-levels">' +
         lvl("Put wall", strike(lv && lv.putWall), "put") + lvl("Call wall", strike(lv && lv.callWall), "call") +
@@ -481,12 +518,13 @@
     if (!p || !p.strike.length) { box.innerHTML = '<div class="prof-empty">No open interest to chart.</div>'; return; }
     var lv = d.levels[st.book] || d.levels.all || {};
     var mv = moveOf(d, st.band);
-    var S = d.spot;
+    var Lx = lastPx(d.symbol);
+    var S = Lx ? Lx.p : d.spot; // marker + "% from spot" follow the live price; move bands stay on the close
 
     var lo = p.strike[0], hi = p.strike[p.strike.length - 1];
     if (st.range === "focus") {
       var mm = moveOf(d, "month") || mv;
-      var flo = Math.min(S * 0.95, mm ? mm.bands["2"][0] : S * 0.9), fhi = Math.max(S * 1.05, mm ? mm.bands["2"][1] : S * 1.1);
+      var flo = Math.min(S * 0.95, d.spot * 0.95, mm ? mm.bands["2"][0] : S * 0.9), fhi = Math.max(S * 1.05, d.spot * 1.05, mm ? mm.bands["2"][1] : S * 1.1);
       [lv.callWall, lv.putWall, lv.flip].forEach(function (k) { if (k != null) { flo = Math.min(flo, k); fhi = Math.max(fhi, k); } });
       var pad = (fhi - flo) * 0.03;
       lo = Math.max(lo, flo - pad); hi = Math.min(hi, fhi + pad);
@@ -561,7 +599,7 @@
 
     // level markers with pill labels, staggered on up to 3 rows when they would overlap
     var marks = [
-      { v: S, cls: "spot", label: "Spot " + px(S) },
+      { v: S, cls: "spot", label: (Lx ? "Last " : "Spot ") + px(S) },
       { v: lv.flip, cls: "flip", label: "Flip " + strike(lv.flip) },
       { v: lv.callWall, cls: "call", label: "Call wall " + strike(lv.callWall) },
       { v: lv.putWall, cls: "put", label: "Put wall " + strike(lv.putWall) }
@@ -612,11 +650,11 @@
 
   // ---------- screener ----------
   var COLS = [
-    ["symbol", "Symbol", false], ["spot", "Close", true], ["avgContracts", "Avg contracts/day", true],
+    ["symbol", "Symbol", false], ["spot", "Close", true], ["last", "Last", true], ["chg", "Chg", true], ["avgContracts", "Avg contracts/day", true],
     ["day", "Day ±1σ", true], ["week", "Week ±1σ", true], ["weekRange", "Week 1σ range", true],
     ["month", "Month ±1σ", true], ["monthRange", "Month 1σ range", true],
     ["putWall", "Put wall", true], ["flip", "Flip", true], ["callWall", "Call wall", true],
-    ["flipDist", "Spot vs flip", true], ["regime", "Regime", false], ["netGex", "Net GEX/1%", true]
+    ["flipDist", "Price vs flip", true], ["regime", "Regime", false], ["netGex", "Net GEX/1%", true]
   ];
   var sortKey = "avgContracts", sortDir = -1, fIndex = "", fRegime = "";
   function sortVal(t, k) {
@@ -627,15 +665,18 @@
       case "weekRange": return t.week ? t.week.bands["1"][0] : null;
       case "monthRange": return t.month ? t.month.bands["1"][0] : null;
       case "putWall": case "flip": case "callWall": case "netGex": return g[k];
-      case "flipDist": return g.flip ? (t.spot / g.flip - 1) : null;
-      case "regime": return g.regime || "";
+      case "last": var l1 = lastPx(t.symbol); return l1 ? l1.p : null;
+      case "chg": var l2 = lastPx(t.symbol); return l2 ? l2.chg : null;
+      case "flipDist": return g.flip ? (nowPx(t.symbol) / g.flip - 1) : null;
+      case "regime": return regimeOf(g, lastPx(t.symbol) ? nowPx(t.symbol) : null) || "";
       default: return t[k];
     }
   }
   function renderScreener() {
     var q = document.getElementById("gex-search").value.trim().toUpperCase();
     var rows = index.tickers.filter(function (t) {
-      return (!q || t.symbol.indexOf(q) >= 0) && (!fIndex || t[fIndex]) && (!fRegime || (t.gex && t.gex.regime === fRegime));
+      var lp = lastPx(t.symbol);
+      return (!q || t.symbol.indexOf(q) >= 0) && (!fIndex || t[fIndex]) && (!fRegime || regimeOf(t.gex, lp ? lp.p : null) === fRegime);
     });
     rows.sort(function (a, b) {
       if (q) { var ea = a.symbol === q ? 0 : a.symbol.indexOf(q) === 0 ? 1 : 2, eb = b.symbol === q ? 0 : b.symbol.indexOf(q) === 0 ? 1 : 2; if (ea !== eb) return ea - eb; }
@@ -648,19 +689,21 @@
         c[1].replace(/σ/g, '<span class="lc">σ</span>') + (sortKey === c[0] ? (sortDir > 0 ? " ▲" : " ▼") : "") + "</th>";
     }).join("");
     document.getElementById("screener-body").innerHTML = rows.map(function (t) {
-      var g = t.gex || {}, fd = g.flip ? (t.spot / g.flip - 1) * 100 : null;
+      var g = t.gex || {}, L = lastPx(t.symbol), fd = g.flip ? (nowPx(t.symbol) / g.flip - 1) * 100 : null;
+      var lastCell = L ? '<td class="num' + (L.old ? ' stale-px" title="Last IEX trade ' + clock(L.t) + ' ET' : "") + '">' + px(L.p) + "</td>" : '<td class="num muted">—</td>';
+      var chgCell = L && L.chg != null ? '<td class="num change ' + (L.chg >= 0 ? "up" : "down") + '">' + pct(L.chg) + "</td>" : '<td class="num muted">—</td>';
       var mvCell = function (m) { return m ? '<td class="num">' + m.sdPct.toFixed(2) + "%" + flagTags(m.flags) + "</td>" : '<td class="num muted">—</td>'; };
       var rng = function (m) { return m ? '<td class="range">' + px(m.bands["1"][0]) + "–" + px(m.bands["1"][1]) + "</td>" : '<td class="range">—</td>'; };
       return '<tr data-sym="' + esc(t.symbol) + '"' + (t.symbol === current ? ' class="selected"' : "") + ">" +
         '<td class="sym">' + esc(t.symbol) + (t.etf ? '<span class="mem">ETF</span>' : "") + (t.sp500 ? '<span class="mem">SPX</span>' : "") + (t.ndx ? '<span class="mem">NDX</span>' : "") + "</td>" +
-        '<td class="num">' + px(t.spot) + "</td>" +
+        '<td class="num">' + px(t.spot) + "</td>" + lastCell + chgCell +
         '<td class="num">' + count(t.avgContracts) + "</td>" +
         mvCell(t.day) + mvCell(t.week) + rng(t.week) + mvCell(t.month) + rng(t.month) +
         '<td class="num change down">' + strike(g.putWall) + "</td>" +
         '<td class="num" style="color:var(--accent)">' + strike(g.flip) + "</td>" +
         '<td class="num change up">' + strike(g.callWall) + "</td>" +
         '<td class="num ' + (fd == null ? "muted" : "") + '">' + (fd == null ? "—" : (fd >= 0 ? "+" : "") + fd.toFixed(1) + "%") + "</td>" +
-        "<td>" + regimeTag(t.gex) + "</td>" +
+        "<td>" + regimeTag(t.gex, L ? L.p : null) + "</td>" +
         '<td class="num">' + money(g.netGex) + "</td></tr>";
     }).join("") || '<tr><td colspan="' + COLS.length + '" class="muted">No symbols match.</td></tr>';
     var total = index.tickers.length;
@@ -694,8 +737,32 @@
   window.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(render, 150); });
   new MutationObserver(render).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 
+  // ---------- live price polling ----------
+  function setNotice() {
+    if (!index) return;
+    var txt = "Cboe end-of-day options · " + shortDate(index.session) + " close";
+    if (live && live.session > index.session && live.quotesAsOf) {
+      txt += " · prices as of " + clock(Date.parse(live.quotesAsOf) / 1000) + " ET";
+    }
+    document.getElementById("live-notice").textContent = txt;
+  }
+  function loadLive() {
+    return fetch("data/gex-spot.json?t=" + Date.now(), { cache: "no-store" })
+      .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+      .then(function (d) {
+        var changed = !live || d.quotesAsOf !== live.quotesAsOf;
+        live = d;
+        if (changed && index) { setNotice(); renderScreener(); render(); }
+      })
+      .catch(function (err) { console.warn("GEX: could not load live prices", err); });
+  }
+  // the feed refreshes every 5 min in the cash session; check each minute while the tab is visible
+  setInterval(function () { if (!document.hidden) loadLive(); }, 60000);
+  document.addEventListener("visibilitychange", function () { if (!document.hidden) loadLive(); });
+
   // ---------- boot ----------
-  getJSON("index.json").then(function (d) {
+  Promise.all([getJSON("index.json"), loadLive()]).then(function (r) {
+    var d = r[0];
     index = d;
     d.tickers.forEach(function (t) { bySymbol[t.symbol] = t; });
     var built = new Date(d.built);
@@ -704,7 +771,7 @@
         month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", timeZone: "America/New_York"
       }) + " ET";
     }
-    document.getElementById("live-notice").textContent = "Cboe end-of-day options · " + shortDate(d.session) + " close";
+    setNotice();
     document.getElementById("gex-asof").textContent = "From the " + shortDate(d.session) + " close · " + d.tickers.length + " symbols";
     document.querySelectorAll("#quick-chips .chip").forEach(function (c) {
       var ok = !!bySymbol[c.getAttribute("data-sym")];
@@ -723,7 +790,7 @@
   });
 })();
 </script>
-<script src="assets/desk.js?v=5" defer></script>
+<script src="assets/desk.js?v=6" defer></script>
 <script src="/assets/site-links.js?v=2" defer></script>
 </body>
 </html>

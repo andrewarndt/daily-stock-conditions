@@ -25,7 +25,7 @@
  * pushed FRED panels as "not live"); start real runs with `gh workflow run market-session.yml`.
  */
 
-import { readFile } from "node:fs/promises";
+import { readFile, unlink } from "node:fs/promises";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
@@ -131,6 +131,17 @@ const TASKS = [
       return stamp(q) < `${last} ${hm(closeMins(last) - 5)}` ? `missing the ${last} close` : null;
     }
   },
+  {
+    // live prices for the GEX tab's ~430 names (its levels are from the prior close)
+    id: "gex-spot", file: "gex-spot.json", script: "fetch-gex-spot.mjs", retry: 2,
+    due: (now, d) => {
+      if (isTradingDay(now.date) && now.mins >= 9 * 60 + 31 && now.mins <= closeMins(now.date) + 5) {
+        return !(ageMin(d.quotesAsOf || d.updated) < 5) ? "older than 5 min, market open" : null;
+      }
+      const last = lastSession(now, (day) => closeMins(day) + 2);
+      return stamp(d.quotesAsOf || d.updated) < `${last} ${hm(closeMins(last))}` ? `missing the ${last} close` : null;
+    }
+  },
   { id: "fear-greed", file: "fear-greed.json", script: "fetch-fear-greed.mjs", retry: 20, due: any(intraday(8 * 60, 17 * 60, 60), slots(16 * 60 + 20)) },
   { id: "fed-watch", file: "fed-watch.json", script: "fetch-fed-watch.mjs", retry: 20, due: any(intraday(7 * 60, 17 * 60, 60), slots(7 * 60)) },
   { id: "putcall", file: "putcall.json", script: "fetch-putcall.mjs", retry: 45, due: any(slots(8 * 60 + 20, 16 * 60 + 20), sessionData((d) => d.asof, 6 * 60)) },
@@ -190,6 +201,11 @@ const VALIDATE = {
     return null;
   },
   putcall: (d) => inRange("put/call", d.ratio, 0.2, 3.5),
+  "gex-spot": (d) => {
+    if (d.source !== "live") return null; // a no-data run keeps the old prices and is flagged on the page
+    if (!(d.priced >= 0.9 * d.count)) return `only ${d.priced} of ${d.count} symbols priced`;
+    return inRange("SPY", d.prices?.SPY?.[0], 100, 5000);
+  },
   "fear-greed": (d) => inRange("fear & greed", d.score, 0, 100),
   "consumer-sentiment": (d) => inRange("UMich sentiment", d.value, 20, 150),
   aaii: (d) => {
@@ -261,6 +277,13 @@ const HEALTH = [
   ["putcall.json", "Put/call ratio", sessionData((d) => d.asof, 18 * 60)],
   ["fear-greed.json", "Fear & Greed", (now, d) => (isTradingDay(now.date) && now.mins > 11 * 60 && now.mins < 17 * 60 && ageMin(d.updated) > 150 ? `last run ${stamp(d.updated)} ET` : null)],
   ["economic.json", "Economic snapshot", (now, d) => (isTradingDay(now.date) && now.mins > 11 * 60 && stamp(d.updated) < `${now.date} 08:00` ? `last run ${stamp(d.updated)} ET` : null)],
+  ["gex-spot.json", "GEX live prices", (now, d) => {
+    const q = d.quotesAsOf || d.updated;
+    if (isTradingDay(now.date) && now.mins >= 9 * 60 + 45 && now.mins <= closeMins(now.date) + 30) {
+      return ageMin(q) > 20 || d.source !== "live" ? `last prices ${stamp(q)} ET, market open` : null;
+    }
+    return null;
+  }],
   ["gex/index.json", "GEX levels (local job)", sessionData((d) => d.session, 3 * 60)],
   ["breadth.json", "Market breadth (local job)", sessionData((d) => d.asof, 3 * 60)],
   ["earnings.json", "FactSet earnings (local job)", (now, d) => ((Date.now() - Date.parse(d.asof + "T20:00:00Z")) / 86400000 > 8.5 ? `latest report ${d.asof}` : null)]
@@ -371,7 +394,8 @@ async function tick() {
       const fresh = await readData(task.file);
       const bad = VALIDATE[task.id] ? VALIDATE[task.id](fresh) : null;
       if (bad) {
-        sh("git", ["checkout", "--", `market_report/data/${task.file}`]);
+        try { sh("git", ["checkout", "--", `market_report/data/${task.file}`]); }
+        catch { await unlink(path.join(DATA, task.file)).catch(() => {}); } // new feed: no committed version yet
         validationProblems.set(task.id, `${task.id}: update rejected, ${bad}`);
         console.error(`  ${task.id}: REJECTED (${bad}); kept the previous file`);
         continue;
