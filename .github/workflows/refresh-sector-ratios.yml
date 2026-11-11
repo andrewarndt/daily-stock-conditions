@@ -1,5 +1,8 @@
 name: Refresh sector ratios data
 
+# BACKUP trigger. market-session.yml's loop is the primary refresher; this run goes through the
+# same due check, validation and cross-checks (session-loop.mjs --only) and restarts the loop if none is running.
+
 on:
   schedule:
     # Once per weekday, after market close (~21:15 UTC = 5:15pm EDT / 4:15pm
@@ -10,6 +13,8 @@ on:
 
 permissions:
   contents: write
+  issues: write
+  actions: write   # restart the session loop if none is running
 
 concurrency:
   group: refresh-sector-ratios
@@ -18,29 +23,22 @@ concurrency:
 jobs:
   refresh:
     runs-on: ubuntu-24.04
+    timeout-minutes: 15
     steps:
-      - name: Check out repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 24
 
-      - name: Fetch latest sector ratio data
-        run: node market_report/scripts/fetch-sector-ratios.mjs
-
-      - name: Commit data if changed
+      - name: Refresh sector-ratios if due (validated)
+        env:
+          ALPACA_API_KEY_ID: ${{ secrets.ALPACA_API_KEY_ID }}
+          ALPACA_API_SECRET_KEY: ${{ secrets.ALPACA_API_SECRET_KEY }}
+          TWELVEDATA_API_KEY: ${{ secrets.TWELVEDATA_API_KEY }}
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           git config user.name "market-desk-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add market_report/data/sector-ratios.json
-          git diff --cached --quiet || git commit -m "Refresh sector ratios data"
-          for attempt in 1 2 3 4 5; do
-            git push origin HEAD:main && exit 0
-            echo "Push rejected (attempt $attempt), rebasing onto latest main..."
-            git fetch origin main
-            git rebase origin/main
-          done
-          echo "Failed to push after retries" >&2
-          exit 1
+          node market_report/scripts/session-loop.mjs --only=sector-ratios

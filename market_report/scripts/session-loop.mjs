@@ -30,6 +30,9 @@ const REPO = path.resolve(__dirname, "..", "..");
 const DATA = path.join(__dirname, "..", "data");
 const ONCE = process.argv.includes("--once");
 const DRY = process.argv.includes("--dry-run");
+// --only=<task id>: used by the per-feed backup workflows (refresh-*.yml) so a backup run goes through the same
+// due check, validation and cross-checks as the loop instead of publishing a raw fetch.
+const ONLY = (process.argv.find((a) => a.startsWith("--only=")) || "").slice(7);
 const MAX_MINUTES = 345; // Actions jobs stop at 6 h; leave room to push
 const END_ET = 23 * 60 + 30; // nothing left to fetch after 11:30 PM ET
 
@@ -296,6 +299,9 @@ async function healthAndAlert(extra, persist = true) {
     if (!persist || (now - firstSeen.get(k)) / 60000 >= ALERT_AFTER_MIN) keep.push(p);
     else console.log(`(not alerting yet, first seen ${Math.round((now - firstSeen.get(k)) / 60000)} min ago) ${p}`);
   }
+  // Only close the issue when nothing is wrong at all. A fresh run hasn't watched any problem for 30 min yet, so
+  // closing on an empty `keep` would close a still-valid alert and reopen it (a second email) half an hour later.
+  if (!keep.length && all.length) return;
   syncAlert(keep);
 }
 function loopRunning() {
@@ -333,6 +339,7 @@ async function tick() {
   const now = ny();
   try { sh("git", ["pull", "-q", "--rebase", "origin", "main"]); } catch (e) { console.warn("pull failed:", e.message.split("\n")[0]); }
   for (const task of TASKS) {
+    if (ONLY && task.id !== ONLY) continue;
     const data = await readData(task.file);
     const reason = task.due(now, data);
     if (!reason) continue;
@@ -392,6 +399,15 @@ function ensureSuccessor(onlyIfIdle) {
   }
 }
 
+if (ONLY && !TASKS.some((t) => t.id === ONLY)) { console.error(`unknown task --only=${ONLY}`); process.exit(1); }
+if (ONLY) {
+  // Backup run for one feed: fetch it if due (validated, committed), then make sure a loop run exists.
+  // Alerts stay with the loop and market-health.yml, which track how long a problem has lasted.
+  await tick();
+  for (const p of validationProblems.values()) console.error(p);
+  ensureSuccessor(true);
+  process.exit(0);
+}
 const started = Date.now();
 let ticks = 0;
 for (;;) {
@@ -403,5 +419,5 @@ for (;;) {
   await new Promise((r) => setTimeout(r, 60000));
 }
 await healthAndAlert([...validationProblems.values()]);
-ensureSuccessor(false);
+ensureSuccessor(ONCE);
 console.log("session loop done");
