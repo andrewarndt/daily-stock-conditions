@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-12T14:30:33.486Z",
+  "updated": "2026-11-12T21:45:34.843Z",
   "source": "live",
   "series": [
     {
@@ -54,7 +54,7 @@
       "unit": "%",
       "value": 3.9,
       "prior": 3.9,
-      "asof": "2026-11-12",
+      "asof": "2026-11-13",
       "live": true
     },
     {
@@ -63,12 +63,12 @@
       "seriesId": "WALCL",
       "name": "Fed Balance Sheet (Total Assets)",
       "unit": "$M",
-      "value": 6748145,
-      "prior": 6745635,
-      "asof": "2026-11-04",
+      "value": 6758867,
+      "prior": 6748145,
+      "asof": "2026-11-11",
       "live": true,
       "trend": "expanding",
-      "trendChange": 585,
+      "trendChange": 3228,
       "trendLabel": "4-wk"
     },
     {
@@ -77,9 +77,9 @@
       "seriesId": "WTREGEN",
       "name": "Treasury General Account",
       "unit": "$M",
-      "value": 957175,
-      "prior": 999727,
-      "asof": "2026-11-04",
+      "value": 914370,
+      "prior": 957175,
+      "asof": "2026-11-11",
       "live": true
     },
     {
@@ -88,12 +88,12 @@
       "seriesId": "WRESBAL",
       "name": "Bank Reserves",
       "unit": "$M",
-      "value": 2930088,
-      "prior": 2893770,
-      "asof": "2026-11-04",
+      "value": 2960603,
+      "prior": 2930088,
+      "asof": "2026-11-11",
       "live": true,
       "trend": "contracting",
-      "trendChange": -99571,
+      "trendChange": -61537,
       "trendLabel": "4-wk"
     },
     {
@@ -102,11 +102,11 @@
       "seriesId": "RRPONTSYD",
       "name": "Overnight Reverse Repo",
       "unit": "$B",
-      "value": 0.152,
-      "prior": 0.252,
-      "asof": "2026-11-10",
+      "value": 0.25,
+      "prior": 0.152,
+      "asof": "2026-11-12",
       "live": true,
-      "change5d": -0.275,
+      "change5d": 0.024999999999999994,
       "stressed": false
     },
     {
