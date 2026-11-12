@@ -61,6 +61,9 @@ const HOLIDAYS = new Set([
   "2027-07-05", "2027-09-06", "2027-11-25", "2027-12-24"
 ]);
 const EARLY_CLOSE = new Set(["2026-11-27", "2026-12-24", "2027-11-26"]);
+// Days the bond market (SIFMA) is closed while stocks trade: Columbus Day and Veterans Day.
+// Treasury publishes no par curve on these, so bond feeds must not expect that day. Extend each year.
+const BOND_ONLY_CLOSED = new Set(["2026-10-12", "2026-11-11", "2027-10-11", "2027-11-11"]);
 
 // ---------- New York clock ----------
 const nyFmt = new Intl.DateTimeFormat("en-US", {
@@ -73,13 +76,14 @@ function ny(t = new Date()) {
   return { date: `${p.year}-${p.month}-${p.day}`, mins: Number(p.hour) * 60 + Number(p.minute), weekday: p.weekday };
 }
 const isTradingDay = (d) => { const w = new Date(d + "T12:00:00Z").getUTCDay(); return w > 0 && w < 6 && !HOLIDAYS.has(d); };
+const isBondDay = (d) => isTradingDay(d) && !BOND_ONLY_CLOSED.has(d);
 const addDays = (d, n) => { const t = new Date(d + "T12:00:00Z"); t.setUTCDate(t.getUTCDate() + n); return t.toISOString().slice(0, 10); };
 const closeMins = (d) => (EARLY_CLOSE.has(d) ? 13 * 60 : 16 * 60);
 // latest trading day D (today or earlier) for which minute-of-day `at(D)` has passed
-function lastSession(now, at) {
+function lastSession(now, at, isDay = isTradingDay) {
   let d = now.date;
   for (let i = 0; i < 15; i++, d = addDays(d, -1)) {
-    if (isTradingDay(d) && (d < now.date || now.mins >= at(d))) return d;
+    if (isDay(d) && (d < now.date || now.mins >= at(d))) return d;
   }
   return d;
 }
@@ -109,8 +113,8 @@ const slots = (...list) => (now, d) => {
 const intraday = (from, to, every) => (now, d) =>
   isTradingDay(now.date) && now.mins >= from && now.mins <= to && !(ageMin(d.updated) < every) ? `older than ${every} min` : null;
 // the data's own session date must reach the last session once `after` (min after close) has passed
-const sessionData = (getDate, after) => (now, d) => {
-  const want = lastSession(now, (day) => closeMins(day) + after);
+const sessionData = (getDate, after, isDay = isTradingDay) => (now, d) => {
+  const want = lastSession(now, (day) => closeMins(day) + after, isDay);
   const have = getDate(d) || "";
   return have < want ? `data ends ${have || "?"}, want ${want}` : null;
 };
@@ -171,7 +175,7 @@ const TASKS = [
   {
     id: "yields", file: "yields.json", script: "fetch-yields.mjs", retry: 45,
     // Treasury posts the day's par curve in the late afternoon / evening
-    due: any(slots(7 * 60), sessionData((d) => (d.series || []).map((s) => s.asof || "").sort()[0], 60))
+    due: any(slots(7 * 60), sessionData((d) => (d.series || []).map((s) => s.asof || "").sort()[0], 60, isBondDay))
   }
 ];
 
@@ -273,7 +277,7 @@ const HEALTH = [
   ["credit.json", "Credit (HYG)", sessionData((d) => lastNYDate(d.dates), 5 * 60)],
   ["volatility.json", "Volatility indices", sessionData((d) => (d.termStructure || []).map((t) => t.asof || "").sort()[0], 15 * 60)],
   ["skew.json", "SPX skew", sessionData((d) => d.asof, 15 * 60)],
-  ["yields.json", "Treasury yields", sessionData((d) => (d.series || []).map((s) => s.asof || "").sort()[0], 15 * 60)],
+  ["yields.json", "Treasury yields", sessionData((d) => (d.series || []).map((s) => s.asof || "").sort()[0], 15 * 60, isBondDay)],
   ["putcall.json", "Put/call ratio", sessionData((d) => d.asof, 18 * 60)],
   ["fear-greed.json", "Fear & Greed", (now, d) => (isTradingDay(now.date) && now.mins > 11 * 60 && now.mins < 17 * 60 && ageMin(d.updated) > 150 ? `last run ${stamp(d.updated)} ET` : null)],
   ["economic.json", "Economic snapshot", (now, d) => (isTradingDay(now.date) && now.mins > 11 * 60 && stamp(d.updated) < `${now.date} 08:00` ? `last run ${stamp(d.updated)} ET` : null)],
