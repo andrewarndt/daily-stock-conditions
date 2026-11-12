@@ -25,7 +25,7 @@
  * pushed FRED panels as "not live"); start real runs with `gh workflow run market-session.yml`.
  */
 
-import { readFile, unlink } from "node:fs/promises";
+import { readFile, unlink, writeFile, mkdir } from "node:fs/promises";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
@@ -352,53 +352,56 @@ function clearStuckPages() {
   }
 }
 
-// One open issue titled ALERT_TITLE holds the current problems; GitHub emails
-// the mention. Commented when the set changes, closed when everything is fine.
-const ALERT_TITLE = "Market Desk data alert";
-const OWNER = (process.env.GITHUB_REPOSITORY || "andrewarndt/").split("/")[0];
-let lastAlertKey = null;
-function syncAlert(problems) {
-  if (DRY || !process.env.GITHUB_ACTIONS) { if (problems.length) console.log("ALERT (not filed locally):\n  " + problems.join("\n  ")); return; }
-  const key = problems.slice().sort().join("|");
-  if (key === lastAlertKey) return;
-  try {
-    const open = JSON.parse(sh("gh", ["issue", "list", "--state", "open", "--search", `"${ALERT_TITLE}" in:title`, "--json", "number"]) || "[]");
-    const body = problems.map((p) => `- ${p}`).join("\n");
-    if (problems.length && !open.length) {
-      sh("gh", ["issue", "create", "--title", ALERT_TITLE, "--body",
-        `@${OWNER} the Market Desk refresh found data that is late, failed validation, or disagrees with a second source:\n\n${body}\n\n` +
-        "The site shows a \"Data delayed\" banner for anything a visitor would see as late. This issue updates while the problems last and closes itself when they clear."]);
-    } else if (problems.length) {
-      sh("gh", ["issue", "comment", String(open[0].number), "--body", `Still open, current problems:\n\n${body}`]);
-    } else if (open.length) {
-      sh("gh", ["issue", "close", String(open[0].number), "--comment", "All Market Desk feeds are current again."]);
-    }
-    lastAlertKey = key;
-  } catch (err) {
-    console.error("alert update failed:", (err.stderr || err.message || "").toString().split("\n")[0]);
-  }
-}
-// Only problems that have lasted ALERT_AFTER_MIN reach the issue (and the
-// owner's inbox): a blip the loop fixes on its next pass never emails. The
-// site's "Data delayed" banner still shows right away. Keyed by feed label,
-// since the message text carries changing timestamps.
-const ALERT_AFTER_MIN = 30;
-const firstSeen = new Map();
-async function healthAndAlert(extra, persist = true) {
+// ---------- alerts: a failed "Market data health check" run is the email ----------
+// market-health.yml (scheduled, every 30 min) is the only alerter. A problem
+// still there ALERT_AFTER_MIN after it was first seen fails that one run, and
+// GitHub emails the failure. The same problem (keyed by feed label, since the
+// text carries changing timestamps) never fails another run until it has
+// cleared, so an outage is one email and recovery sends none. The site's
+// "Data delayed" banner still shows right away. State carries from run to run
+// in .health-state/ (restored and saved by actions/cache in market-health.yml).
+const ALERT_AFTER_MIN = 25; // two checks 30 min apart, with slack for late crons
+const STATE_FILE = path.join(REPO, ".health-state", "state.json");
+const alertKey = (p) => p.split(":")[0];
+async function healthAlerts() {
   clearStuckPages();
-  const all = [...(await healthCheck()), ...extra], now = Date.now(), keep = [];
-  const labels = new Set(all.map((p) => p.split(":")[0]));
-  for (const k of [...firstSeen.keys()]) if (!labels.has(k)) firstSeen.delete(k);
-  for (const p of all) {
-    const k = p.split(":")[0];
-    if (!firstSeen.has(k)) firstSeen.set(k, now);
-    if (!persist || (now - firstSeen.get(k)) / 60000 >= ALERT_AFTER_MIN) keep.push(p);
-    else console.log(`(not alerting yet, first seen ${Math.round((now - firstSeen.get(k)) / 60000)} min ago) ${p}`);
+  const problems = await healthCheck();
+  // validation / cross-source problems only the running loop can see
+  if (process.env.GITHUB_ACTIONS && loopRunning()) {
+    const lp = await readData(LOOP_PROBLEMS);
+    if (Array.isArray(lp.problems)) problems.push(...lp.problems);
   }
-  // Only close the issue when nothing is wrong at all. A fresh run hasn't watched any problem for 30 min yet, so
-  // closing on an empty `keep` would close a still-valid alert and reopen it (a second email) half an hour later.
-  if (!keep.length && all.length) return;
-  syncAlert(keep);
+  let state = {};
+  try { state = JSON.parse(await readFile(STATE_FILE, "utf8")); } catch { /* first run or cache evicted */ }
+  const now = Date.now(), next = {}, fire = [];
+  for (const p of problems) {
+    const k = alertKey(p);
+    next[k] = next[k] || state[k] || { first: now, reported: false };
+  }
+  for (const p of problems) {
+    const s = next[alertKey(p)], mins = Math.round((now - s.first) / 60000);
+    if (s.reported) console.log(`(already emailed) ${p}`);
+    else if (mins >= ALERT_AFTER_MIN) fire.push(p);
+    else console.log(`(not alerting yet, first seen ${mins} min ago) ${p}`);
+  }
+  for (const p of fire) next[alertKey(p)].reported = true;
+  await mkdir(path.dirname(STATE_FILE), { recursive: true });
+  await writeFile(STATE_FILE, JSON.stringify(next, null, 2));
+  return { problems, fire };
+}
+
+// The loop writes its validation problems here (committed only when the set
+// changes) so the health check can include them.
+const LOOP_PROBLEMS = "loop-problems.json";
+let loopProblemsKey = null;
+async function publishLoopProblems() {
+  const problems = [...validationProblems.values()].sort();
+  const key = problems.join("|");
+  if (loopProblemsKey === null) loopProblemsKey = ((await readData(LOOP_PROBLEMS)).problems || []).slice().sort().join("|");
+  if (key === loopProblemsKey || DRY) return;
+  await writeFile(path.join(DATA, LOOP_PROBLEMS), JSON.stringify({ updated: new Date().toISOString(), problems }, null, 2) + "\n");
+  try { commitAndPush({ id: "loop-problems", file: LOOP_PROBLEMS }, problems.length ? `${problems.length} problem(s)` : "clear"); loopProblemsKey = key; }
+  catch (err) { console.error("could not publish loop problems:", (err.stderr || err.message || "").toString().split("\n")[0]); }
 }
 function loopRunning() {
   try {
@@ -468,13 +471,18 @@ async function tick() {
 
 const HEALTH_ONLY = process.argv.includes("--health-only");
 if (HEALTH_ONLY) {
-  // used by market-health.yml: restart the loop if it isn't running. While a
-  // loop run is live it owns the alert (with its 30-min persistence), so this
-  // hourly check only alerts when the loop itself is down.
-  if (!process.env.GITHUB_ACTIONS || !loopRunning()) await healthAndAlert([], false);
-  else { console.log("loop is running; it handles alerts"); clearStuckPages(); }
+  // used by market-health.yml: check every feed, restart the loop if it isn't
+  // running, and fail (= email) once for each problem that has lasted.
+  const { problems, fire } = await healthAlerts();
   ensureSuccessor(true);
-  process.exit(0);
+  if (!fire.length) { console.log(problems.length ? "problems seen, not alerting (see above)" : "all feeds current"); process.exit(0); }
+  const esc = (s) => s.replace(/%/g, "%25").replace(/\r/g, "%0D").replace(/\n/g, "%0A");
+  for (const p of fire) console.log(`::error title=Market Desk data problem::${esc(p)}`);
+  const summary = `### Market Desk data problems\n\nNew (this run emailed you):\n${fire.map((p) => `- ${p}`).join("\n")}\n\n` +
+    `All current:\n${problems.map((p) => `- ${p}`).join("\n")}\n\nThe site shows a "Data delayed" banner for anything a visitor would see as late. ` +
+    "These problems won't fail another check until they clear.\n";
+  if (process.env.GITHUB_STEP_SUMMARY) await writeFile(process.env.GITHUB_STEP_SUMMARY, summary, { flag: "a" });
+  process.exit(1);
 }
 
 // Start the next loop run before this one ends (GITHUB_TOKEN may trigger
@@ -507,11 +515,12 @@ const started = Date.now();
 let ticks = 0;
 for (;;) {
   await tick();
-  if (ticks++ % 5 === 0 || validationProblems.size) await healthAndAlert([...validationProblems.values()]);
+  await publishLoopProblems();
+  if (ticks++ % 5 === 0) clearStuckPages();
   if (ONCE) break;
   if ((Date.now() - started) / 60000 > MAX_MINUTES) break;
   await new Promise((r) => setTimeout(r, 60000));
 }
-await healthAndAlert([...validationProblems.values()]);
+await publishLoopProblems();
 ensureSuccessor(ONCE);
 console.log("session loop done");

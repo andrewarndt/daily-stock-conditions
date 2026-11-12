@@ -20,7 +20,6 @@ on:
 
 permissions:
   contents: write
-  issues: write     # data-alert issue
   actions: write    # start the next loop run, cancel stuck Pages deploys
   pages: write      # request a rebuild after clearing a stuck Pages deploy
 

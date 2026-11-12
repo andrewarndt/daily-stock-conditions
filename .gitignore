@@ -6,3 +6,6 @@
 /Wildlife Photos/
 
 scripts/dispatch-refresh.log
+
+# Market Desk alert state (restored by actions/cache in market-health.yml)
+/.health-state/

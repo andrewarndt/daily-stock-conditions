@@ -1,8 +1,12 @@
 name: Market data health check
 
-# Independent of the session loop: checks every Market Desk feed against its
-# schedule, opens/updates/closes the "Market Desk data alert" issue, and
-# restarts the session-loop chain whenever no run is active (any hour, any day).
+# The Market Desk alerter. Every 30 min it checks each feed against its
+# schedule (plus the live website and the session loop's validation problems),
+# restarts the session-loop chain if no run is active, and clears stuck Pages
+# deploys. A problem that has lasted ~30 min FAILS this run once, and GitHub
+# emails the failure. The same problem won't fail another run until it clears,
+# so an outage is one email and recovery sends none. .health-state/ carries
+# what was already emailed from run to run (actions/cache).
 
 on:
   schedule:
@@ -12,9 +16,12 @@ on:
 
 permissions:
   contents: read
-  issues: write
   actions: write
   pages: write      # request a rebuild after clearing a stuck Pages deploy
+
+concurrency:
+  group: market-health
+  cancel-in-progress: false
 
 jobs:
   check:
@@ -25,7 +32,19 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 24
+      - name: Restore alert state
+        uses: actions/cache/restore@v4
+        with:
+          path: .health-state
+          key: health-state-${{ github.run_id }}
+          restore-keys: health-state-
       - name: Check feeds
         env:
           GH_TOKEN: ${{ github.token }}
         run: node market_report/scripts/session-loop.mjs --health-only
+      - name: Save alert state
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .health-state
+          key: health-state-${{ github.run_id }}
