@@ -14,6 +14,7 @@ permissions:
   contents: read
   issues: write
   actions: write
+  pages: write      # request a rebuild after clearing a stuck Pages deploy
 
 jobs:
   check:

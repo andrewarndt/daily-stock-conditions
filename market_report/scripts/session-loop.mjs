@@ -295,7 +295,57 @@ async function healthCheck() {
     if (!d || !Object.keys(d).length) { found.push(`${label}: file missing or unreadable`); continue; }
     try { const r = check(now, d); if (r) found.push(`${label}: ${r}`); } catch (e) { found.push(`${label}: check failed (${e.message})`); }
   }
+  return [...found, ...(await siteCheck())];
+}
+
+// ---------- the live website, not just the repo ----------
+// The repo can be current while visitors see old numbers: on 2026-11-11 one
+// GitHub Pages deploy hung "in progress" for 2 h and every later deploy queued
+// behind it. These two checks catch and clear that.
+const SITE = "https://4aholdingscompany.com/market_report/data/";
+const SITE_FILES = ["overview.json", "gex-spot.json"];
+const SITE_LAG_MIN = 20;
+async function siteCheck() {
+  const found = [];
+  for (const file of SITE_FILES) {
+    const repo = (await readData(file)).updated;
+    if (!repo) continue;
+    let live = null;
+    for (let attempt = 1; attempt <= 2 && !live; attempt++) {
+      try {
+        const res = await fetch(`${SITE}${file}?t=${Date.now()}`, { cache: "no-store" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        live = (await res.json()).updated || "missing";
+      } catch (err) { if (attempt === 2) live = `unreachable (${err.message})`; else await new Promise((r) => setTimeout(r, 5000)); }
+    }
+    if (live.startsWith("unreachable")) { found.push(`Live website: ${file} ${live}`); continue; }
+    const behind = live === "missing" || (Date.parse(live) < Date.parse(repo) &&
+      (Date.parse(repo) - Date.parse(live) > SITE_LAG_MIN * 60000 || Date.now() - Date.parse(repo) > SITE_LAG_MIN * 60000));
+    if (behind) found.push(`Live website: serves ${file} from ${live === "missing" ? "?" : stamp(live)} ET, repo has ${stamp(repo)} ET (site deploy stuck or failing)`);
+  }
   return found;
+}
+// A Pages deploy normally finishes in about a minute. One in progress longer
+// than PAGES_STUCK_MIN blocks every deploy after it, so cancel it (force-cancel
+// if a plain cancel didn't take) and ask Pages for a fresh build.
+const PAGES_STUCK_MIN = 10;
+function clearStuckPages() {
+  if (DRY || !process.env.GITHUB_ACTIONS) return;
+  try {
+    const runs = JSON.parse(sh("gh", ["run", "list", "--workflow", "pages-build-deployment", "--limit", "15", "--json", "databaseId,status,createdAt"]) || "[]");
+    for (const r of runs) {
+      const age = (Date.now() - Date.parse(r.createdAt)) / 60000;
+      if (r.status !== "in_progress" || age < PAGES_STUCK_MIN) continue;
+      const repo = process.env.GITHUB_REPOSITORY;
+      if (age < 2 * PAGES_STUCK_MIN) sh("gh", ["run", "cancel", String(r.databaseId)]);
+      else sh("gh", ["api", "-X", "POST", `repos/${repo}/actions/runs/${r.databaseId}/force-cancel`]);
+      console.warn(`Pages deploy ${r.databaseId} stuck ${Math.round(age)} min: ${age < 2 * PAGES_STUCK_MIN ? "cancelled" : "force-cancelled"}`);
+      try { sh("gh", ["api", "-X", "POST", `repos/${repo}/pages/builds`]); console.log("requested a new Pages build"); }
+      catch (e) { console.warn("Pages rebuild request failed (next data push redeploys):", (e.stderr || e.message || "").toString().split("\n")[0]); }
+    }
+  } catch (err) {
+    console.error("Pages watchdog failed:", (err.stderr || err.message || "").toString().split("\n")[0]);
+  }
 }
 
 // One open issue titled ALERT_TITLE holds the current problems; GitHub emails
@@ -331,6 +381,7 @@ function syncAlert(problems) {
 const ALERT_AFTER_MIN = 30;
 const firstSeen = new Map();
 async function healthAndAlert(extra, persist = true) {
+  clearStuckPages();
   const all = [...(await healthCheck()), ...extra], now = Date.now(), keep = [];
   const labels = new Set(all.map((p) => p.split(":")[0]));
   for (const k of [...firstSeen.keys()]) if (!labels.has(k)) firstSeen.delete(k);
@@ -417,7 +468,7 @@ if (HEALTH_ONLY) {
   // loop run is live it owns the alert (with its 30-min persistence), so this
   // hourly check only alerts when the loop itself is down.
   if (!process.env.GITHUB_ACTIONS || !loopRunning()) await healthAndAlert([], false);
-  else console.log("loop is running; it handles alerts");
+  else { console.log("loop is running; it handles alerts"); clearStuckPages(); }
   ensureSuccessor(true);
   process.exit(0);
 }
