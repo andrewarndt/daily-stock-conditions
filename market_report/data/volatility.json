@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-13T02:04:47.064Z",
+  "updated": "2026-11-13T02:34:59.143Z",
   "source": "live",
   "labels": [
     "Jun",
@@ -44,10 +44,10 @@
         35.8,
         39.83,
         42.3,
-        42
+        43.35
       ],
       "live": true,
-      "asof": "2026-11-11"
+      "asof": "2026-11-12"
     },
     "dspx": {
       "name": "Dispersion Index",
