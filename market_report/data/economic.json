@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-12T19:16:05.051Z",
+  "updated": "2026-11-13T13:45:05.690Z",
   "source": "live",
   "indicators": [
     {
@@ -152,7 +152,7 @@
         3.75
       ],
       "live": true,
-      "nextRelease": "2026-11-12"
+      "nextRelease": "2026-12-09"
     },
     {
       "id": "industrial_production",
