@@ -1,59 +1,59 @@
 {
-  "updated": "2026-11-12T20:59:43.309Z",
-  "quotesAsOf": "2026-11-12T20:59:41.378Z",
+  "updated": "2026-11-13T14:25:38.249Z",
+  "quotesAsOf": "2026-11-13T14:24:50.788Z",
   "source": "live",
   "indices": [
     {
       "id": "sp500",
       "name": "S&P 500",
-      "value": 756.93,
-      "change": -0.37773098183732623,
+      "value": 760.34,
+      "change": 0.4199904907813492,
       "changeType": "pct",
       "unit": "$",
       "ticker": "SPY",
       "live": true,
-      "asof": "2026-11-12T20:59:41.378739645Z"
+      "asof": "2026-11-13T14:01:17.473286698Z"
     },
     {
       "id": "dow",
       "name": "Dow Jones",
-      "value": 522.57,
-      "change": -0.3613205838330454,
-      "changeType": "pct",
-      "unit": "$",
       "ticker": "DIA",
       "live": true,
-      "asof": "2026-11-12T20:59:36.074457461Z"
+      "value": 522.47,
+      "change": -0.3756392403774203,
+      "changeType": "pct",
+      "asof": "2026-11-12T21:00:00.000Z",
+      "unit": "$"
     },
     {
       "id": "nasdaq",
       "name": "Nasdaq-100",
-      "value": 687.92,
-      "change": -0.3592120509849389,
+      "value": 689.92,
+      "change": 0.25065570078246846,
       "changeType": "pct",
       "unit": "$",
       "ticker": "QQQ",
       "live": true,
-      "asof": "2026-11-12T20:59:41.35609271Z"
+      "asof": "2026-11-13T14:24:50.788330784Z"
     },
     {
       "id": "ust10y",
       "name": "10-Yr Treasury",
       "live": true,
-      "value": 5.103,
-      "change": 0.105,
+      "value": 5.145,
+      "change": 0.042,
       "changeType": "pt",
-      "asof": "2026-11-12T19:59:54.000Z",
+      "asof": "2026-11-13T14:10:24.000Z",
       "unit": "%"
     },
     {
       "id": "vix",
       "name": "VIX",
       "live": true,
-      "value": 18.89,
-      "change": 1.4000002288818365,
+      "value": 18.03,
+      "change": -0.670000762939452,
       "changeType": "abs",
-      "asof": "2026-11-12T20:44:31.000Z"
+      "asof": "2026-11-13T14:10:31.000Z"
     }
   ],
   "commodities": [
@@ -62,36 +62,36 @@
       "name": "US Dollar Index",
       "ticker": "$DXY",
       "live": true,
-      "value": 103.167,
-      "change": 0.24972920877006105,
+      "value": 103.228,
+      "change": 0.056219668589798204,
       "changeType": "pct",
-      "asof": "2026-11-12T20:49:39.000Z"
+      "asof": "2026-11-13T14:15:34.000Z"
     },
     {
       "id": "btc",
       "name": "Bitcoin",
-      "value": 71483.32,
-      "change": -3.42074,
+      "value": 69300.09,
+      "change": -3.022544,
       "changeType": "pct",
       "live": true,
-      "asof": "2026-11-12T20:59:00.000Z",
+      "asof": "2026-11-13T14:25:00.000Z",
       "unit": "$"
     },
     {
       "id": "gold",
       "name": "Gold",
-      "value": 3876.19767,
-      "change": -0.1920222,
+      "value": 3885.12556,
+      "change": 0.037861498,
       "changeType": "pct",
       "live": true,
-      "asof": "2026-11-12T20:59:00.000Z",
+      "asof": "2026-11-13T14:25:00.000Z",
       "unit": "$"
     },
     {
       "id": "silver",
       "name": "Silver",
-      "value": 45.105,
-      "change": -3.3119,
+      "value": 45.12,
+      "change": -3.27975,
       "changeType": "pct",
       "live": true,
       "asof": "2026-11-12T20:59:00.000Z",
@@ -103,10 +103,10 @@
       "name": "Crude Oil",
       "ticker": "/CL",
       "live": true,
-      "value": 88.98,
-      "change": 2.831389408605094,
+      "value": 89.08,
+      "change": 0.38314417896699315,
       "changeType": "pct",
-      "asof": "2026-11-12T20:49:39.000Z",
+      "asof": "2026-11-13T14:15:34.000Z",
       "unit": "$"
     },
     {
@@ -114,10 +114,10 @@
       "name": "20+ Yr Treasury",
       "ticker": "TLT",
       "live": true,
-      "value": 79.735,
-      "change": -1.4644070634693613,
+      "value": 79.72,
+      "change": -1.4829438903841168,
       "changeType": "pct",
-      "asof": "2026-11-12T20:59:40.000Z",
+      "asof": "2026-11-12T21:00:00.000Z",
       "unit": "$"
     },
     {
@@ -125,10 +125,10 @@
       "name": "Broad Commodities",
       "ticker": "DBC",
       "live": true,
-      "value": 30.915,
-      "change": 0.24319016550269057,
+      "value": 30.91,
+      "change": 0.22697745481766993,
       "changeType": "pct",
-      "asof": "2026-11-12T20:59:36.000Z",
+      "asof": "2026-11-12T21:00:00.000Z",
       "unit": "$"
     }
   ],
@@ -136,19 +136,19 @@
     "SPY": {
       "high": 763.01,
       "low": 753.735,
-      "last": 756.93,
+      "last": 760.34,
       "live": true
     },
     "IWM": {
       "high": 282.19,
       "low": 278.05,
-      "last": 278.445,
+      "last": 279.47,
       "live": true
     },
     "QQQ": {
       "high": 694.52,
       "low": 680,
-      "last": 687.92,
+      "last": 689.92,
       "live": true
     }
   }
