@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-13T14:30:47.747Z",
+  "updated": "2026-11-13T21:45:40.795Z",
   "source": "live",
   "series": [
     {
@@ -54,7 +54,7 @@
       "unit": "%",
       "value": 3.9,
       "prior": 3.9,
-      "asof": "2026-11-13",
+      "asof": "2026-11-16",
       "live": true
     },
     {
@@ -102,11 +102,11 @@
       "seriesId": "RRPONTSYD",
       "name": "Overnight Reverse Repo",
       "unit": "$B",
-      "value": 0.25,
-      "prior": 0.152,
-      "asof": "2026-11-12",
+      "value": 0.325,
+      "prior": 0.25,
+      "asof": "2026-11-13",
       "live": true,
-      "change5d": 0.024999999999999994,
+      "change5d": 0.2,
       "stressed": false
     },
     {
@@ -128,12 +128,12 @@
       "seriesId": "BAMLH0A0HYM2",
       "name": "High Yield OAS",
       "unit": "bps",
-      "value": 330,
-      "prior": 334,
-      "asof": "2026-11-11",
+      "value": 320,
+      "prior": 330,
+      "asof": "2026-11-12",
       "live": true,
       "trend": "down",
-      "trendChange": -10,
+      "trendChange": -12,
       "trendLabel": "5-day",
       "condition": "Tight",
       "conditionClass": "up"
@@ -144,12 +144,12 @@
       "seriesId": "BAMLC0A0CM",
       "name": "Investment Grade OAS",
       "unit": "bps",
-      "value": 90,
-      "prior": 91,
-      "asof": "2026-11-11",
+      "value": 89,
+      "prior": 90,
+      "asof": "2026-11-12",
       "live": true,
       "trend": "down",
-      "trendChange": -3,
+      "trendChange": -2,
       "trendLabel": "5-day",
       "condition": "Very Tight",
       "conditionClass": "up"
