@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-13T15:15:18.352Z",
+  "updated": "2026-11-13T19:15:54.077Z",
   "source": "live",
   "indicators": [
     {
@@ -44,17 +44,17 @@
       "id": "ppi",
       "name": "PPI, Year-over-Year",
       "desc": "Bureau of Labor Statistics",
-      "value": 12.84239,
-      "prior": 9.77643,
-      "asof": "2026-09-01",
+      "value": 12.79016,
+      "prior": 12.37111,
+      "asof": "2026-10-01",
       "unit": "%",
       "trend": [
-        9.41593,
         12.21712,
-        9.80686,
-        8.6199,
-        9.77643,
-        12.84239
+        9.71396,
+        8.56806,
+        9.69517,
+        12.37111,
+        12.79016
       ],
       "live": true,
       "nextRelease": "2026-11-13"
