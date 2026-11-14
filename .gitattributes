@@ -1,2 +1,4 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+# vCard needs CRLF line endings exactly as written; store it untouched.
+*.vcf -text
