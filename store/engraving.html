@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SS82YDJ0GN"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-SS82YDJ0GN');
+</script>
+<title>Custom Engraving — 4A Holdings Company</title>
+<meta name="description" content="Tell me about your custom engraving idea: your details, shipping address, notes, and any reference images or links. I'll follow up with a quote.">
+<link rel="canonical" href="https://4aholdingscompany.com/store/engraving.html">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="stylesheet" href="assets/style.css?v=3">
+<style>
+  /* ---------- wood background ----------
+     Grain is an inline SVG noise filter stretched along x, tinted brown and
+     laid over a warm base color, with faint plank seams on top. */
+  :root {
+    --wood: #d6b48a;
+    --wood-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='2400' height='700'%3E%3Cfilter id='g' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0018 0.16' numOctaves='5' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.36 0 0 0 0 0.2 0 0 0 0 0.08 2.6 0 0 0 -1.05'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+    --burn: #3b1f0c;
+    --burn-light: rgba(255, 236, 205, 0.55);
+    --card: rgba(255, 252, 246, 0.94);
+    --burn-ink: #3a1a06;
+    --burn-op: 0.62;
+    --rule-burn: rgba(58, 26, 6, 0.55);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --wood: #4a3220;
+      --burn: #f1cf98;
+      --burn-light: rgba(0, 0, 0, 0.6);
+      --card: rgba(33, 27, 21, 0.95);
+      --burn-ink: #0e0602;
+      --burn-op: 0.8;
+      --rule-burn: rgba(10, 4, 1, 0.75);
+    }
+  }
+  html, body { background-color: var(--wood); }
+  body {
+    background-image:
+      repeating-linear-gradient(180deg, transparent 0 238px, rgba(40, 20, 6, 0.28) 238px 240px),
+      var(--wood-grain),
+      linear-gradient(90deg, rgba(0,0,0,0.06), transparent 30%, rgba(255,255,255,0.05) 60%, rgba(0,0,0,0.06));
+    background-size: auto, 2400px 700px, auto;
+    background-position: 0 0;
+    background-attachment: scroll;
+  }
+  .topbar { background: var(--card); }
+
+  /* ---------- burned-in hero ---------- */
+  .engrave-hero {
+    position: relative;
+    /* clip the rosette at the top bar only; let it spread sideways and down */
+    clip-path: inset(0 -100vw -60rem -100vw);
+    text-align: center;
+    padding: 3rem 16px 1rem;
+  }
+  .plate {
+    position: relative;
+    overflow: hidden;
+    max-width: 40rem;
+    margin: 0 auto;
+    padding: 3.1rem 2.75rem 2.9rem;
+    border-radius: 0.2rem;
+    /* routed recess: dark lip on top, light catch on the bottom edge */
+    box-shadow: inset 0 3px 6px rgba(40, 18, 4, 0.55), inset 0 -1px 0 rgba(255, 235, 200, 0.35), 0 1px 0 rgba(255, 235, 200, 0.35);
+    background: radial-gradient(ellipse at center, rgba(255, 240, 215, 0.18), rgba(60, 28, 8, 0.22) 75%, rgba(40, 16, 4, 0.4));
+  }
+  /* the laser pass: a hot orange beam sweeps across once */
+  .plate::after {
+    content: "";
+    position: absolute;
+    top: 0; bottom: 0;
+    left: -2%;
+    width: 2px;
+    background: linear-gradient(180deg, transparent, #ff9a3c 25%, #fff1c9 50%, #ff9a3c 75%, transparent);
+    box-shadow: 0 0 16px 4px rgba(255, 140, 50, 0.6);
+    animation: laser 2.6s cubic-bezier(.5,0,.3,1) 0.3s 1 forwards;
+    opacity: 0;
+  }
+  @keyframes laser {
+    0% { left: -2%; opacity: 0; }
+    8% { opacity: 1; }
+    92% { opacity: 1; }
+    100% { left: 102%; opacity: 0; }
+  }
+  .engrave-eyebrow {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--burn);
+    opacity: 0.8;
+  }
+  .engrave-hero h1 {
+    margin: 0.6rem 0 0.4rem;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1.9rem, 6vw, 2.9rem);
+    line-height: 1.12;
+    /* burned / carved into the wood */
+    color: var(--burn);
+    text-shadow: 0 1px 0 var(--burn-light), 0 0 6px rgba(120, 50, 10, 0.35);
+  }
+  .flourish { display: block; width: 12rem; max-width: 70%; height: 14px; margin: 0.4rem auto 0.9rem; color: var(--burn); opacity: 0.85; }
+  .engrave-hero p { margin: 0 auto; max-width: 32rem; color: var(--burn); font-size: 1.02rem; font-weight: 500; opacity: 0.88; }
+
+  /* ---------- guilloche engraving ----------
+     Fine machine-engraved line patterns (rosettes and woven bands, as on
+     banknotes and watch dials), drawn by the script at the bottom of the page
+     and "burned" into the wood: dark hairlines with a faint scorch halo. */
+  body { position: relative; overflow-x: hidden; }
+  .gx { color: var(--burn-ink); mix-blend-mode: multiply; pointer-events: none; overflow: visible; }
+  .gx-side { position: absolute; z-index: 0; width: 30rem; height: 30rem; opacity: calc(var(--burn-op) * 0.55); }
+  .gx-side.left { top: 24rem; left: calc(50% - 54rem/2 - 24rem); }
+  .gx-side.right { top: 66rem; right: calc(50% - 54rem/2 - 24rem); }
+  .page, .plate { position: relative; z-index: 1; }
+  .gx-hero { position: absolute; z-index: 0; left: 50%; top: 50%; width: 38rem; height: 38rem; margin: -19rem 0 0 -19rem; opacity: calc(var(--burn-op) * 0.4); }
+  .plate .frame { position: absolute; inset: 0.7rem; border: 1px solid var(--rule-burn); pointer-events: none; }
+  .plate .frame::before { content: ""; position: absolute; inset: 22px; border: 1px solid var(--rule-burn); opacity: 0.7; }
+  .plate .gx-band { position: absolute; left: 0; right: 0; height: 18px; }
+  .plate .gx-band.top { top: 2px; } .plate .gx-band.bottom { bottom: 2px; }
+  .plate .gx-band svg { display: block; width: 100%; height: 100%; }
+  .gx-foot { position: relative; margin-top: 1rem; height: 11rem; }
+  .gx-foot .band { position: absolute; left: 0; right: 0; top: 50%; height: 64px; margin-top: -32px; opacity: var(--burn-op); }
+  .gx-foot .band::before, .gx-foot .band::after { content: ""; position: absolute; left: 0; right: 0; height: 0; border-top: 1px solid var(--rule-burn); }
+  .gx-foot .band::before { top: -6px; } .gx-foot .band::after { bottom: -6px; }
+  .gx-foot .band svg { display: block; width: 100%; height: 100%; }
+  .gx-foot .medal { position: absolute; left: 50%; top: 50%; width: 10.5rem; height: 10.5rem; margin: -5.25rem 0 0 -5.25rem; border-radius: 50%; background: var(--wood); background-image: var(--wood-grain); background-size: 900px 260px; box-shadow: 0 0 0 1px var(--rule-burn), 0 0 0 5px var(--wood), 0 0 0 6px var(--rule-burn); }
+  .gx-foot .medal svg { position: absolute; inset: 0; width: 100%; height: 100%; opacity: var(--burn-op); }
+  .gx-foot .medal b { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--font-display); font-weight: 600; font-size: 1.9rem; letter-spacing: 0.04em; color: var(--burn); text-shadow: 0 1px 0 var(--burn-light); }
+  .gx-foot .medal b::before { content: ""; position: absolute; width: 3.6rem; height: 3.6rem; border-radius: 50%; background: var(--wood); background-image: var(--wood-grain); box-shadow: 0 0 0 1px var(--rule-burn); z-index: -1; }
+  .gx-foot .medal b { z-index: 0; isolation: isolate; }
+  @media (max-width: 1240px) { .gx-side { display: none; } }
+  @media (max-width: 640px) { .plate .frame::before { inset: 20px; } .gx-hero { width: 26rem; height: 26rem; margin: -13rem 0 0 -13rem; } }
+
+  /* ---------- page body ---------- */
+  .engrave-page { max-width: 54rem; margin: 0 auto; }
+
+
+  .section-title {
+    display: flex; align-items: center; gap: 0.9rem;
+    margin: 0 0 1.1rem;
+    font-family: var(--font-display); font-weight: 600; font-size: 1.35rem;
+    color: var(--burn); text-shadow: 0 1px 0 var(--burn-light);
+  }
+  .section-title::before, .section-title::after { content: ""; flex: 1; height: 3px; border-top: 1px solid var(--rule-burn); border-bottom: 1px solid var(--rule-burn); -webkit-mask-image: linear-gradient(90deg, transparent, #000 70%); mask-image: linear-gradient(90deg, transparent, #000 70%); }
+  .section-title::after { -webkit-mask-image: linear-gradient(90deg, #000 30%, transparent); mask-image: linear-gradient(90deg, #000 30%, transparent); }
+
+  .steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+  .step { text-align: center; padding: 1.2rem 1rem 1.1rem; background: var(--card); box-shadow: 0 6px 16px -10px rgba(40, 18, 4, 0.6); border: 1px solid var(--line); border-radius: 0.75rem; }
+  .stamp {
+    display: grid; place-items: center;
+    width: 2.6rem; height: 2.6rem; margin: 0 auto 0.6rem;
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+    outline: 1px dashed var(--accent); outline-offset: 3px;
+    font-family: var(--font-display); font-size: 1.1rem; color: var(--accent);
+  }
+  .step h3 { margin: 0 0 0.25rem; font-size: 0.95rem; }
+  .step p { margin: 0; font-size: 0.85rem; color: var(--ink-soft); }
+
+  .materials { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.45rem; margin: 0 0 2.5rem; padding: 0; list-style: none; }
+  .materials li {
+    font-size: 0.8rem; letter-spacing: 0.04em;
+    padding: 0.35rem 0.85rem;
+    border: 1px solid var(--line); border-radius: 999px;
+    background: var(--card); color: var(--ink-soft);
+  }
+  .materials li::before { content: "\25C6"; color: var(--accent); font-size: 0.6rem; margin-right: 0.45rem; vertical-align: 0.1em; }
+
+  /* ---------- form card ---------- */
+  .order-card {
+    position: relative;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-top: 4px solid var(--accent);
+    border-radius: 0.9rem;
+    padding: 1.75rem 2rem 1.5rem;
+    box-shadow: 0 24px 48px -24px rgba(40, 18, 4, 0.7);
+  }
+  .inquiry-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.9rem 1rem; align-items: end; }
+  .inquiry-form .group {
+    grid-column: 1 / -1;
+    display: flex; align-items: baseline; gap: 0.6rem;
+    margin: 0.9rem 0 0; padding-bottom: 0.45rem;
+    border-bottom: 1px dashed var(--line);
+    font-family: var(--font-display); font-weight: 400; font-size: 1.15rem;
+  }
+  .inquiry-form .group:first-child { margin-top: 0; }
+  .inquiry-form .group .num { font-size: 0.75rem; letter-spacing: 0.2em; color: var(--accent); font-family: var(--font-body); font-weight: 600; }
+  .inquiry-form label { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.85rem; font-weight: 600; color: var(--ink); }
+  .inquiry-form .opt { font-weight: 400; color: var(--ink-soft); }
+  .inquiry-form .full { grid-column: 1 / -1; }
+  .inquiry-form input, .inquiry-form textarea {
+    font: inherit; font-size: 0.95rem; font-weight: 400; color: var(--ink);
+    background: var(--paper); border: 1px solid var(--line); border-radius: 0.5rem;
+    padding: 0.6rem 0.75rem; width: 100%;
+  }
+  .inquiry-form textarea { resize: vertical; min-height: 4.5rem; }
+  .inquiry-form input:focus, .inquiry-form textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(199, 154, 88, 0.2); }
+  .inquiry-form .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+
+  .dropzone {
+    grid-column: 1 / -1;
+    display: block;
+    text-align: center;
+    padding: 1.4rem 1rem;
+    border: 2px dashed var(--line);
+    border-radius: 0.75rem;
+    background: var(--paper);
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+  .dropzone:hover, .dropzone.over, .dropzone:focus-within { border-color: var(--accent); background: var(--accent-soft); }
+  .dropzone input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+  .dropzone svg { width: 2rem; height: 2rem; color: var(--accent); margin: 0 auto 0.35rem; display: block; }
+  .dropzone strong { display: block; font-size: 0.95rem; }
+  .dropzone span { font-size: 0.8rem; font-weight: 400; color: var(--ink-soft); }
+  .file-list { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0; padding: 0; list-style: none; }
+  .file-list:empty { display: none; }
+  .file-list li { display: flex; align-items: center; gap: 0.45rem; padding: 0.3rem 0.6rem 0.3rem 0.3rem; font-size: 0.8rem; color: var(--ink-soft); background: var(--accent-soft); border-radius: 0.4rem; }
+  .file-list img { width: 2rem; height: 2rem; object-fit: cover; border-radius: 0.25rem; }
+
+  .inquiry-form .actions { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-top: 0.4rem; }
+  button.contact-button {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: linear-gradient(180deg, #a77a3f, var(--accent)); color: #fff;
+    border: 0; font: inherit; font-weight: 600; font-size: 0.95rem; letter-spacing: 0.02em;
+    padding: 0.8rem 1.7rem; border-radius: 999px; cursor: pointer;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.25);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  button.contact-button:hover { transform: translateY(-1px); box-shadow: inset 0 1px 0 rgba(255,255,255,0.25), 0 8px 18px rgba(138, 99, 48, 0.35); }
+  button.contact-button:disabled { opacity: 0.6; cursor: default; transform: none; }
+  .inquiry-status { margin: 0; font-size: 0.9rem; color: var(--ink-soft); }
+  .contact-direct { margin: 1.1rem 0 0; padding-top: 0.9rem; border-top: 1px solid var(--line); font-size: 0.85rem; color: var(--ink-soft); }
+  .contact-direct a { color: var(--accent); }
+
+  .signoff { text-align: center; margin: 2.25rem 0 0.5rem; font-family: var(--font-display); font-style: italic; color: var(--burn); text-shadow: 0 1px 0 var(--burn-light); }
+  .signoff b { display: block; font-style: normal; font-weight: 600; font-size: 1.35rem; margin-top: 0.15rem; }
+
+  @media (prefers-color-scheme: dark) {
+    button.contact-button { background: linear-gradient(180deg, #d5aa68, var(--accent)); color: #1a1205; }
+  }
+  @media (max-width: 640px) {
+    .inquiry-form { grid-template-columns: minmax(0, 1fr); }
+    .order-card { padding: 1.4rem 1rem 1.2rem; }
+    .steps { grid-template-columns: minmax(0, 1fr); }
+    .step { display: grid; grid-template-columns: auto 1fr; gap: 0 0.9rem; text-align: left; align-items: center; }
+    .stamp { grid-row: span 2; margin: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .plate::after { animation: none; }
+  }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- laser burn: crisp hairline over a faint scorch halo -->
+    <filter id="burn" x="-5%" y="-5%" width="110%" height="110%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="0.9" result="halo"/>
+      <feComponentTransfer in="halo" result="halo2"><feFuncA type="linear" slope="0.45"/></feComponentTransfer>
+      <feMerge><feMergeNode in="halo2"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <symbol id="gx-rosette" viewBox="-150 -150 300 300"></symbol>
+    <symbol id="gx-medal" viewBox="-150 -150 300 300"></symbol>
+    <symbol id="gx-band" viewBox="0 0 1200 40" preserveAspectRatio="none"></symbol>
+  </defs>
+</svg>
+<svg class="gx gx-side left" aria-hidden="true"><use href="#gx-rosette" filter="url(#burn)"/></svg>
+<svg class="gx gx-side right" aria-hidden="true"><use href="#gx-rosette" filter="url(#burn)"/></svg>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="home-link" href="../">&larr; 4A Holdings Company</a>
+    <a class="brand" href="index.html">Store</a>
+    <span class="home-link-spacer" aria-hidden="true">&larr; 4A Holdings Company</span>
+  </div>
+</div>
+
+<header class="engrave-hero">
+  <svg class="gx gx-hero" aria-hidden="true"><use href="#gx-rosette" filter="url(#burn)"/></svg>
+  <div class="plate">
+    <div class="frame" aria-hidden="true"><div class="gx-band top"><svg class="gx" preserveAspectRatio="none"><use href="#gx-band" width="100%" height="100%"/></svg></div><div class="gx-band bottom"><svg class="gx" preserveAspectRatio="none"><use href="#gx-band" width="100%" height="100%"/></svg></div></div>
+    <span class="engrave-eyebrow">Custom Engraving</span>
+    <h1>Thank you for working with me</h1>
+    <svg class="flourish" viewBox="0 0 200 14" fill="none" stroke="currentColor" aria-hidden="true">
+      <path d="M2 7h78M120 7h78" stroke-width="1"/>
+      <path d="M100 1l6 6-6 6-6-6z" fill="currentColor" stroke="none"/>
+      <path d="M86 7l4-3 4 3-4 3z M106 7l4-3 4 3-4 3z" stroke-width="1"/>
+    </svg>
+    <p>Every engraved piece starts with an idea. Tell me yours below and I'll come back to you with a custom quote.</p>
+  </div>
+</header>
+
+<div class="page engrave-page">
+
+  <h2 class="section-title">How it works</h2>
+  <div class="steps">
+    <div class="step"><span class="stamp">I</span><h3>Share your idea</h3><p>Wording, artwork, the item, and any photos or links.</p></div>
+    <div class="step"><span class="stamp">II</span><h3>Get a quote</h3><p>I'll email you a custom price. No charge until you approve.</p></div>
+    <div class="step"><span class="stamp">III</span><h3>Engraved &amp; shipped</h3><p>Made to order and sent to your door.</p></div>
+  </div>
+
+  <ul class="materials" aria-label="Things I can engrave">
+    <li>Knives</li><li>Water bottles</li><li>Ceramics</li><li>Metal</li><li>Wood</li><li>Glass</li><li>Gifts &amp; keepsakes</li>
+  </ul>
+
+  <h2 class="section-title">Tell me about your piece</h2>
+  <section class="order-card">
+    <form class="inquiry-form engrave-form" novalidate>
+      <h3 class="group"><span class="num">01</span>Your information</h3>
+      <label>Your name<input name="name" type="text" autocomplete="name" required></label>
+      <label>Email<input name="email" type="email" autocomplete="email" required></label>
+      <label class="full"><span>Phone <span class="opt">optional</span></span><input name="phone" type="tel" autocomplete="tel"></label>
+
+      <h3 class="group"><span class="num">02</span>Shipping address</h3>
+      <label class="full">Street address<input name="street" type="text" autocomplete="street-address" required></label>
+      <label>City<input name="city" type="text" autocomplete="address-level2" required></label>
+      <label>State / region<input name="region" type="text" autocomplete="address-level1"></label>
+      <label>ZIP / postal code<input name="postal" type="text" autocomplete="postal-code" required></label>
+      <label>Country<input name="country" type="text" autocomplete="country-name" value="United States"></label>
+
+      <h3 class="group"><span class="num">03</span>Your idea</h3>
+      <label class="full">General notes
+        <textarea name="notes" rows="5" required placeholder="What you'd like engraved, on what item, wording or design, size, a date you need it by..."></textarea>
+      </label>
+      <label class="dropzone" id="dropzone">
+        <input name="attachment" type="file" accept="image/*,.pdf" multiple>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+        <strong>Add images <span class="opt">optional</span></strong>
+        <span>Drop photos, sketches, or logos here, or tap to choose. Up to 5 files, 5 MB total.</span>
+      </label>
+      <ul class="file-list" id="file-list"></ul>
+      <label class="full"><span>Links <span class="opt">optional</span></span>
+        <textarea name="links" rows="2" placeholder="Paste links to examples or inspiration, one per line"></textarea>
+      </label>
+
+      <input type="text" name="_honey" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <div class="full actions">
+        <button type="submit" class="contact-button">Send my idea <span aria-hidden="true">&rarr;</span></button>
+        <p class="inquiry-status" role="status" aria-live="polite"></p>
+      </div>
+    </form>
+    <p class="contact-direct">Nothing is charged yet. I'll email you a quote before any work begins. Questions? <a id="engrave-email" href="#"></a></p>
+  </section>
+
+  <p class="signoff">Looking forward to making something for you,<b>Andrew</b></p>
+</div>
+
+<div class="gx-foot" aria-hidden="true">
+  <div class="band"><svg class="gx" preserveAspectRatio="none"><use href="#gx-band" width="100%" height="100%" filter="url(#burn)"/></svg></div>
+  <div class="medal"><svg class="gx"><use href="#gx-medal" filter="url(#burn)"/></svg><b>4A</b></div>
+</div>
+
+<script>
+  // Guilloche patterns: rotated copies of modulated rose curves, the same
+  // math a rose engine traces. Built once into the <symbol>s above.
+  (function () {
+    const TAU = Math.PI * 2, NS = "http://www.w3.org/2000/svg";
+    const r1 = (v) => Math.round(v * 10) / 10;
+    function path(sym, d, w) {
+      const el = document.createElementNS(NS, "path");
+      el.setAttribute("d", d); el.setAttribute("fill", "none"); el.setAttribute("stroke", "currentColor");
+      el.setAttribute("stroke-width", w); el.setAttribute("vector-effect", "non-scaling-stroke");
+      sym.appendChild(el);
+    }
+    function circle(sym, r, w) { path(sym, `M${r} 0A${r} ${r} 0 1 0 ${-r} 0A${r} ${r} 0 1 0 ${r} 0`, w); }
+    // K copies of r(t) = R + a*sin(n t) + b*sin(m t), each turned a little
+    function ring(sym, R, a, n, K, w, b = 0, m = 0) {
+      const steps = Math.max(240, n * 14);
+      let d = "";
+      for (let k = 0; k < K; k++) {
+        const rot = k * TAU / (n * K);
+        for (let i = 0; i <= steps; i++) {
+          const t = i / steps * TAU, r = R + a * Math.sin(n * t) + b * Math.sin(m * t);
+          d += (i ? "L" : "M") + r1(r * Math.cos(t + rot)) + " " + r1(r * Math.sin(t + rot));
+        }
+      }
+      path(sym, d, w);
+    }
+    const ros = document.getElementById("gx-rosette");
+    circle(ros, 147, 0.9); circle(ros, 143, 0.5);
+    ring(ros, 126, 13, 40, 6, 0.45);
+    circle(ros, 108, 0.7);
+    ring(ros, 82, 18, 24, 9, 0.4, 5, 6);
+    circle(ros, 58, 0.6);
+    ring(ros, 40, 13, 14, 8, 0.4);
+    circle(ros, 20, 0.6); circle(ros, 17, 0.4);
+
+    const med = document.getElementById("gx-medal");
+    circle(med, 147, 1); circle(med, 141, 0.5);
+    ring(med, 116, 22, 30, 8, 0.45, 4, 5);
+    circle(med, 88, 0.8);
+
+    const band = document.getElementById("gx-band");
+    path(band, "M0 1H1200M0 39H1200", 0.8);
+    const wave = (amp, len, K, w) => {
+      let d = "";
+      for (let k = 0; k < K; k++) {
+        const ph = k * TAU / K;
+        for (let x = 0; x <= 1200; x += 3) d += (x ? "L" : "M") + x + " " + r1(20 + amp * Math.sin(TAU * x / len + ph));
+      }
+      path(band, d, w);
+    };
+    wave(15, 48, 6, 0.45);
+    wave(17, 150, 3, 0.55);
+  })();
+</script>
+<script src="/assets/inquiry.js?v=1"></script>
+<script>
+  // Sent as multipart form data (not JSON) so image files ride along as
+  // FormSubmit attachments, emailed to the same inbox as the other forms.
+  const TO = window.sendInquiry.email;
+  const MAX_FILES = 5, MAX_BYTES = 5 * 1024 * 1024;
+  const form = document.querySelector(".engrave-form");
+  const fileInput = form.elements.attachment;
+  const fileList = document.getElementById("file-list");
+  const dropzone = document.getElementById("dropzone");
+  const emailLink = document.getElementById("engrave-email");
+  emailLink.href = "mailto:" + TO + "?subject=" + encodeURIComponent("Custom engraving");
+  emailLink.textContent = TO;
+
+  const mb = (n) => (n / 1024 / 1024).toFixed(1) + " MB";
+  function showFiles() {
+    fileList.querySelectorAll("img").forEach((img) => URL.revokeObjectURL(img.src));
+    fileList.textContent = "";
+    [...fileInput.files].forEach((file) => {
+      const li = document.createElement("li");
+      if (file.type.startsWith("image/")) {
+        const img = document.createElement("img");
+        img.src = URL.createObjectURL(file);
+        img.alt = "";
+        li.appendChild(img);
+      }
+      li.appendChild(document.createTextNode(file.name + " (" + mb(file.size) + ")"));
+      fileList.appendChild(li);
+    });
+  }
+  fileInput.addEventListener("change", showFiles);
+
+  ["dragenter", "dragover"].forEach((t) => dropzone.addEventListener(t, (e) => { e.preventDefault(); dropzone.classList.add("over"); }));
+  ["dragleave", "drop"].forEach((t) => dropzone.addEventListener(t, () => dropzone.classList.remove("over")));
+  dropzone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    if (e.dataTransfer.files.length) { fileInput.files = e.dataTransfer.files; showFiles(); }
+  });
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const f = form.elements;
+    const status = form.querySelector(".inquiry-status");
+    const send = form.querySelector('button[type="submit"]');
+
+    const missing = [f.name, f.email, f.street, f.city, f.postal, f.notes].filter((el) => !el.value.trim());
+    if (missing.length) {
+      status.textContent = "Please fill in your name, email, shipping address, and a few notes about your idea.";
+      missing[0].focus();
+      return;
+    }
+    if (!f.email.checkValidity()) {
+      status.textContent = "That email doesn't look right.";
+      f.email.focus();
+      return;
+    }
+    const files = [...fileInput.files];
+    const total = files.reduce((n, file) => n + file.size, 0);
+    if (files.length > MAX_FILES || total > MAX_BYTES) {
+      status.textContent = `Please attach up to ${MAX_FILES} files, 5 MB total (you have ${files.length}, ${mb(total)}). You can paste links for anything larger.`;
+      dropzone.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+
+    const address = [
+      f.street.value.trim(),
+      [f.city.value.trim(), f.region.value.trim()].filter(Boolean).join(", ") + " " + f.postal.value.trim(),
+      f.country.value.trim(),
+    ].filter(Boolean).join("\n");
+
+    const data = new FormData();
+    const fields = {
+      "Name": f.name.value.trim(),
+      "Email": f.email.value.trim(),
+      "Phone": f.phone.value.trim(),
+      "Shipping address": address,
+      "Idea / notes": f.notes.value.trim(),
+      "Links": f.links.value.trim(),
+      "Images attached": files.length ? files.map((file) => file.name).join(", ") : "",
+      "Sent from": location.href,
+    };
+    Object.keys(fields).forEach((k) => data.append(k, fields[k] || "-"));
+    files.forEach((file) => data.append("attachment", file, file.name));
+    data.append("_subject", "Custom engraving request: " + fields["Name"]);
+    data.append("_template", "table");
+    data.append("_replyto", fields["Email"]);
+    data.append("_honey", f._honey.value);
+
+    status.textContent = files.length ? "Sending (uploading images)…" : "Sending…";
+    send.disabled = true;
+    fetch("https://formsubmit.co/ajax/" + TO, { method: "POST", headers: { "Accept": "application/json" }, body: data })
+      .then((res) => res.json().then((j) => {
+        if (!res.ok || String(j.success) !== "true") throw new Error(j.message || "HTTP " + res.status);
+      }))
+      .then(() => {
+        form.reset();
+        showFiles();
+        status.textContent = "Thank you! Your idea was sent. I'll email you soon with a quote.";
+      })
+      .catch((err) => {
+        console.warn("Engraving form: send failed", err);
+        status.textContent = `That didn't go through. Please email ${TO} instead.`;
+      })
+      .finally(() => { send.disabled = false; });
+  });
+</script>
+
+<script src="/assets/site-links.js?v=2" defer></script>
+</body>
+</html>
