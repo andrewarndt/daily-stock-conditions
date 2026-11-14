@@ -51,7 +51,7 @@ function contactFooterHtml(parkName) {
       <div class="contact-card">
         <div>
           <h2>Interested in a print?</h2>
-          <p>Every photo here is from a real trip. Prints come in small, medium and large, on foam core, acrylic or HD acrylic. If one catches your eye or you'd like to license a photo, send a note below.</p>
+          <p>Every photo here is from a real trip. Prints come in sizes from 4×5 up to 40×60, on smooth matte or premium fine art paper, with matboard or styrene mounting. If one catches your eye or you'd like to license a photo, send a note below.</p>
         </div>
         <form class="inquiry-form" novalidate>
           <label>Your name<input name="name" type="text" autocomplete="name" required></label>

@@ -27,6 +27,12 @@
     border-left: 3px solid var(--accent-warm);
     border-radius: 0.4rem;
   }
+  .order-price {
+    margin: 0;
+    font-size: 1.05rem;
+    color: var(--ink);
+  }
+  .order-price strong { font-size: 1.25rem; }
 </style>
 </head>
 <body>
@@ -61,24 +67,18 @@
       <input type="hidden" name="photo">
       <label>Your name<input name="name" type="text" autocomplete="name" required></label>
       <label>Email<input name="email" type="email" autocomplete="email" required></label>
-      <label><span>Phone <span class="opt">optional</span></span><input name="phone" type="tel" autocomplete="tel"></label>
-      <label>Print material
-        <select name="medium" id="order-medium" required>
-          <option value="" selected disabled>Choose a material</option>
-          <option>Foam Core - Smooth Matte</option>
-          <option>Matboard - Smooth Matte</option>
-          <option>Smooth Matte</option>
-          <option>Acrylic</option>
-          <option>HD Acrylic</option>
-          <option value="Custom order">Contact for custom order</option>
+      <label class="full"><span>Phone <span class="opt">optional</span></span><input name="phone" type="tel" autocomplete="tel"></label>
+      <label>Paper &amp; mounting
+        <select name="mounting" id="order-mounting" required>
+          <option value="" selected disabled>Loading options…</option>
         </select>
       </label>
-      <label>Width
-        <select name="width" id="order-width" class="size-select" required></select>
+      <label>Size &amp; price
+        <select name="size" id="order-size" required disabled>
+          <option value="" selected disabled>Choose a mounting first</option>
+        </select>
       </label>
-      <label>Height
-        <select name="height" id="order-height" class="size-select" required></select>
-      </label>
+      <p class="full order-price" id="order-price" hidden></p>
       <p class="full order-note" id="order-note" hidden></p>
       <label class="full">Street address<input name="street" type="text" autocomplete="street-address" required></label>
       <label>City<input name="city" type="text" autocomplete="address-level2" required></label>
@@ -97,7 +97,7 @@
 </div>
 
 <script src="/assets/inquiry.js?v=1"></script>
-<script src="assets/parks.js?v=4"></script>
+<script src="assets/parks.js?v=5"></script>
 <script>
   const galleriesEl = document.getElementById("order-galleries");
   const selectedEl = document.getElementById("order-selected");
@@ -107,28 +107,63 @@
   emailLink.textContent = CONTACT_EMAIL;
   document.getElementById("quality-note-slot").outerHTML = photoQualityNoteHtml();
 
-  // Width / height: 8 to 40 inches in steps of 2, then 40+ (custom quote).
-  const CUSTOM_SIZE = "40+";
-  const sizeOptions = '<option value="" selected disabled>Choose inches</option>' +
-    Array.from({ length: 17 }, (_, i) => 8 + i * 2).map((n) => `<option value="${n}">${n} in</option>`).join("") +
-    `<option value="${CUSTOM_SIZE}">40+ in (custom quote)</option>`;
-  form.elements.width.innerHTML = sizeOptions;
-  form.elements.height.innerHTML = sizeOptions;
+  // Prices come from data/print-prices.json, which scripts/build-print-prices.py
+  // builds from the WHCC cost spreadsheet (selling prices, margin already added).
+  // Pick a paper & mounting first; the size list then shows only the sizes
+  // offered for that mounting, each with its price.
+  const CUSTOM = "custom";
+  const mountingEl = form.elements.mounting, sizeEl = form.elements.size;
+  const priceEl = document.getElementById("order-price"), noteEl = document.getElementById("order-note");
+  const money = (n) => "$" + n.toFixed(2);
+  let priceList = null;
 
-  const noteEl = document.getElementById("order-note");
-  function updateNote() {
-    const f = form.elements, notes = [];
-    if (f.width.value === CUSTOM_SIZE || f.height.value === CUSTOM_SIZE) {
-      notes.push("Sizes above 40 inches are made to order. We'll reach out with a custom quote.");
-    }
-    if (f.medium.value === "Custom order") {
-      notes.push("We'll contact you to talk through your custom order. Add any details under special requests.");
-    }
-    noteEl.textContent = notes.join(" ");
-    noteEl.hidden = !notes.length;
+  function mountingLabel() {
+    const m = priceList && priceList.mountings.find((x) => x.id === mountingEl.value);
+    return m ? m.label : "Custom order";
   }
-  [form.elements.width, form.elements.height, form.elements.medium].forEach((el) => el.addEventListener("change", updateNote));
-  const sizeText = (v) => (v === CUSTOM_SIZE ? "40+" : v);
+  function fillSizes() {
+    const mid = mountingEl.value;
+    priceEl.hidden = true;
+    noteEl.hidden = mid !== CUSTOM;
+    noteEl.textContent = "We'll contact you to talk through your custom order (other sizes, acrylic, framing...). Add the details under special requests.";
+    if (mid === CUSTOM) {
+      sizeEl.innerHTML = '<option value="custom" selected>Custom size (quoted)</option>';
+      sizeEl.disabled = false;
+      return;
+    }
+    const sizes = priceList.sizes.filter((s) => s.prices[mid] != null);
+    sizeEl.innerHTML = '<option value="" selected disabled>Choose a size</option>' +
+      sizes.map((s) => `<option value="${escapeHtml(s.size)}">${escapeHtml(s.size)} in — ${money(s.prices[mid])}</option>`).join("");
+    sizeEl.disabled = false;
+  }
+  function selectedPrice() {
+    const s = priceList && priceList.sizes.find((x) => x.size === sizeEl.value);
+    return s ? s.prices[mountingEl.value] : null;
+  }
+  function showPrice() {
+    const p = selectedPrice();
+    priceEl.hidden = p == null;
+    if (p != null) priceEl.innerHTML = `Print price: <strong>${money(p)}</strong> <span class="opt">(shipping confirmed by email)</span>`;
+  }
+  mountingEl.addEventListener("change", fillSizes);
+  sizeEl.addEventListener("change", showPrice);
+
+  fetch("data/print-prices.json?v=" + Date.now().toString().slice(0, -5))
+    .then((r) => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then((data) => {
+      priceList = data;
+      const groups = {};
+      data.mountings.forEach((m) => { (groups[m.group] = groups[m.group] || []).push(m); });
+      mountingEl.innerHTML = '<option value="" selected disabled>Choose paper &amp; mounting</option>' +
+        Object.keys(groups).map((g) => `<optgroup label="${escapeHtml(g)}">` +
+          groups[g].map((m) => `<option value="${escapeHtml(m.id)}">${escapeHtml(m.label)}</option>`).join("") + "</optgroup>").join("") +
+        `<option value="${CUSTOM}">Something else — contact me for a quote</option>`;
+    })
+    .catch((err) => {
+      console.error("Failed to load print prices:", err);
+      mountingEl.innerHTML = `<option value="${CUSTOM}" selected>Contact me for a quote</option>`;
+      fillSizes();
+    });
 
   let picked = null; // { park, filename }
 
@@ -193,14 +228,16 @@
       f.email.focus();
       return;
     }
-    const unpicked = [f.medium, f.width, f.height].filter((el) => !el.value);
+    const unpicked = [f.mounting, f.size].filter((el) => !el.value);
     if (unpicked.length) {
-      status.textContent = "Please choose a print material, width, and height.";
+      status.textContent = "Please choose a paper & mounting, then a size.";
       unpicked[0].focus();
       return;
     }
-    const size = sizeText(f.width.value) + " x " + sizeText(f.height.value) + " in" +
-      (f.width.value === CUSTOM_SIZE || f.height.value === CUSTOM_SIZE ? " (custom quote needed)" : "");
+    const custom = f.mounting.value === CUSTOM;
+    const size = custom ? "Custom (quote needed)" : f.size.value + " in";
+    const price = selectedPrice();
+    const mounting = mountingLabel();
     const address = [
       f.street.value.trim(),
       [f.city.value.trim(), f.region.value.trim()].filter(Boolean).join(", ") + " " + f.postal.value.trim(),
@@ -208,21 +245,25 @@
     ].filter(Boolean).join("\n");
     status.textContent = "Sending…";
     send.disabled = true;
-    sendInquiry("Print order: " + picked.park.name + " (" + size + ", " + f.medium.value + ")", {
+    sendInquiry("Print order: " + picked.park.name + " (" + size + ", " + mounting + (price != null ? ", " + money(price) : "") + ")", {
       "Name": f.name.value.trim(),
       "Email": f.email.value.trim(),
       "Phone": f.phone.value.trim(),
       "Photo": f.photo.value,
       "Photo link": new URL(webPhotoUrl(picked.park, picked.filename), location.href).href,
-      "Size (W x H)": size,
-      "Material": f.medium.value,
+      "Paper & mounting": mounting,
+      "Size": size,
+      "Price shown": price != null ? money(price) : "Custom quote",
       "Shipping address": address,
       "Special requests": f.requests.value.trim(),
       "Sent from": location.href,
     }, f._honey.value)
       .then(() => {
         form.reset();
-        updateNote();
+        sizeEl.innerHTML = '<option value="" selected disabled>Choose a mounting first</option>';
+        sizeEl.disabled = true;
+        priceEl.hidden = true;
+        noteEl.hidden = true;
         picked = null;
         galleriesEl.querySelectorAll(".pick-tile[aria-pressed=true]").forEach((b) => b.setAttribute("aria-pressed", "false"));
         selectedEl.innerHTML = '<p class="order-selected-empty">No photo picked yet &mdash; choose one from the galleries above.</p>';
