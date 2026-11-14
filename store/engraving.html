@@ -155,7 +155,7 @@
   .section-title::before, .section-title::after { content: ""; flex: 1; height: 3px; border-top: 1px solid var(--rule-burn); border-bottom: 1px solid var(--rule-burn); -webkit-mask-image: linear-gradient(90deg, transparent, #000 70%); mask-image: linear-gradient(90deg, transparent, #000 70%); }
   .section-title::after { -webkit-mask-image: linear-gradient(90deg, #000 30%, transparent); mask-image: linear-gradient(90deg, #000 30%, transparent); }
 
-  .steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+  .steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-bottom: 2.75rem; }
   .step { text-align: center; padding: 1.2rem 1rem 1.1rem; background: var(--card); box-shadow: 0 6px 16px -10px rgba(40, 18, 4, 0.6); border: 1px solid var(--line); border-radius: 0.75rem; }
   .stamp {
     display: grid; place-items: center;
@@ -167,15 +167,6 @@
   }
   .step h3 { margin: 0 0 0.25rem; font-size: 0.95rem; }
   .step p { margin: 0; font-size: 0.85rem; color: var(--ink-soft); }
-
-  .materials { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.45rem; margin: 0 0 2.5rem; padding: 0; list-style: none; }
-  .materials li {
-    font-size: 0.8rem; letter-spacing: 0.04em;
-    padding: 0.35rem 0.85rem;
-    border: 1px solid var(--line); border-radius: 999px;
-    background: var(--card); color: var(--ink-soft);
-  }
-  .materials li::before { content: "\25C6"; color: var(--accent); font-size: 0.6rem; margin-right: 0.45rem; vertical-align: 0.1em; }
 
   /* ---------- form card ---------- */
   .order-card {
@@ -311,10 +302,6 @@
     <div class="step"><span class="stamp">II</span><h3>Get a quote</h3><p>I'll email you a custom price. No charge until you approve.</p></div>
     <div class="step"><span class="stamp">III</span><h3>Engraved &amp; shipped</h3><p>Made to order and sent to your door.</p></div>
   </div>
-
-  <ul class="materials" aria-label="Things I can engrave">
-    <li>Knives</li><li>Water bottles</li><li>Ceramics</li><li>Metal</li><li>Wood</li><li>Glass</li><li>Gifts &amp; keepsakes</li>
-  </ul>
 
   <h2 class="section-title">Tell me about your piece</h2>
   <section class="order-card">
