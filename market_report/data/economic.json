@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-13T19:15:54.077Z",
+  "updated": "2026-11-16T13:45:43.858Z",
   "source": "live",
   "indicators": [
     {
@@ -57,7 +57,7 @@
         12.79016
       ],
       "live": true,
-      "nextRelease": "2026-11-13"
+      "nextRelease": "2026-12-15"
     },
     {
       "id": "lei",
