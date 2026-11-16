@@ -22,7 +22,7 @@
 <meta property="og:image" content="https://4aholdingscompany.com/wildlife/assets/web/Everglades%20National%20Park%2C%20Florida/IMG_7093.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/png" href="/favicon.png">
-<link rel="stylesheet" href="assets/style.css?v=6">
+<link rel="stylesheet" href="assets/style.css?v=8">
 </head>
 <body>
 
@@ -59,7 +59,7 @@
 </div>
 
 <script src="/assets/inquiry.js?v=1"></script>
-<script src="assets/parks.js?v=5"></script>
+<script src="assets/parks.js?v=7"></script>
 <script>
   const slug = new URLSearchParams(location.search).get("park");
 
@@ -90,7 +90,7 @@
 
     gridEl.innerHTML = park.photos.map((filename) => {
       const webUrl = webPhotoUrl(park, filename);
-      return `<img src="${webUrl}" alt="${escapeHtml(park.name)} wildlife photo" loading="lazy">`;
+      return `<a href="${photoPageUrl(park, filename)}" title="View larger and ask about a print"><img src="${webUrl}" alt="${escapeHtml(park.name)} wildlife photo" loading="lazy"></a>`;
     }).join("");
   });
 </script>

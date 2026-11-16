@@ -16,6 +16,15 @@ function webPhotoUrl(park, filename) {
   return "assets/web/" + encodeURIComponent(park.folder) + "/" + encodeURIComponent(filename);
 }
 
+function galleryUrl(park) {
+  return "gallery.html?park=" + encodeURIComponent(park.slug);
+}
+
+// Large single-photo page with the print-interest form (photo.html).
+function photoPageUrl(park, filename) {
+  return "photo.html?park=" + encodeURIComponent(park.slug) + "&photo=" + encodeURIComponent(filename);
+}
+
 // Old slugs from before the park folders were renamed (spelling fixes), so
 // links shared or indexed under the old URLs still open the right gallery.
 const LEGACY_SLUGS = {
@@ -51,7 +60,7 @@ function contactFooterHtml(parkName) {
       <div class="contact-card">
         <div>
           <h2>Interested in a print?</h2>
-          <p>Every photo here is from a real trip. Prints come in sizes from 4×5 up to 40×60, on smooth matte or premium fine art paper, with matboard or styrene mounting. If one catches your eye or you'd like to license a photo, send a note below.</p>
+          <p>Prints come in sizes from 4×5 up to 40×60, on smooth matte or premium fine art paper, with matboard or styrene mounting. If one catches your eye or you'd like to license a photo, send a note below.</p>
         </div>
         <form class="inquiry-form" novalidate>
           <label>Your name<input name="name" type="text" autocomplete="name" required></label>
@@ -77,8 +86,8 @@ function contactFooterHtml(parkName) {
 }
 
 document.addEventListener("submit", (e) => {
-  // order.html's form has its own handler.
-  const form = e.target.closest(".inquiry-form:not(.order-form)");
+  // order.html and photo.html forms have their own handlers.
+  const form = e.target.closest(".inquiry-form:not(.order-form):not(.print-interest-form)");
   if (!form) return;
   e.preventDefault();
   const f = form.elements;

@@ -1,7 +1,10 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&display=swap");
+
 :root {
   --ink: #1c2420;
   --ink-soft: #556157;
-  --paper: #f6f5f0;
+  color-scheme: light;
+  --paper: #ffffff;
   --paper-raised: #ffffff;
   --line: #dde1d8;
   --accent: #3f6b4a;
@@ -13,20 +16,7 @@
   --font-body: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --ink: #e9ece7;
-    --ink-soft: #a7b3a9;
-    --paper: #121613;
-    --paper-raised: #191f1a;
-    --line: #2a322b;
-    --accent: #7fb88c;
-    --accent-soft: #1c2a1f;
-    --accent-warm: #e0a765;
-    --accent-warm-soft: #2c2013;
-    --grain: rgba(127, 184, 142, 0.06);
-  }
-}
+/* Wildlife pages are always white (no dark palette), so the photos sit on a clean gallery wall. */
 
 /* Scale the whole page with the window: 16px root up to 1600px wide,
    then 1vw (capped), so every rem-based size grows on large monitors
@@ -39,12 +29,6 @@ body {
   color: var(--ink);
   font-family: var(--font-body);
   line-height: 1.5;
-  /* soft organic grain so flat sections don't read sterile */
-  background-image:
-    radial-gradient(var(--grain) 1.4px, transparent 1.4px),
-    radial-gradient(var(--grain) 1.4px, transparent 1.4px);
-  background-size: 28px 28px;
-  background-position: 0 0, 14px 14px;
 }
 a { color: inherit; }
 img { max-width: 100%; display: block; }
@@ -323,6 +307,7 @@ img { max-width: 100%; display: block; }
   transition: transform 0.2s ease;
 }
 .photo-grid a:hover img { transform: scale(1.04); }
+.photo-grid a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 .empty-state {
   color: var(--ink-soft);
@@ -500,3 +485,195 @@ button.contact-button:disabled { opacity: 0.6; cursor: default; transform: none;
 .order-form-link { margin: 0; padding: 0.5rem 1rem 0.75rem; text-align: center; font-size: 0.7rem; }
 .order-form-link a { color: var(--ink-soft); text-decoration: none; }
 .order-form-link a:hover { color: var(--accent); text-decoration: underline; }
+
+/* ---------- price line + custom note (order.html, photo.html) ---------- */
+.order-note {
+  margin: 0;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.88rem;
+  color: var(--ink);
+  background: var(--accent-warm-soft);
+  border-left: 3px solid var(--accent-warm);
+  border-radius: 0.4rem;
+}
+.order-price { margin: 0; font-size: 1.05rem; color: var(--ink); }
+.order-price strong { font-size: 1.25rem; }
+
+/* ---------- single photo page (photo.html) ---------- */
+.photo-page { max-width: 72rem; }
+.photo-view { margin: 0 0 2.5rem; }
+.photo-stage {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 12rem;
+}
+.photo-stage img {
+  max-width: 100%;
+  max-height: 78vh;
+  width: auto;
+  height: auto;
+  border-radius: 0.4rem;
+  box-shadow: 0 18px 40px -22px rgba(20, 30, 20, 0.45);
+}
+.photo-nav {
+  position: absolute;
+  top: 50%;
+  width: 2.8rem;
+  height: 2.8rem;
+  margin-top: -1.4rem;
+  display: grid;
+  place-items: center;
+  padding-bottom: 0.2rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--ink);
+  font-size: 2rem;
+  line-height: 1;
+  text-decoration: none;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+  transition: transform 0.15s ease;
+}
+.photo-nav[hidden] { display: none; }
+.photo-nav:hover { transform: scale(1.07); }
+.photo-nav:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.photo-nav.prev { left: 0.75rem; }
+.photo-nav.next { right: 0.75rem; }
+.photo-view figcaption { margin-top: 0.9rem; text-align: center; }
+.photo-park { display: block; font-family: var(--font-display); font-size: 1.35rem; font-weight: 600; }
+.photo-meta { display: block; margin-top: 0.15rem; font-size: 0.85rem; color: var(--ink-soft); }
+.interest-card { max-width: 52rem; margin: 0 auto; }
+.interest-head { display: flex; gap: 1.1rem; align-items: center; }
+.interest-head img { width: 5.5rem; height: 5.5rem; object-fit: cover; border-radius: 0.5rem; border: 1px solid var(--line); flex: none; }
+.interest-head h2 { margin: 0 0 0.3rem; }
+@media (max-width: 640px) {
+  .photo-stage img { max-height: 70vh; }
+  .photo-nav { width: 2.3rem; height: 2.3rem; margin-top: -1.15rem; font-size: 1.6rem; }
+  .photo-nav.prev { left: 0.35rem; }
+  .photo-nav.next { right: 0.35rem; }
+  .interest-head img { width: 4rem; height: 4rem; }
+}
+
+/* =====================================================================
+   Gallery-wall theme (look and feel modeled on printsforwildlife.org):
+   off-white page, light elegant serif throughout, olive color blocks with
+   white text, square photo corners, terracotta pill buttons, pale blue
+   call-to-action band. Layout and behavior are unchanged; these rules only
+   restyle what is above.
+   ===================================================================== */
+:root {
+  --ink: #1b1b18;
+  --ink-soft: #55544b;
+  --paper: #fcfcfb;
+  --paper-raised: #ffffff;
+  --line: #e6e4dc;
+  --accent: #6a6a3d;          /* olive */
+  --accent-soft: #f1f1e8;
+  --accent-warm: #c06d4c;     /* terracotta */
+  --accent-warm-soft: #f7ebe4;
+  --sky: #d3ddf0;
+  --on-olive: #f6f4ec;
+  --grain: rgba(106, 106, 61, 0.15);
+  --font-display: "Cormorant Garamond", "Iowan Old Style", Palatino, Georgia, serif;
+  --font-body: "Cormorant Garamond", "Iowan Old Style", Palatino, Georgia, serif;
+}
+body { font-size: 1.12rem; letter-spacing: 0.02em; line-height: 1.6; }
+
+/* top bar: thin rule, quiet serif */
+.topbar { border-bottom: 1px solid var(--line); background: var(--paper); }
+.brand { font-size: 1.7rem; font-weight: 600; letter-spacing: 0.01em; }
+.brand span { color: var(--accent); font-style: italic; font-weight: 500; }
+.home-link, .home-link-spacer { font-size: 0.98rem; letter-spacing: 0.04em; }
+
+/* give-back band: olive block, white text */
+.giveback-banner { background: var(--accent); color: var(--on-olive); border: 0; padding: 1.6rem 1.5rem; }
+.giveback-figure { color: #f0d9b5; font-weight: 600; }
+.giveback-lead { font-weight: 500; font-style: italic; font-size: clamp(1.25rem, 2.4vw, 1.65rem); }
+.giveback-text .giveback-sub { color: rgba(246, 244, 236, 0.85); font-size: 1.05rem; }
+
+/* hero: keep the rolling reel, then a centered statement on white */
+.hero { background: var(--paper); border-bottom: 0; }
+.hero-inner { color: var(--ink); text-align: center; padding: 3.25rem 1.5rem 1.5rem; }
+.hero-eyebrow { background: none; border: 0; padding: 0; border-radius: 0; color: var(--accent); font-family: var(--font-body); font-size: 0.85rem; letter-spacing: 0.28em; margin-bottom: 1rem; }
+.hero h1 { font-weight: 400; font-size: clamp(2.2rem, 5vw, 3.4rem); line-height: 1.1; letter-spacing: 0.01em; text-shadow: none; margin: 0 0 1rem; }
+.hero p { color: var(--ink-soft); text-shadow: none; max-width: 46rem; margin: 0 auto; font-size: 1.22rem; }
+.hero-reel-item { margin-right: 0.3rem; }
+
+.page-head h1 { font-weight: 400; font-size: clamp(2.2rem, 4.5vw, 3rem); letter-spacing: 0.01em; }
+.page-head p { font-size: 1.15rem; }
+
+/* park folders: olive cards with the photo inset, like printed mats */
+.park-grid { gap: 2rem; }
+.park-card {
+  background: var(--accent);
+  border: 0;
+  border-radius: 0;
+  padding: 1.4rem 1.4rem 0.4rem;
+  color: var(--on-olive);
+  box-shadow: none;
+}
+.park-card.has-photos:hover { transform: translateY(-4px); box-shadow: 0 18px 34px -18px rgba(40, 40, 20, 0.55); border: 0; }
+.park-cover { background: rgba(0, 0, 0, 0.15); }
+.park-body { padding: 1.1rem 0 1rem; }
+.park-body h2 { font-weight: 600; font-size: 1.35rem; color: #fff; }
+.park-location { color: rgba(246, 244, 236, 0.8); font-size: 1rem; }
+.park-count { background: none; color: var(--on-olive); padding: 0; font-weight: 500; font-style: italic; font-size: 1rem; }
+.park-count::after { content: " \2192"; }
+.park-card.empty { opacity: 0.55; }
+.park-card.empty .park-count::after { content: none; }
+.park-cover.placeholder { color: var(--on-olive); }
+
+/* photos: square corners, no frames */
+.photo-grid { gap: 0.9rem; }
+.photo-grid a, .pick-tile { border-radius: 0; border: 0; background: var(--accent-soft); }
+.photo-stage img { border-radius: 0; }
+.order-selected img, .interest-head img { border-radius: 0; }
+
+/* low-key notice line */
+.notice-banner { background: none; border: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); border-radius: 0; text-align: center; font-style: italic; font-size: 1rem; padding: 0.8rem 1rem; }
+.empty-state { border-radius: 0; }
+
+/* about the photographer: olive quote block */
+.about-me {
+  max-width: 56rem;
+  background: var(--accent);
+  color: var(--on-olive);
+  border: 0;
+  border-radius: 0;
+  padding: 2.4rem 2.6rem 2.2rem;
+}
+.about-me h2 { font-weight: 500; font-size: 2rem; color: #fff; }
+.about-me p { color: var(--on-olive); font-size: 1.18rem; }
+.about-me p:first-of-type { font-style: italic; }
+.about-me .about-photo { border: 3px solid var(--on-olive); width: 8rem; height: 8rem; }
+
+/* contact / forms: pale blue band, square fields, terracotta pills */
+.site-footer { border-top: 0; }
+.contact-card { background: var(--sky); border: 0; border-radius: 0; padding: 2.4rem 2.6rem; }
+.contact-card h2 { font-weight: 500; font-size: 2rem; }
+.contact-card p { color: #3e4250; font-size: 1.08rem; }
+.inquiry-form label { font-weight: 600; font-size: 1rem; letter-spacing: 0.03em; }
+.inquiry-form input, .inquiry-form select, .inquiry-form textarea { border-radius: 0; border-color: #b9c3d6; font-size: 1.05rem; background: #fff; }
+.inquiry-form input:focus, .inquiry-form select:focus, .inquiry-form textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--grain); }
+a.contact-button, button.contact-button {
+  background: var(--accent-warm);
+  color: #fff;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 1.05rem;
+  letter-spacing: 0.06em;
+  padding: 0.75rem 1.9rem;
+  box-shadow: 0 6px 14px -8px rgba(120, 50, 20, 0.6);
+}
+a.contact-button:hover, button.contact-button:hover { box-shadow: 0 10px 20px -8px rgba(120, 50, 20, 0.6); }
+.contact-direct a, .order-change { color: var(--accent); }
+.inquiry-status { font-size: 1rem; }
+.order-note { border-radius: 0; }
+.photo-park { font-weight: 500; font-size: 1.8rem; }
+.photo-meta { font-size: 1rem; font-style: italic; }
+.back-link { font-size: 1rem; letter-spacing: 0.03em; }
+@media (max-width: 640px) {
+  .about-me, .contact-card { padding: 1.6rem 1.25rem; }
+  .park-card { padding: 1.1rem 1.1rem 0.2rem; }
+}
