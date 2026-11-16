@@ -65,23 +65,12 @@ function randomCoverPhoto(products) {
 }
 
 function productCardHtml(product) {
-  const hasPhotos = product.images.length > 0;
-  const cover = hasPhotos
-    ? `<div class="product-cover"><img src="${webPhotoUrl(product, product.images[0])}" alt="${escapeHtml(product.name)}" loading="lazy"></div>`
-    : `<div class="product-cover placeholder">Photos coming soon</div>`;
-
-  const extraThumbs = hasPhotos ? product.images.slice(1) : [];
-  const thumbs = extraThumbs.length
-    ? `<div class="product-thumbs">${extraThumbs.map((filename) => `
-        <a href="${photoUrl(product, filename)}" target="_blank" rel="noopener">
-          <img src="${webPhotoUrl(product, filename)}" alt="${escapeHtml(product.name)} detail" loading="lazy">
-        </a>`).join("")}</div>`
-    : "";
+  const images = product.images || [];
+  const gallery = images.length ? carouselHtml(product, images) : `<div class="product-cover placeholder">Photos coming soon</div>`;
 
   return `
     <div class="product-card">
-      ${cover}
-      ${thumbs}
+      ${gallery}
       <div class="product-body">
         <h2>${escapeHtml(product.name)}</h2>
         ${priceHtml(product)}
@@ -94,6 +83,60 @@ function productCardHtml(product) {
         ${actionsHtml(product)}
       </div>
     </div>`;
+}
+
+// Photo carousel: one slide per photo, whole photo shown (never cropped) over
+// a blurred copy of itself. Swipe on phones; arrows and dots elsewhere.
+// Wired up by initCarousels() after the cards are on the page.
+function carouselHtml(product, images) {
+  const name = escapeHtml(product.name);
+  const slides = images.map((filename, i) => {
+    const src = webPhotoUrl(product, filename);
+    return `
+        <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="${i + 1} of ${images.length}">
+          <img class="carousel-backdrop" src="${src}" alt="" aria-hidden="true" loading="lazy">
+          <img class="carousel-photo" src="${src}" alt="${name}, photo ${i + 1}" loading="${i === 0 ? "eager" : "lazy"}">
+        </div>`;
+  }).join("");
+  const controls = images.length > 1 ? `
+      <button type="button" class="carousel-btn prev" aria-label="Previous photo" disabled>&#8249;</button>
+      <button type="button" class="carousel-btn next" aria-label="Next photo">&#8250;</button>
+      <div class="carousel-dots">${images.map((_, i) => `<button type="button" class="carousel-dot" aria-label="Photo ${i + 1}"${i === 0 ? ' aria-current="true"' : ""}></button>`).join("")}</div>
+      <span class="carousel-count">1 / ${images.length}</span>` : "";
+  return `
+    <div class="carousel" aria-roledescription="carousel" aria-label="${name} photos">
+      <div class="carousel-track" tabindex="0">${slides}
+      </div>${controls}
+    </div>`;
+}
+
+function initCarousels(root = document) {
+  root.querySelectorAll(".carousel").forEach((car) => {
+    const track = car.querySelector(".carousel-track");
+    const slides = car.querySelectorAll(".carousel-slide");
+    const dots = car.querySelectorAll(".carousel-dot");
+    const prev = car.querySelector(".prev"), next = car.querySelector(".next");
+    const count = car.querySelector(".carousel-count");
+    if (slides.length < 2) return;
+    const go = (i) => track.scrollTo({ left: Math.max(0, Math.min(i, slides.length - 1)) * track.clientWidth, behavior: "smooth" });
+    const current = () => Math.round(track.scrollLeft / track.clientWidth);
+    function update() {
+      const i = current();
+      dots.forEach((d, j) => (j === i ? d.setAttribute("aria-current", "true") : d.removeAttribute("aria-current")));
+      prev.disabled = i === 0;
+      next.disabled = i === slides.length - 1;
+      count.textContent = `${i + 1} / ${slides.length}`;
+    }
+    let t;
+    track.addEventListener("scroll", () => { clearTimeout(t); t = setTimeout(update, 60); }, { passive: true });
+    prev.addEventListener("click", () => go(current() - 1));
+    next.addEventListener("click", () => go(current() + 1));
+    dots.forEach((d, j) => d.addEventListener("click", () => go(j)));
+    track.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") { e.preventDefault(); go(current() - 1); }
+      if (e.key === "ArrowRight") { e.preventDefault(); go(current() + 1); }
+    });
+  });
 }
 
 // "$12.00", or "From $19.75" when options are priced differently. Products

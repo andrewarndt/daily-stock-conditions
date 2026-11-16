@@ -19,10 +19,10 @@
 <meta property="og:title" content="Store — 4A Holdings Company">
 <meta property="og:description" content="Handmade Damascus knives, pocket knives, and reed diffusers -- buy online with secure checkout.">
 <meta property="og:url" content="https://4aholdingscompany.com/store/">
-<meta property="og:image" content="https://4aholdingscompany.com/store/assets/web/damascus-knives/IMG_8320.JPG">
+<meta property="og:image" content="https://4aholdingscompany.com/store/assets/web/damascus-knives/IMG_8405.JPG">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/png" href="/favicon.png">
-<link rel="stylesheet" href="assets/style.css?v=3">
+<link rel="stylesheet" href="assets/style.css?v=4">
 <!-- Warm up the connection to Stripe checkout so Buy buttons open faster -->
 <link rel="preconnect" href="https://buy.stripe.com" crossorigin>
 <link rel="dns-prefetch" href="https://buy.stripe.com">
@@ -71,7 +71,7 @@
   <div id="footer-slot"></div>
 </div>
 
-<script src="assets/products.js?v=2"></script>
+<script src="assets/products.js?v=3"></script>
 <script>
   loadProducts().then((products) => {
     try {
@@ -86,6 +86,7 @@
 
     const grid = document.getElementById("product-grid");
     grid.innerHTML = products.map(productCardHtml).join("");
+    if (typeof initCarousels === "function") initCarousels(grid);
 
     document.getElementById("footer-slot").outerHTML = contactFooterHtml();
 
