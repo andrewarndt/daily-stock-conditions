@@ -677,3 +677,50 @@ a.contact-button:hover, button.contact-button:hover { box-shadow: 0 10px 20px -8
   .about-me, .contact-card { padding: 1.6rem 1.25rem; }
   .park-card { padding: 1.1rem 1.1rem 0.2rem; }
 }
+
+/* ---------- "See it on your wall" room preview (photo.html) ---------- */
+.room-preview { max-width: 52rem; margin: 0 auto 3rem; }
+.room-preview[hidden] { display: none; }
+.room-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 0.9rem; }
+.room-head h2 { margin: 0; font-family: var(--font-display); font-weight: 500; font-size: 2rem; }
+.room-tabs { display: flex; gap: 1.4rem; }
+.room-tabs button, .room-sizes button {
+  font: inherit;
+  cursor: pointer;
+  background: none;
+  color: var(--ink-soft);
+}
+.room-tabs button { border: 0; padding: 0.2rem 0; border-bottom: 2px solid transparent; font-size: 1.12rem; letter-spacing: 0.04em; }
+.room-tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+.room-stage {
+  position: relative;
+  overflow: hidden;
+  background: var(--accent-soft);
+}
+.room-bg { position: absolute; max-width: none; height: auto; }
+/* the print hangs bare, no frame; just a soft shadow on the wall */
+.room-print {
+  position: absolute;
+  border: 0 solid transparent;
+  background: #ddd;
+  box-shadow: 0 0.6rem 1.2rem -0.4rem rgba(0, 0, 0, 0.45), 0 0.15rem 0.3rem rgba(0, 0, 0, 0.25);
+  transition: left 0.35s ease, top 0.35s ease, width 0.35s ease, height 0.35s ease;
+}
+.room-print img { width: 100%; height: 100%; object-fit: cover; }
+.room-controls { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0.6rem 1.2rem; margin-top: 1rem; }
+.room-sizes { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.45rem; }
+.room-orient { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 0.15rem; }
+.room-orient button { font: inherit; cursor: pointer; border: 0; background: none; color: var(--ink-soft); padding: 0.25rem 0.85rem; border-radius: 999px; font-size: 1rem; }
+.room-orient button[aria-pressed="true"] { background: var(--ink); color: #fff; }
+.room-orient button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.room-sizes button { border: 1px solid var(--line); padding: 0.3rem 0.85rem; border-radius: 999px; font-size: 1rem; }
+.room-sizes button:hover { border-color: var(--accent); color: var(--ink); }
+.room-sizes button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+.room-tabs button:focus-visible, .room-sizes button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.room-note { margin: 0.6rem 0 0; text-align: center; font-style: italic; color: var(--ink-soft); font-size: 1rem; }
+@media (prefers-reduced-motion: reduce) { .room-print { transition: none; } }
+@media (max-width: 640px) {
+  .room-head h2 { font-size: 1.6rem; }
+  .interest-head { align-items: flex-start; }
+  .interest-head h2 { font-size: 1.45rem; }
+}

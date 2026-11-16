@@ -15,7 +15,7 @@
 <title>Photo — Wildlife Photography</title>
 <meta name="description" content="View a wildlife photo up close and ask about a print.">
 <link rel="icon" type="image/png" href="/favicon.png">
-<link rel="stylesheet" href="assets/style.css?v=8">
+<link rel="stylesheet" href="assets/style.css?v=9">
 </head>
 <body>
 
@@ -42,6 +42,22 @@
     </figcaption>
   </figure>
 
+  <section class="room-preview" id="room-preview" hidden>
+    <div class="room-head">
+      <h2>See it on your wall</h2>
+      <div class="room-tabs" role="tablist" aria-label="Room"></div>
+    </div>
+    <div class="room-stage">
+      <img class="room-bg" alt="">
+      <div class="room-print"><img alt="Your selected photo as a framed print"></div>
+    </div>
+    <div class="room-controls">
+      <div class="room-orient" aria-label="Orientation"></div>
+      <div class="room-sizes" aria-label="Print size"></div>
+    </div>
+    <p class="room-note"></p>
+  </section>
+
   <section class="contact-card interest-card" id="interest">
     <div class="interest-head">
       <img id="interest-thumb" alt="" hidden>
@@ -67,6 +83,7 @@
 
 <script src="/assets/inquiry.js?v=1"></script>
 <script src="assets/parks.js?v=7"></script>
+<script src="assets/room-preview.js?v=3"></script>
 <script>
   // photo.html?park=<slug>&photo=<filename>: one photo large, arrows to the
   // rest of that park's photos, and a print-interest form for this photo.
@@ -76,6 +93,7 @@
   emailLink.href = "mailto:" + CONTACT_EMAIL;
   emailLink.textContent = CONTACT_EMAIL;
   let current = null; // { park, filename }
+  let preview = null; // room preview, once the photo is known
 
   function notFound(msg) {
     document.getElementById("photo-park").textContent = msg;
@@ -98,6 +116,7 @@
     img.src = src;
     img.alt = `${park.name} wildlife photo ${i + 1}`;
     img.hidden = false;
+    preview = initRoomPreview(document.getElementById("room-preview"), src);
     const thumb = document.getElementById("interest-thumb");
     thumb.src = src;
     thumb.hidden = false;
@@ -150,6 +169,7 @@
       "Photo": park.name + " — " + filename,
       "Photo link": new URL(webPhotoUrl(park, filename), location.href).href,
       "Photo page": location.href,
+      "Size viewed in wall preview": preview ? preview.describe() : "-",
       "Notes": f.message.value.trim(),
     }, f._honey.value)
       .then(() => {
