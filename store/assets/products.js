@@ -143,7 +143,14 @@ function initCarousels(root = document) {
 // without checkout options get no price line (they're email-to-buy).
 function priceHtml(product) {
   const prices = (product.options || []).map((opt) => opt.price);
-  if (prices.length === 0) return "";
+  if (prices.length === 0) {
+    // Email-to-buy items can still list a price ("price" in products.json),
+    // with an optional unit ("each") and their own shipping charge.
+    if (typeof product.price !== "number") return "";
+    const unit = product.priceUnit ? ` <span class="price-unit">${escapeHtml(product.priceUnit)}</span>` : "";
+    const ship = typeof product.shipping === "number" ? `<span class="price-ship">+ ${formatPrice(product.shipping)} shipping</span>` : "";
+    return `<p class="product-price">${formatPrice(product.price)}${unit}${ship}</p>`;
+  }
   const low = Math.min(...prices);
   const label = prices.some((p) => p !== low) ? `From ${formatPrice(low)}` : formatPrice(low);
   return `<p class="product-price">${label}</p>`;
@@ -164,6 +171,7 @@ function productsJsonLd(products) {
         brand: { "@type": "Brand", name: "4A Holdings Company" },
         image: p.images.map((f) => base + webPhotoUrl(p, f)),
       };
+      if (!prices.length && typeof p.price === "number") prices.push(p.price);
       if (prices.length) {
         item.offers = {
           "@type": "AggregateOffer",

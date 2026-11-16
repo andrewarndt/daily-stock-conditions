@@ -495,3 +495,7 @@ a.contact-button:hover {
 
 /* Shipping and returns block reuses the About card look. */
 .about-me.policies a { color: var(--accent); }
+
+/* listed price on email-to-buy items: "$8.00 each  + $4.00 shipping" */
+.product-price .price-unit { font-size: 0.85em; font-weight: 400; color: var(--ink-soft); }
+.product-price .price-ship { display: inline-block; margin-left: 0.6rem; font-size: 0.78em; font-weight: 400; color: var(--ink-soft); }
