@@ -81,8 +81,8 @@ Clicking one opens a real checkout — do not test by completing a payment.
 
 ## Price change 2026-11-15
 
-New prices and payment links created through the API (restricted key). The old links below were left
-**active** until the owner confirms they can be deactivated:
+New prices and payment links created through the API (restricted key). The old links below were
+**deactivated** on 2026-11-15 once the site used the new ones (they now show Stripe's "no longer available" page):
 
 | Item | Old price | New price | Old link (retire) | New link |
 |---|---|---|---|---|

@@ -6,7 +6,7 @@
       "tagline": "Same vessel, bare or laser-engraved to order",
       "description": "The same matte ceramic diffuser vessel as the NESTI CASA sets, sold on its own — no scent oil included, for refilling your own or just displaying reeds. I also do custom laser engraving on these; the floral pattern shown is an example of what's possible, not a standard finish.",
       "note": "Ordering an engraved one? After you check out, email us what you'd like engraved (a design, initials, or a name) and we'll confirm it before we start.",
-      "images": ["Custom.jpg", "Engrave Blank.jpg", "image_b8373429.jpg"],
+      "images": ["Custom.jpg", "Engrave Blank.jpg", "image_b8373429.jpg", "IMG_8320.JPG", "IMG_8850.JPG"],
       "options": [
         { "label": "Blank", "price": 15.75, "url": "https://buy.stripe.com/eVqcN4bF18TM0v1fB13Ru0m" },
         { "label": "Custom engraved", "price": 19.75, "url": "https://buy.stripe.com/cNi28q7oL3zsgtZ74v3Ru0l" }
@@ -42,7 +42,7 @@
       "note": "Made to order. Email us with your design or details and we'll send a proof before engraving.",
       "price": 8.0,
       "priceUnit": "each",
-      "images": [],
+      "images": ["card-wood.jpg", "card-black-metal.jpg", "card-black-metal-qr-nfc.jpg"],
       "options": []
     },
     {
@@ -54,7 +54,7 @@
       "price": 8.0,
       "priceUnit": "each",
       "shipping": 4.0,
-      "images": [],
+      "images": ["journal-cover.jpg", "journal-cover-closeup.jpg"],
       "options": []
     },
     {
