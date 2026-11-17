@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-17T13:45:58.398Z",
+  "updated": "2026-11-17T15:15:37.631Z",
   "source": "live",
   "indicators": [
     {
@@ -158,17 +158,17 @@
       "id": "industrial_production",
       "name": "Industrial Production, Year-over-Year",
       "desc": "Federal Reserve Board",
-      "value": 2.24515,
-      "prior": 1.61545,
-      "asof": "2026-09-01",
+      "value": 2.14968,
+      "prior": 2.14207,
+      "asof": "2026-10-01",
       "unit": "%",
       "trend": [
-        1.43274,
-        1.74089,
-        1.4609,
-        1.28231,
-        1.61545,
-        2.24515
+        1.71049,
+        1.46711,
+        1.24983,
+        1.44719,
+        2.14207,
+        2.14968
       ],
       "live": true,
       "nextRelease": "2026-11-17"
