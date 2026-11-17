@@ -9,3 +9,7 @@ scripts/dispatch-refresh.log
 
 # Market Desk alert state (restored by actions/cache in market-health.yml)
 /.health-state/
+
+# Full-resolution store photo originals -- never published (site uses resized copies in store/assets/web/)
+/store-photos/
+/Liquidation Flip Photos/
