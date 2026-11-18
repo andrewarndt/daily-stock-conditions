@@ -1,0 +1,127 @@
+/* CraftReport shared look: warm cream ground, cocoa ink, rust buttons, sage and honey accents,
+   soft rounded cards. Used by /craftreport/ and /craftreport/map/. */
+
+:root {
+  color-scheme: light dark;
+  --ground: #f3ecdf;
+  --sand: #ece2d0;
+  --paper: #fffdf8;
+  --ink: #24170f;
+  --body: #3b2e25;
+  --muted: #6b5644;
+  --line: #e3d5bd;
+  --rule: #ede3d1;
+  --rust: #c95a34;
+  --rust-btn: #a8461f;
+  --rust-btn-hover: #8c3417;
+  --rust-ink: #8c3417;
+  --rust-tint: #f7e1d5;
+  --sage: #4f6b47;
+  --sage-ink: #2e4727;
+  --sage-tint: #dce3d2;
+  --gold: #c99a3b;
+  --gold-ink: #5c400c;
+  --gold-tint: #f1dfb5;
+  --row-hover: #f6f0e4;
+  --on-rust: #fff7f0;
+  --shadow: 0 1px 2px rgba(60, 40, 20, 0.05), 0 12px 28px -16px rgba(60, 40, 20, 0.25);
+  --shadow-lift: 0 2px 4px rgba(60, 40, 20, 0.06), 0 20px 40px -18px rgba(60, 40, 20, 0.35);
+  --radius: 1.5rem;
+  --radius-sm: 0.9rem;
+  --serif: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --sans: "Figtree", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ground: #1c140f;
+    --sand: #241a14;
+    --paper: #2a1f18;
+    --ink: #f6eee2;
+    --body: #e6d9c6;
+    --muted: #c0aa90;
+    --line: #3f3025;
+    --rule: #34271e;
+    --rust: #e07a52;
+    --rust-btn: #b4512b;
+    --rust-btn-hover: #c95a34;
+    --rust-ink: #f1b597;
+    --rust-tint: #3f2418;
+    --sage: #9cba90;
+    --sage-ink: #c5dbb9;
+    --sage-tint: #263021;
+    --gold: #e0b65e;
+    --gold-ink: #f1dfb5;
+    --gold-tint: #3a2d12;
+    --row-hover: #31241b;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px -16px rgba(0, 0, 0, 0.6);
+    --shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.3), 0 20px 40px -18px rgba(0, 0, 0, 0.7);
+  }
+}
+
+* { box-sizing: border-box; }
+html { font-size: clamp(16px, 1vw, 36px); scroll-behavior: smooth; }
+body { margin: 0; background: var(--ground); color: var(--body); font-family: var(--sans); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+a { color: var(--rust-ink); }
+h1, h2, h3 { color: var(--ink); font-family: var(--serif); font-weight: 500; letter-spacing: -0.015em; font-optical-sizing: auto; }
+h2 { margin: 0.35rem 0 0.6rem; font-size: clamp(1.6rem, 4vw, 2.15rem); line-height: 1.15; }
+.muted { color: var(--muted); }
+.wrap { max-width: 64rem; margin: 0 auto; padding: 0 1rem; }
+
+.eyebrow { display: inline-block; color: var(--rust-ink); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
+
+/* top bar with the CraftReport mark */
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 0; }
+.brand { display: inline-flex; align-items: center; gap: 0.6rem; color: var(--ink); text-decoration: none; font-family: var(--serif); font-size: 1.3rem; font-weight: 600; letter-spacing: -0.01em; }
+.brand-mark { display: grid; place-items: center; width: 2.4rem; height: 2.4rem; border-radius: 0.8rem; background: var(--rust); color: var(--on-rust); box-shadow: var(--shadow); }
+.brand-mark svg { width: 1.4rem; height: 1.4rem; }
+.toplinks { display: flex; align-items: center; gap: 0.5rem; }
+.toplinks a.plain { padding: 0.5rem 0.8rem; color: var(--body); text-decoration: none; font-weight: 600; font-size: 0.92rem; border-radius: 999px; }
+.toplinks a.plain:hover { background: var(--paper); }
+
+/* buttons and pills */
+.btn { display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.8rem 1.4rem; border-radius: 999px; border: 0; background: var(--rust-btn); color: var(--on-rust); font: inherit; font-size: 0.95rem; font-weight: 700; text-decoration: none; cursor: pointer; transition: background 0.15s ease, transform 0.15s ease; }
+.btn:hover { background: var(--rust-btn-hover); transform: translateY(-1px); }
+.btn.soft { background: var(--rust-tint); color: var(--rust-ink); }
+.btn.soft:hover { background: color-mix(in srgb, var(--rust-tint) 80%, var(--rust)); }
+.btn.small { padding: 0.55rem 1rem; font-size: 0.88rem; }
+.pill { display: inline-block; padding: 0.15rem 0.6rem; border-radius: 999px; background: var(--sand); color: var(--body); font-size: 0.78rem; font-weight: 600; white-space: nowrap; }
+.pill.sage { background: var(--sage-tint); color: var(--sage-ink); }
+.pill.gold { background: var(--gold-tint); color: var(--gold-ink); }
+.pill.rust { background: var(--rust-tint); color: var(--rust-ink); }
+
+/* cards */
+.card, .panel { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+.panel { padding: 1.4rem 1.5rem; scroll-margin-top: 1rem; }
+.icon-tile { display: grid; place-items: center; width: 2.8rem; height: 2.8rem; border-radius: 0.9rem; margin-bottom: 0.8rem; }
+.icon-tile svg { width: 1.45rem; height: 1.45rem; }
+.icon-tile.rust { background: var(--rust-tint); color: var(--rust-ink); }
+.icon-tile.sage { background: var(--sage-tint); color: var(--sage-ink); }
+.icon-tile.gold { background: var(--gold-tint); color: var(--gold-ink); }
+
+/* filters and tables (map page) */
+.filters { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 0.9rem; align-items: flex-end; }
+.filters label { display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.78rem; font-weight: 600; color: var(--muted); flex: 1 1 9rem; }
+.filters label.check { flex: 0 0 auto; flex-direction: row; align-items: center; gap: 0.45rem; padding: 0.55rem 0.9rem; border-radius: 999px; background: var(--sand); color: var(--body); font-size: 0.85rem; cursor: pointer; }
+.filters label.check input { accent-color: var(--rust-btn); }
+.filters select, .filters input[type="search"] { font: inherit; font-size: 0.92rem; color: var(--ink); background: var(--ground); border: 1px solid var(--line); border-radius: 999px; padding: 0.55rem 0.95rem; }
+.filters select:focus, .filters input:focus { outline: 2px solid var(--rust); outline-offset: 1px; }
+.chip { display: none; border: 0; background: var(--rust-tint); color: var(--rust-ink); border-radius: 999px; padding: 0.55rem 0.95rem; font: inherit; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
+.chip.is-on { display: inline-block; }
+
+.table-scroll { overflow-x: auto; border: 1px solid var(--rule); border-radius: var(--radius-sm); }
+table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+th, td { padding: 0.65rem 0.7rem; text-align: left; border-bottom: 1px solid var(--rule); white-space: nowrap; color: var(--body); }
+tbody tr:last-child td { border-bottom: 0; }
+tbody tr:hover td { background: var(--row-hover); }
+th { background: var(--sand); color: var(--muted); font-weight: 700; font-size: 0.75rem; cursor: pointer; user-select: none; }
+th.nosort { cursor: default; }
+th[aria-sort="ascending"]::after { content: " \25B2"; }
+th[aria-sort="descending"]::after { content: " \25BC"; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+footer { margin-top: 2rem; padding: 2rem 0 3rem; color: var(--muted); font-size: 0.88rem; }
+footer a { color: inherit; }
+
+@media (max-width: 640px) {
+  .toplinks a.plain { display: none; }
+}

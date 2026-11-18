@@ -1,0 +1,88 @@
+{
+ "label": "US benchmark: juried art and craft shows, not Ohio",
+ "source": "Sunshine Artist show reviews (trade magazine quoting exhibitors), 2022-2025",
+ "caveat": "Fine-art festivals report higher sales than church, school or bazaar craft fairs. Use as a reference point, not as what an Ohio show will pay.",
+ "min_reports": 3,
+ "states": [
+  "AL",
+  "IA",
+  "IL",
+  "IN",
+  "KY",
+  "MI",
+  "MN",
+  "NC",
+  "TN",
+  "TX",
+  "WV"
+ ],
+ "overall": {
+  "group": "All reports",
+  "reports": 99,
+  "median_sales": 2500,
+  "sales_low": 1500,
+  "sales_high": 4800,
+  "would_return_pct": 83
+ },
+ "by_show_type": [
+  {
+   "group": "Art festival",
+   "reports": 43,
+   "median_sales": 3000,
+   "sales_low": 1800,
+   "sales_high": 5200,
+   "would_return_pct": 77
+  },
+  {
+   "group": "Craft fair",
+   "reports": 40,
+   "median_sales": 2500,
+   "sales_low": 1550,
+   "sales_high": 5625,
+   "would_return_pct": 90
+  }
+ ],
+ "by_category": [
+  {
+   "group": "Paintings & prints",
+   "reports": 28,
+   "median_sales": 3000,
+   "sales_low": 2000,
+   "sales_high": 4950,
+   "would_return_pct": 82
+  },
+  {
+   "group": "Clothing",
+   "reports": 7,
+   "median_sales": 3000,
+   "sales_low": 1250,
+   "sales_high": 4800,
+   "would_return_pct": null
+  },
+  {
+   "group": "Other",
+   "reports": 12,
+   "median_sales": 2750,
+   "sales_low": 1850,
+   "sales_high": 7575,
+   "would_return_pct": 50
+  },
+  {
+   "group": "Woodwork & clay",
+   "reports": 15,
+   "median_sales": 2200,
+   "sales_low": 1850,
+   "sales_high": 5800,
+   "would_return_pct": 86
+  },
+  {
+   "group": "Jewelry",
+   "reports": 10,
+   "median_sales": 2150,
+   "sales_low": 1018,
+   "sales_high": 3675,
+   "would_return_pct": 67
+  }
+ ],
+ "updated": "2026-11-18"
+}

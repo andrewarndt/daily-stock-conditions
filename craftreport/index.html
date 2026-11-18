@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!--
+  HIDDEN PAGE (Ohio craft-event pilot). Keep it hidden:
+  - noindex/nofollow below, so search engines skip it
+  - NOT in sitemap.xml / scripts/generate-sitemap.mjs, NOT in robots.txt
+    (listing it in robots.txt would advertise the path)
+  - no link to it from any other page or menu
+  - no Google tag on purpose: the page promises anonymity
+  Vendor data and analysis live OUTSIDE this public repo (D:\GitHub\craftreport).
+  Shared look: assets/craftreport.css (also used by map/).
+-->
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>CraftReport — what Ohio craft shows actually pay</title>
+<meta name="description" content="A free, anonymous report on which Ohio craft shows pay off, by category, built from real vendor sales numbers.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="CraftReport — what Ohio craft shows actually pay">
+<meta property="og:description" content="Vendors helping vendors: share what your Ohio shows really made and get free access to the pooled data and analysis.">
+<meta property="og:image" content="https://4aholdingscompany.com/images/logo-mark.png">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&display=swap">
+<link rel="stylesheet" href="assets/craftreport.css">
+<style>
+  /* hero */
+  .hero { position: relative; overflow: hidden; background:
+      radial-gradient(30rem 20rem at 92% 8%, var(--rust-tint), transparent 70%),
+      radial-gradient(26rem 18rem at 4% 100%, var(--sage-tint), transparent 70%),
+      var(--sand); padding-bottom: 3.5rem; }
+  .hero-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); gap: 2.5rem; align-items: center; padding-top: 2rem; }
+  .hero h1 { margin: 0.7rem 0 1rem; font-size: clamp(2.4rem, 6.5vw, 3.9rem); line-height: 1.04; letter-spacing: -0.03em; }
+  .hero h1 em { font-style: italic; color: var(--rust); }
+  .hero .lead { max-width: 33rem; margin: 0 0 1.6rem; font-size: 1.1rem; }
+  .btns { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-bottom: 1.4rem; }
+  .trust { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0; padding: 0; list-style: none; }
+  .trust li { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.3rem 0.75rem; border-radius: 999px; background: var(--paper); border: 1px solid var(--line); font-size: 0.85rem; font-weight: 600; color: var(--body); }
+  .trust li::before { content: "\2713"; color: var(--sage); font-weight: 800; }
+
+  .how { padding: 1.5rem; }
+  .how h3 { margin: 0 0 1rem; font-size: 1.3rem; }
+  .how ol { margin: 0; padding: 0; list-style: none; display: grid; gap: 1rem; }
+  .how li { display: grid; grid-template-columns: 2.6rem minmax(0, 1fr); gap: 0.85rem; align-items: start; }
+  .how li .icon-tile { width: 2.6rem; height: 2.6rem; margin: 0; }
+  .how li b { display: block; color: var(--ink); }
+  .how li span { color: var(--muted); font-size: 0.92rem; }
+
+  section { padding: 3.25rem 0; }
+  .section-head { max-width: 40rem; margin-bottom: 1.5rem; }
+  .section-head p { margin: 0; color: var(--muted); }
+
+  /* story */
+  .story-card { position: relative; padding: 2.2rem 2.2rem 2rem; }
+  .story-card::before { content: "\201C"; position: absolute; top: -0.4rem; right: 1.6rem; font-family: var(--serif); font-size: 7rem; line-height: 1; color: var(--rust-tint); }
+  .goal { position: relative; margin: 0.5rem 0 1.4rem; max-width: 34rem; font-family: var(--serif); font-weight: 500; color: var(--ink); font-size: clamp(1.8rem, 4.6vw, 2.6rem); line-height: 1.12; letter-spacing: -0.02em; }
+  .story-body { max-width: 40rem; }
+  .story-body p { margin: 0 0 1rem; font-size: 1.06rem; }
+  .sign { display: flex; align-items: center; gap: 0.75rem; margin: 1.5rem 0 0; color: var(--muted); }
+  .sign .avatar { display: grid; place-items: center; width: 2.6rem; height: 2.6rem; border-radius: 50%; background: var(--sage-tint); color: var(--sage-ink); }
+  .sign .avatar svg { width: 1.3rem; height: 1.3rem; }
+  .sign b { display: block; color: var(--ink); font-weight: 700; }
+
+  /* what you get back */
+  .cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+  .cards .card { padding: 1.4rem; }
+  .cards .card h3 { margin: 0 0 0.35rem; font-size: 1.25rem; }
+  .cards .card p { margin: 0; color: var(--muted); font-size: 0.95rem; }
+  .data-card { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; margin-top: 1rem; padding: 1.5rem 1.6rem; border-radius: var(--radius); text-decoration: none; color: var(--sage-ink); background: radial-gradient(22rem 12rem at 95% 0%, color-mix(in srgb, var(--gold-tint) 70%, transparent), transparent 70%), var(--sage-tint); border: 1px solid color-mix(in srgb, var(--sage) 25%, transparent); box-shadow: var(--shadow); transition: transform 0.2s ease, box-shadow 0.2s ease; }
+  .data-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lift); }
+  .data-card .eyebrow { color: var(--sage-ink); }
+  .data-title { display: block; margin: 0.25rem 0 0.2rem; font-family: var(--serif); font-size: 1.5rem; font-weight: 500; color: var(--ink); line-height: 1.2; }
+  .data-sub { display: block; font-size: 0.95rem; color: var(--sage-ink); }
+  .data-card .arrow { flex: 0 0 auto; display: grid; place-items: center; width: 3rem; height: 3rem; border-radius: 50%; background: var(--sage); color: var(--paper); font-size: 1.3rem; }
+
+  /* report */
+  .report-form { padding: 1.75rem; }
+  .report-form fieldset { margin: 0; padding: 0; border: 0; }
+  .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.1rem 1.25rem; }
+  .field { display: flex; flex-direction: column; gap: 0.35rem; }
+  .field.full { grid-column: 1 / -1; }
+  .field > label, .field > .label { font-weight: 700; color: var(--ink); font-size: 0.95rem; }
+  .req { color: var(--rust); }
+  .hint { color: var(--muted); font-size: 0.83rem; margin-top: -0.15rem; }
+  .report-form input[type="text"], .report-form input[type="email"], .report-form input[type="date"], .report-form input[type="number"] {
+    width: 100%; font: inherit; font-size: 1rem; color: var(--ink); background: var(--ground); border: 1.5px solid var(--line); border-radius: 0.8rem; padding: 0.7rem 0.9rem; }
+  .report-form input:focus { outline: none; border-color: var(--rust); box-shadow: 0 0 0 3px var(--rust-tint); }
+  .money { display: flex; gap: 0.5rem; align-items: stretch; }
+  .money .amount { position: relative; flex: 1 1 auto; }
+  .money .amount::before { content: "$"; position: absolute; left: 0.9rem; top: 50%; transform: translateY(-50%); color: var(--muted); font-weight: 600; }
+  .money .amount input { padding-left: 1.8rem; }
+  .seg { display: inline-flex; flex: 0 0 auto; padding: 0.2rem; border-radius: 0.8rem; background: var(--sand); }
+  .seg label { display: grid; place-items: center; padding: 0 0.75rem; border-radius: 0.6rem; font-size: 0.85rem; font-weight: 600; color: var(--muted); cursor: pointer; white-space: nowrap; }
+  .seg input { position: absolute; opacity: 0; pointer-events: none; }
+  .seg input:checked + span { color: var(--ink); }
+  .seg label:has(input:checked) { background: var(--paper); box-shadow: var(--shadow); color: var(--ink); }
+  .seg label:has(input:focus-visible) { outline: 2px solid var(--rust); }
+  .chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .chips label { position: relative; }
+  .chips input { position: absolute; opacity: 0; pointer-events: none; }
+  .chips span { display: inline-block; padding: 0.5rem 0.95rem; border-radius: 999px; border: 1.5px solid var(--line); background: var(--ground); color: var(--body); font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: background 0.12s ease, border-color 0.12s ease; }
+  .chips span:hover { border-color: var(--rust); }
+  .chips input:checked + span { background: var(--rust-tint); border-color: var(--rust); color: var(--rust-ink); }
+  .chips input:focus-visible + span { outline: 2px solid var(--rust); outline-offset: 2px; }
+  .extras { margin-top: 1.6rem; padding-top: 1.4rem; border-top: 1px dashed var(--line); }
+  .extras-title { margin: 0 0 1rem; font-family: var(--serif); font-size: 1.15rem; color: var(--ink); }
+  .extras-title small { font-family: var(--sans); font-size: 0.85rem; color: var(--muted); font-weight: 500; }
+  .agree { display: flex; gap: 0.7rem; align-items: flex-start; margin-top: 1.5rem; padding: 1rem 1.1rem; border-radius: var(--radius-sm); background: var(--gold-tint); color: var(--gold-ink); font-size: 0.93rem; cursor: pointer; }
+  .agree input { width: 1.2rem; height: 1.2rem; margin-top: 0.15rem; accent-color: var(--rust-btn); flex: 0 0 auto; }
+  .submit-row { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin-top: 1.4rem; }
+  .submit-row .btn { font-size: 1rem; padding: 0.9rem 1.7rem; }
+  .submit-row .btn[disabled] { opacity: 0.6; cursor: wait; transform: none; }
+  .status { color: var(--muted); font-size: 0.92rem; }
+  .status.bad { color: var(--rust-ink); font-weight: 600; }
+  .err { color: var(--rust-ink); font-size: 0.83rem; font-weight: 600; }
+  .err:empty { display: none; }
+  .field.has-err input { border-color: var(--rust); }
+  .thanks { display: none; text-align: center; padding: 2.5rem 1.5rem; }
+  .thanks .icon-tile { margin: 0 auto 0.8rem; width: 3.4rem; height: 3.4rem; }
+  .thanks h3 { margin: 0 0 0.4rem; font-size: 1.6rem; }
+  .thanks p { margin: 0 auto 1.3rem; max-width: 30rem; color: var(--muted); }
+  .is-sent .report-form { display: none; }
+  .is-sent .thanks { display: block; }
+  @media (max-width: 640px) {
+    .report-form { padding: 1.25rem; }
+    .form-grid { grid-template-columns: minmax(0, 1fr); }
+    .money { flex-direction: column; }
+    .seg { align-self: flex-start; }
+    .seg label { padding: 0.45rem 0.75rem; }
+  }
+
+  /* privacy */
+  .rules { display: grid; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); gap: 0.9rem; margin: 0; padding: 0; list-style: none; }
+  .rules li { display: grid; grid-template-columns: 2.4rem minmax(0, 1fr); gap: 0.8rem; padding: 1.1rem 1.2rem; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-sm); }
+  .rules li .icon-tile { width: 2.4rem; height: 2.4rem; margin: 0; }
+  .rules li .icon-tile svg { width: 1.2rem; height: 1.2rem; }
+  .rules strong { display: block; color: var(--ink); }
+  .rules span { font-size: 0.93rem; color: var(--muted); }
+  .consent { margin: 1.2rem 0 0; padding: 1.1rem 1.3rem; border-radius: var(--radius-sm); background: var(--gold-tint); color: var(--gold-ink); font-size: 0.95rem; }
+  .consent b { display: block; margin-bottom: 0.2rem; }
+
+  @media (max-width: 860px) {
+    .hero-grid { grid-template-columns: minmax(0, 1fr); }
+    .cards { grid-template-columns: minmax(0, 1fr); }
+    .story-card { padding: 1.6rem 1.3rem; }
+    .data-card .arrow { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <nav class="topbar">
+      <a class="brand" href="./">
+        <span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 9 5 4h14l1.5 5"/><path d="M3.5 9a2.8 2.8 0 0 0 5.67 0 2.8 2.8 0 0 0 5.66 0 2.8 2.8 0 0 0 5.67 0"/><path d="M5 11.5V20h14v-8.5"/><path d="M10 20v-4.5h4V20"/></svg></span>
+        CraftReport
+      </a>
+      <div class="toplinks">
+        <a class="plain" href="#why">Why</a>
+        <a class="plain" href="map/">Map and data</a>
+        <a class="btn small" href="#report">Report an event</a>
+      </div>
+    </nav>
+
+    <div class="hero-grid">
+      <div>
+        <span class="eyebrow">Ohio · by vendors, for vendors</span>
+        <h1>Vendors <em>helping</em> vendors.</h1>
+        <p class="lead">Share what your shows really brought in. In return, you get free access to the pooled numbers and analysis from every vendor who does the same, so you know what a booth is worth before you pay for it.</p>
+        <div class="btns">
+          <a class="btn" href="#report">Report an event</a>
+          <a class="btn soft" href="#why">Why this exists</a>
+        </div>
+        <ul class="trust">
+          <li>Free</li>
+          <li>No sign-in</li>
+          <li>Totals only, never your numbers</li>
+          <li>Past shows count too</li>
+        </ul>
+      </div>
+
+      <aside class="card how" aria-label="How it works">
+        <h3>How it works</h3>
+        <ol>
+          <li><span class="icon-tile rust"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4h6l1 2h3v14H5V6h3z"/><path d="M9 12h6M9 16h4"/></svg></span><div><b>Report a show</b><span>About 3 minutes per event. Old shows count too.</span></div></li>
+          <li><span class="icon-tile gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="9" r="3"/><circle cx="16" cy="9" r="3"/><path d="M3 19c.8-3 2.8-4.5 5-4.5s4.2 1.5 5 4.5M11 19c.8-3 2.8-4.5 5-4.5s4.2 1.5 5 4.5"/></svg></span><div><b>We pool it</b><span>Your numbers are combined with other vendors'. Nobody sees yours.</span></div></li>
+          <li><span class="icon-tile sage"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6.5-5.4-6.5-10.5a6.5 6.5 0 0 1 13 0C18.5 15.6 12 21 12 21z"/><circle cx="12" cy="10.5" r="2.3"/></svg></span><div><b>Everyone sees what shows pay</b><span>On a map of Ohio events, free for every vendor.</span></div></li>
+        </ol>
+      </aside>
+    </div>
+  </div>
+</header>
+
+<section id="why">
+  <div class="wrap">
+    <article class="card story-card">
+      <span class="eyebrow">The goal</span>
+      <p class="goal">Bring pricing power back to the vendor community.</p>
+      <div class="story-body">
+        <p>I'm a vendor too. At the first event I ever did, about 10 people came through all day. I made more money selling to the other vendors than to the people who showed up.</p>
+        <p>The baker who was there had it worse. She had to give away all of her inventory and took a much bigger loss than I did. We paid for that booth based on the event's marketing and its past history. If we had known it was really a $10 event, we might never have gone.</p>
+        <p>This page is the start of something better: a place where vendors can have confidence in what they're paying for. When we pool real numbers, venues have to price honestly.</p>
+      </div>
+      <div class="sign">
+        <span class="avatar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></span>
+        <span><b>A fellow Ohio vendor</b>Founder of CraftReport</span>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section style="padding-top: 0;">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">What you get back</span>
+      <h2>Free access to everything we collect.</h2>
+    </div>
+    <div class="cards">
+      <div class="card">
+        <span class="icon-tile rust"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span>
+        <h3>The community data</h3>
+        <p>Real sales from real vendors, by event and by what you sell. Medians and ranges, never anyone's individual numbers.</p>
+      </div>
+      <div class="card">
+        <span class="icon-tile gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/></svg></span>
+        <h3>The analysis</h3>
+        <p>Which shows pay off, how sales compare with the booth fee, and which events vendors would go back to.</p>
+      </div>
+      <div class="card">
+        <span class="icon-tile sage"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20V10"/><path d="M12 10c0-3.5 2.5-6 6-6 0 3.5-2.5 6-6 6zM12 13c0-3-2.2-5-5-5 0 3 2.2 5 5 5z"/></svg></span>
+        <h3>It gets better as we grow</h3>
+        <p>Every event you report and every vendor you send here makes the numbers sharper for all of us. Spread the word.</p>
+      </div>
+    </div>
+    <a class="data-card" href="map/">
+      <span>
+        <span class="eyebrow">Map and data</span>
+        <span class="data-title">See what Ohio shows charge and pay</span>
+        <span class="data-sub">Every Ohio show we've found on a map, with booth fees, and vendor results as they come in.</span>
+      </span>
+      <span class="arrow" aria-hidden="true">→</span>
+    </a>
+  </div>
+</section>
+
+<section id="report" style="background: var(--sand);">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Report an event</span>
+      <h2>One form per event.</h2>
+      <p>About 2 minutes per show. Add every show on your calendar, good and bad, including 2025 and 2026 shows. Results are only accurate when both kinds get reported.</p>
+    </div>
+    <div id="form-slot">
+      <form class="card report-form" id="report-form" novalidate>
+        <fieldset>
+          <div class="form-grid">
+            <div class="field" data-f="event_name">
+              <label for="f-event">Name of the event <span class="req">*</span></label>
+              <input id="f-event" name="event_name" type="text" list="dl-events" maxlength="120" autocomplete="off" placeholder="Start typing, e.g. Columbus ChristmasFair">
+              <span class="err"></span>
+            </div>
+            <div class="field" data-f="city">
+              <label for="f-city">City or town <span class="req">*</span></label>
+              <input id="f-city" name="city" type="text" list="dl-cities" maxlength="80" autocomplete="off" placeholder="e.g. Dayton">
+              <span class="err"></span>
+            </div>
+            <div class="field" data-f="event_date">
+              <label for="f-date">First day of the event <span class="req">*</span></label>
+              <input id="f-date" name="event_date" type="date" min="2015-01-01">
+              <span class="hint">This also tells us the time of year.</span>
+              <span class="err"></span>
+            </div>
+            <div class="field" data-f="days">
+              <label for="f-days">Days you vended <span class="req">*</span></label>
+              <input id="f-days" name="days" type="number" min="1" max="14" step="1" value="1" inputmode="numeric">
+              <span class="err"></span>
+            </div>
+            <div class="field full" data-f="category">
+              <span class="label">What do you sell? <span class="req">*</span></span>
+              <div class="chips" role="radiogroup" aria-label="What do you sell?">
+                <label><input type="radio" name="category" value="Food & drink"><span>Food &amp; drink</span></label>
+                <label><input type="radio" name="category" value="Paintings & prints"><span>Paintings &amp; prints</span></label>
+                <label><input type="radio" name="category" value="Woodwork & clay"><span>Woodwork &amp; clay</span></label>
+                <label><input type="radio" name="category" value="Jewelry"><span>Jewelry</span></label>
+                <label><input type="radio" name="category" value="Clothing"><span>Clothing</span></label>
+                <label><input type="radio" name="category" value="Custom work"><span>Custom work</span></label>
+                <label><input type="radio" name="category" value="Home decor"><span>Home decor</span></label>
+                <label><input type="radio" name="category" value="Other"><span>Other</span></label>
+              </div>
+              <span class="err"></span>
+            </div>
+            <div class="field" data-f="sales">
+              <label for="f-sales">Your sales <span class="req">*</span></label>
+              <div class="money">
+                <div class="amount"><input id="f-sales" name="sales" type="number" min="0" step="1" inputmode="decimal" placeholder="0"></div>
+                <div class="seg" role="radiogroup" aria-label="Sales are for">
+                  <label><input type="radio" name="sales_basis" value="event" checked><span>Whole event</span></label>
+                  <label><input type="radio" name="sales_basis" value="day"><span>Per day</span></label>
+                </div>
+              </div>
+              <span class="hint">Everything you sold. Your best estimate is fine.</span>
+              <span class="err"></span>
+            </div>
+            <div class="field" data-f="booth_fee">
+              <label for="f-fee">Booth cost</label>
+              <div class="money">
+                <div class="amount"><input id="f-fee" name="booth_fee" type="number" min="0" step="1" inputmode="decimal" placeholder="0"></div>
+                <div class="seg" role="radiogroup" aria-label="Booth cost is">
+                  <label><input type="radio" name="booth_fee_basis" value="day" checked><span>Per day</span></label>
+                  <label><input type="radio" name="booth_fee_basis" value="event"><span>Whole event</span></label>
+                </div>
+              </div>
+              <span class="err"></span>
+            </div>
+          </div>
+
+          <div class="extras">
+            <p class="extras-title">A few quick extras <small>(optional)</small></p>
+            <div class="form-grid">
+              <div class="field">
+                <span class="label">Would you go back?</span>
+                <div class="chips">
+                  <label><input type="radio" name="would_return" value="yes"><span>Yes</span></label>
+                  <label><input type="radio" name="would_return" value="maybe"><span>Maybe</span></label>
+                  <label><input type="radio" name="would_return" value="no"><span>No</span></label>
+                </div>
+              </div>
+              <div class="field">
+                <span class="label">Indoor or outdoor?</span>
+                <div class="chips">
+                  <label><input type="radio" name="setting" value="indoor"><span>Indoor</span></label>
+                  <label><input type="radio" name="setting" value="outdoor"><span>Outdoor</span></label>
+                  <label><input type="radio" name="setting" value="both"><span>Both</span></label>
+                </div>
+              </div>
+              <div class="field full" data-f="email">
+                <label for="f-email">Email, if you'd like the results report</label>
+                <input id="f-email" name="email" type="email" maxlength="254" autocomplete="email" placeholder="you@example.com">
+                <span class="hint">Stored separately from your sales answers and never shared.</span>
+                <span class="err"></span>
+              </div>
+            </div>
+          </div>
+
+          <label class="agree" data-f="consent">
+            <input type="checkbox" name="consent" id="f-consent">
+            <span>I agree my answers may be used anonymously, combined with others, to report results for Ohio craft events. My individual numbers will never be shown or shared. <span class="req">*</span><br><span class="err"></span></span>
+          </label>
+
+          <div id="ts" style="margin-top: 1.2rem;"></div>
+          <div class="submit-row">
+            <button class="btn" type="submit" id="f-submit">Send my report</button>
+            <span class="status" id="f-status" role="status"></span>
+          </div>
+        </fieldset>
+      </form>
+
+      <div class="card thanks" id="thanks">
+        <span class="icon-tile sage"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></span>
+        <h3>Thank you!</h3>
+        <p>Your report is in. Every event you add makes the numbers better for every vendor. Got another show on your calendar?</p>
+        <button class="btn" type="button" id="again">Report another event</button>
+      </div>
+      <datalist id="dl-events"></datalist>
+      <datalist id="dl-cities"></datalist>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Privacy</span>
+      <h2>Your numbers stay yours.</h2>
+    </div>
+    <ul class="rules">
+      <li><span class="icon-tile sage"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="9" r="3"/><circle cx="16" cy="9" r="3"/><path d="M3 19c.8-3 2.8-4.5 5-4.5s4.2 1.5 5 4.5M11 19c.8-3 2.8-4.5 5-4.5s4.2 1.5 5 4.5"/></svg></span><div><strong>Minimum of 3</strong><span>No result is ever shown for an event and category with fewer than 3 reports, so nobody can work out who you are.</span></div></li>
+      <li><span class="icon-tile sage"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span><div><strong>Totals only</strong><span>Results show medians and ranges, never a single vendor's numbers.</span></div></li>
+      <li><span class="icon-tile sage"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span><div><strong>Email kept apart</strong><span>If you leave an email, it's stored separately from your sales answers and used only to send the report. It is never sold or shared.</span></div></li>
+      <li><span class="icon-tile sage"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span><div><strong>Organizers see no raw data</strong><span>If an organizer shares this form, they see the same public totals as everyone else.</span></div></li>
+      <li><span class="icon-tile sage"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></span><div><strong>Delete on request</strong><span>Email <a href="mailto:4aholdingscompany@gmail.com?subject=CraftReport%20removal">4aholdingscompany@gmail.com</a> with the event name and date, and your report will be removed.</span></div></li>
+    </ul>
+    <p class="consent"><b>What you agree to on the form</b>"I agree my answers may be used anonymously, combined with others, to report results for Ohio craft events. My individual numbers will never be shown or shared."</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">CraftReport · a 4A Holdings Company project · <a href="map/">Map and data</a></div>
+</footer>
+
+<script>
+  // ---- Switch the form on: paste these two after deploying (see D:\GitHub\craftreport\worker\README.md) ----
+  // API_URL: the Worker's address, e.g. "https://craftreport-api.<subdomain>.workers.dev"
+  // TURNSTILE_SITEKEY: the public site key of the Turnstile widget (the secret key stays in the Worker)
+  // Share the page as /craftreport/?s=fb-columbus to record which group a vendor came from.
+  const API_URL = "https://craftreport-api.4aholdingscompany.workers.dev";
+  const TURNSTILE_SITEKEY = "0x4AAAAAAGHXXyVeoq3PBnk-";
+
+  (function () {
+    const form = document.getElementById("report-form");
+    const slot = document.getElementById("form-slot");
+    const status = document.getElementById("f-status");
+    const submitBtn = document.getElementById("f-submit");
+    const source = (new URLSearchParams(location.search).get("s") || "").replace(/[^a-z0-9-]/gi, "").slice(0, 40);
+    let token = "", widget = null, known = new Map();
+
+    // Suggest known Ohio events and towns, so the same show is spelled the same way.
+    fetch("data/events.json").then((r) => r.json()).then((d) => {
+      const evs = d.events || [], cities = new Set();
+      const dlE = document.getElementById("dl-events"), dlC = document.getElementById("dl-cities");
+      for (const e of evs) {
+        known.set(e.event.toLowerCase(), e);
+        dlE.append(new Option(e.city ? `${e.event}, ${e.city}` : e.event, e.event));
+        if (e.city) cities.add(e.city);
+      }
+      for (const c of [...cities].sort()) dlC.append(new Option(c));
+    }).catch(() => {});
+    form.event_name.addEventListener("change", () => {
+      const e = known.get(form.event_name.value.trim().toLowerCase());
+      if (!e) return;
+      if (!form.city.value && e.city) form.city.value = e.city;
+      if (e.days && form.days.value === "1") form.days.value = e.days;
+    });
+
+    // Cloudflare's spam check: loaded only once the form is switched on.
+    if (TURNSTILE_SITEKEY) {
+      window.onTurnstileLoad = () => {
+        widget = turnstile.render("#ts", { sitekey: TURNSTILE_SITEKEY, theme: "auto", callback: (t) => { token = t; }, "expired-callback": () => { token = ""; } });
+      };
+      const sc = document.createElement("script");
+      sc.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=onTurnstileLoad";
+      sc.async = true; sc.defer = true;
+      document.head.append(sc);
+    }
+
+    function showErrors(fields) {
+      form.querySelectorAll("[data-f]").forEach((el) => {
+        const msg = (fields || {})[el.dataset.f] || "";
+        el.classList.toggle("has-err", !!msg);
+        const box = el.querySelector(".err"); if (box) box.textContent = msg;
+      });
+      const first = form.querySelector(".has-err");
+      if (first) first.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    form.addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+      status.className = "status"; status.textContent = "";
+      if (!API_URL || !TURNSTILE_SITEKEY) { status.className = "status bad"; status.textContent = "The form isn't switched on yet. Check back soon."; return; }
+      const v = (name) => { const el = form.querySelector(`[name="${name}"]:checked`) || form.elements[name]; return el && el.value !== undefined ? el.value : ""; };
+      const body = {
+        event_name: v("event_name"), city: v("city"), event_date: v("event_date"), days: Number(v("days")),
+        sales: v("sales"), sales_basis: v("sales_basis"), booth_fee: v("booth_fee"), booth_fee_basis: v("booth_fee_basis"),
+        category: (form.querySelector('[name="category"]:checked') || {}).value || "",
+        would_return: (form.querySelector('[name="would_return"]:checked') || {}).value || null,
+        setting: (form.querySelector('[name="setting"]:checked') || {}).value || null,
+        email: v("email"), consent: form.consent.checked, source, turnstile: token
+      };
+      if (!token) { status.className = "status bad"; status.textContent = "One moment: the spam check is still loading."; return; }
+      submitBtn.disabled = true; status.textContent = "Sending…";
+      try {
+        const res = await fetch(API_URL.replace(/\/$/, "") + "/submit", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+        const out = await res.json().catch(() => ({}));
+        if (res.ok && out.ok) {
+          showErrors({}); slot.classList.add("is-sent"); status.textContent = "";
+          slot.scrollIntoView({ behavior: "smooth", block: "start" });
+        } else {
+          showErrors(out.fields);
+          status.className = "status bad"; status.textContent = out.error || "Something went wrong. Please try again.";
+        }
+      } catch (e) {
+        status.className = "status bad"; status.textContent = "Couldn't reach the server. Check your connection and try again.";
+      } finally {
+        submitBtn.disabled = false;
+        token = ""; if (widget !== null && window.turnstile) turnstile.reset(widget);
+      }
+    });
+
+    // "Report another event": keep the town and what they sell, clear the rest.
+    document.getElementById("again").addEventListener("click", () => {
+      const keepCity = form.city.value, keepCat = (form.querySelector('[name="category"]:checked') || {}).value, keepEmail = form.email.value;
+      form.reset();
+      form.city.value = keepCity; form.email.value = keepEmail;
+      if (keepCat) form.querySelector(`[name="category"][value="${CSS.escape(keepCat)}"]`).checked = true;
+      slot.classList.remove("is-sent");
+      form.event_name.focus();
+    });
+  })();
+</script>
+</body>
+</html>

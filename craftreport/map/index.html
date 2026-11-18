@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- HIDDEN PAGE: same rules as ../index.html (noindex, no sitemap, no nav links, no Google tag).
+     Data (all written by scripts in D:\GitHub\craftreport\src):
+       ../data/events.json     import_venue_data.py  organizer-published event facts (directory)
+       ../data/benchmark.json  import_venue_data.py  US trade-press sales, medians per group, 3+ reports only
+       ../data/results.json    aggregate.py --publish  CraftReport form results, 3+ reports only -->
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>Map and data — CraftReport</title>
+<meta name="description" content="Ohio craft shows, what they charge vendors, and what vendors report selling there.">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&display=swap">
+<link rel="stylesheet" href="../assets/craftreport.css">
+<style>
+  :root { --state: #f7efe1; --state-line: #d9c6a3; --listed: var(--rust); --result: var(--sage); --good: #3f7a3a; --bad: #b3412f; }
+  @media (prefers-color-scheme: dark) { :root { --state: #2f2319; --state-line: #5a4532; --good: #8fcf86; --bad: #f08a6c; } }
+  .wrap { max-width: 72rem; }
+  .intro { margin: 0 0 1rem; color: var(--muted); font-size: 0.95rem; max-width: 46rem; }
+
+  .hero { background:
+      radial-gradient(30rem 18rem at 92% 0%, var(--rust-tint), transparent 70%),
+      radial-gradient(24rem 16rem at 0% 100%, var(--sage-tint), transparent 70%),
+      var(--sand); padding-bottom: 3.5rem; }
+  .hero h1 { margin: 1.2rem 0 0.7rem; font-size: clamp(2.1rem, 5.5vw, 3.2rem); line-height: 1.06; letter-spacing: -0.03em; }
+  .hero h1 em { font-style: italic; color: var(--rust); }
+  .hero .lead { max-width: 42rem; margin: 0; font-size: 1.05rem; }
+  .jump { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.2rem; }
+  .jump a { padding: 0.45rem 0.95rem; border-radius: 999px; background: var(--paper); border: 1px solid var(--line); color: var(--body); text-decoration: none; font-size: 0.88rem; font-weight: 600; }
+  .jump a:hover { border-color: var(--rust); color: var(--rust-ink); }
+
+  .sample { display: none; margin: 1rem 0 0; padding: 0.7rem 1rem; border-radius: var(--radius-sm); background: var(--gold-tint); color: var(--gold-ink); font-weight: 700; font-size: 0.92rem; }
+  .is-sample .sample { display: block; }
+
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.8rem; margin: -1.75rem 0 1.25rem; position: relative; }
+  .stat { display: flex; gap: 0.8rem; align-items: center; padding: 1rem 1.1rem; }
+  .stat .icon-tile { margin: 0; flex: 0 0 auto; }
+  .stat b { display: block; font-family: var(--serif); font-weight: 500; color: var(--ink); font-size: 1.7rem; line-height: 1.05; }
+  .stat span.label { color: var(--muted); font-size: 0.82rem; }
+
+  .stack { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.25rem; }
+  .grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1.75rem; align-items: center; }
+  .notes ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 0.7rem; font-size: 0.93rem; color: var(--muted); }
+  .notes li { padding-left: 1.1rem; position: relative; }
+  .notes li::before { content: ""; position: absolute; left: 0; top: 0.6rem; width: 0.45rem; height: 0.45rem; border-radius: 50%; background: var(--gold); }
+  .notes strong { color: var(--ink); }
+  .key { display: inline-block; width: 0.8rem; height: 0.8rem; border-radius: 50%; vertical-align: -0.08rem; margin-right: 0.3rem; }
+  .key.listed { background: color-mix(in srgb, var(--listed) 25%, transparent); border: 2px solid var(--listed); }
+  .key.result { background: var(--result); }
+
+  .map { display: block; width: 100%; height: auto; }
+  .map .state { fill: var(--state); stroke: var(--state-line); stroke-width: 2; stroke-linejoin: round; }
+  .map .lake-label { fill: var(--muted); font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; }
+  .map .city text { fill: var(--muted); font-size: 11px; font-weight: 600; }
+  .map .ev { cursor: pointer; }
+  .map .ev circle { transition: transform 0.15s ease; transform-box: fill-box; transform-origin: center; }
+  .map .ev.listed circle { fill: var(--listed); fill-opacity: 0.22; stroke: var(--listed); stroke-width: 1.8; }
+  .map .ev.result circle { fill: var(--result); fill-opacity: 0.9; stroke: var(--paper); stroke-width: 2; }
+  .map .ev:hover circle, .map .ev.is-on circle { fill-opacity: 0.85; transform: scale(1.15); }
+  .legend { margin: 0.6rem 0 0; color: var(--muted); font-size: 0.82rem; }
+
+  .count { margin: 0 0 0.5rem; color: var(--muted); font-size: 0.82rem; font-weight: 600; }
+  td.event { white-space: normal; min-width: 13rem; }
+  td.event b { font-weight: 700; color: var(--ink); }
+  td.event span, .sub { display: block; color: var(--muted); font-size: 0.78rem; }
+  td .na { color: var(--muted); font-size: 0.85rem; }
+  .ratio.good { color: var(--good); font-weight: 700; }
+  .ratio.bad { color: var(--bad); font-weight: 700; }
+  .empty-row td { text-align: center; color: var(--muted); padding: 2.2rem 0.5rem; white-space: normal; }
+  .empty-row:hover td { background: transparent; }
+  .src { color: var(--rust-ink); text-decoration: none; font-weight: 600; font-size: 0.84rem; }
+  .src:hover { text-decoration: underline; }
+
+  .caveat { margin: 0 0 1.2rem; padding: 0.9rem 1.1rem; border-radius: var(--radius-sm); background: var(--gold-tint); color: var(--gold-ink); font-size: 0.92rem; }
+  .bars { display: grid; gap: 0.6rem; }
+  .bar { display: grid; grid-template-columns: 10rem minmax(0, 1fr) 6.5rem; gap: 0.8rem; align-items: center; font-size: 0.9rem; }
+  .bar .track { position: relative; height: 0.95rem; border-radius: 999px; background: var(--sand); }
+  .bar .range { position: absolute; top: 0; bottom: 0; border-radius: 999px; background: color-mix(in srgb, var(--rust) 35%, transparent); }
+  .bar .mid { position: absolute; top: -0.2rem; bottom: -0.2rem; width: 4px; border-radius: 2px; background: var(--rust-btn); }
+  .bar .val { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; color: var(--ink); }
+  .bar.total { font-weight: 700; padding-bottom: 0.6rem; border-bottom: 1px solid var(--rule); }
+  .bar .n { color: var(--muted); font-weight: 400; font-size: 0.76rem; }
+
+  main { padding-bottom: 2rem; }
+
+  @media (max-width: 860px) {
+    .grid { grid-template-columns: minmax(0, 1fr); }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .stat .icon-tile { display: none; }
+    .bar { grid-template-columns: 7rem minmax(0, 1fr) 5.5rem; gap: 0.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <nav class="topbar"><a class="brand" href="../"><span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 9 5 4h14l1.5 5"/><path d="M3.5 9a2.8 2.8 0 0 0 5.67 0 2.8 2.8 0 0 0 5.66 0 2.8 2.8 0 0 0 5.67 0"/><path d="M5 11.5V20h14v-8.5"/><path d="M10 20v-4.5h4V20"/></svg></span>CraftReport</a><div class="toplinks"><a class="plain" href="../">Home</a><a class="btn small" href="../#report">Report an event</a></div></nav>
+    <span class="eyebrow">Map and data · Ohio</span>
+    <h1>What Ohio shows <em>charge</em>, and what they pay.</h1>
+    <p class="lead">Every Ohio craft show we've found, what it charges vendors, and, as reports come in, what vendors actually sold there. Sales numbers are always medians and ranges, never one vendor's numbers.</p>
+    <nav class="jump"><a href="#directory">Event directory</a><a href="#results">Vendor results</a><a href="#benchmark">US benchmark</a></nav>
+    <p class="sample">Sample vendor results for previewing the layout. Those rows are not real events or real numbers.</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="stats">
+    <div class="card stat"><span class="icon-tile rust"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6.5-5.4-6.5-10.5a6.5 6.5 0 0 1 13 0C18.5 15.6 12 21 12 21z"/><circle cx="12" cy="10.5" r="2.3"/></svg></span><div><b id="s-events">–</b><span class="label">Ohio events listed</span></div></div>
+    <div class="card stat"><span class="icon-tile gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.5"/></svg></span><div><b id="s-fees">–</b><span class="label">with a published booth fee</span></div></div>
+    <div class="card stat"><span class="icon-tile rust"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M14.8 9.2c-.5-.8-1.5-1.2-2.8-1.2-1.7 0-2.8.8-2.8 2s1.1 1.6 2.8 2 2.8.8 2.8 2-1.1 2-2.8 2c-1.3 0-2.3-.4-2.8-1.2M12 6.5V8M12 16v1.5"/></svg></span><div><b id="s-medfee">–</b><span class="label">typical booth fee</span></div></div>
+    <div class="card stat"><span class="icon-tile sage"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="9" r="3"/><circle cx="16" cy="9" r="3"/><path d="M3 19c.8-3 2.8-4.5 5-4.5s4.2 1.5 5 4.5M11 19c.8-3 2.8-4.5 5-4.5s4.2 1.5 5 4.5"/></svg></span><div><b id="s-reports">0</b><span class="label">vendor sales reports</span></div></div>
+  </div>
+
+  <div class="stack">
+    <section class="panel grid">
+      <div>
+        <span class="eyebrow">Map</span>
+        <svg class="map" id="map" viewBox="0 0 451 477" role="img" aria-label="Map of Ohio with a dot for each listed craft event">
+          <text class="lake-label" x="245" y="34" text-anchor="middle">Lake Erie</text>
+          <polygon class="state" points="31.8,67.2 155.6,63.7 189.9,79.0 223.4,96.7 264.0,99.1 313.8,90.8 349.9,63.7 386.1,46.0 420.4,34.2 420.4,192.3 411.4,220.6 406.0,256.0 389.7,300.8 359.0,338.6 313.8,359.8 280.3,388.2 252.3,405.9 232.4,438.9 209.8,433.0 169.1,428.3 137.5,429.5 105.9,411.8 86.0,408.2 60.7,374.0 31.8,374.0"/>
+          <g id="cities"></g>
+          <g id="dots"></g>
+        </svg>
+        <p class="legend"><span class="key listed"></span>Listed event &nbsp; <span class="key result"></span>Has vendor results. Bigger dot = more events in that town. Click a dot to see its events.</p>
+      </div>
+      <div class="notes">
+        <span class="eyebrow">How to read this</span>
+        <h2>The numbers, in plain terms.</h2>
+        <ul>
+          <li><strong>Booth fee:</strong> the organizer's published price for one booth for the whole event. "Not published" means the organizer only shares it with applicants, not that it's free.</li>
+          <li><strong>7× target:</strong> a common rule of thumb says a show should bring in about 7 times its booth fee. It's what you'd want to sell for the fee to be worth it.</li>
+          <li><strong>Median sales:</strong> the middle vendor report. Half sold more, half sold less. The <strong>typical range</strong> is the middle half of reports.</li>
+          <li><strong>Sales ÷ fee:</strong> how many times the booth fee vendors made back. Green is 7× or more, red is under 3×.</li>
+          <li>Sales for an event and category are only shown once 3 or more vendors have reported, so no one's numbers can be picked out.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="panel" id="directory">
+      <span class="eyebrow">Event directory</span>
+      <h2>Ohio craft shows and what they charge.</h2>
+      <p class="intro">Facts the organizers published themselves: dates, booth fees, size and setting. Fees are list prices; early-bird and returning-vendor discounts aren't included. Spot something wrong or missing? Report the event and tell us in the notes.</p>
+      <div class="filters">
+        <label>Search<input id="d-q" type="search" placeholder="Event, city or county"></label>
+        <label>Region<select id="d-region"><option value="">All of Ohio</option><option>Northwest</option><option>Northeast</option><option>Central</option><option>Southwest</option><option>Southeast</option></select></label>
+        <label>Time of year<select id="d-season"><option value="">Any time</option><option value="spring">Spring</option><option value="summer">Summer</option><option value="fall">Fall</option><option value="winter">Winter</option></select></label>
+        <label>Setting<select id="d-io"><option value="">Indoor or outdoor</option><option value="indoor">Indoor</option><option value="outdoor">Outdoor</option></select></label>
+        <label class="check"><input id="d-upcoming" type="checkbox"> Upcoming only</label>
+        <label class="check"><input id="d-fee" type="checkbox"> Has a booth fee</label>
+        <button class="chip" id="d-clear" type="button">Show all towns ✕</button>
+      </div>
+      <p class="count" id="d-count"></p>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th data-k="event">Event</th>
+              <th data-k="date">Date</th>
+              <th class="num" data-k="days">Days</th>
+              <th class="num" data-k="booth_fee">Booth fee</th>
+              <th class="num" data-k="rule_7x">7× target</th>
+              <th data-k="indoor_outdoor">Setting</th>
+              <th class="num" data-k="vendor_count">Vendors</th>
+              <th class="nosort">Source</th>
+            </tr>
+          </thead>
+          <tbody id="d-rows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel" id="results">
+      <span class="eyebrow">Vendor results</span>
+      <h2>What vendors actually sold.</h2>
+      <p class="intro">From the CraftReport form. An event shows up here once 3 vendors in the same category have reported it.</p>
+      <div class="filters">
+        <label>Region<select id="r-region"><option value="">All of Ohio</option><option>Northwest</option><option>Northeast</option><option>Central</option><option>Southwest</option><option>Southeast</option></select></label>
+        <label>What you sell<select id="r-cat"><option value="">All categories</option></select></label>
+        <label>Year<select id="r-year"><option value="">All years</option></select></label>
+        <label>Search<input id="r-q" type="search" placeholder="Event or city"></label>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th data-k="event">Event</th>
+              <th data-k="category">Category</th>
+              <th class="num" data-k="reports">Reports</th>
+              <th class="num" data-k="median_sales">Median sales</th>
+              <th class="num" data-k="sales_low">Typical range</th>
+              <th class="num" data-k="median_fee">Booth fee</th>
+              <th class="num" data-k="median_sales_per_fee">Sales ÷ fee</th>
+              <th class="num" data-k="return_pct">Would return</th>
+            </tr>
+          </thead>
+          <tbody id="r-rows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel" id="benchmark">
+      <span class="eyebrow">US benchmark</span>
+      <h2>What vendors report at juried shows elsewhere.</h2>
+      <p class="caveat" id="b-caveat">Loading…</p>
+      <div class="bars" id="b-bars"></div>
+      <p class="legend" id="b-foot"></p>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">CraftReport · a 4A Holdings Company project · <a href="../">Back to the main page</a></div>
+</footer>
+
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const NS = "http://www.w3.org/2000/svg";
+  const svg = (tag, attrs, parent) => { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); if (parent) parent.append(n); return n; };
+  const html = (tag, attrs, text) => { const n = document.createElement(tag); for (const k in attrs || {}) n.setAttribute(k, attrs[k]); if (text != null) n.textContent = text; return n; };
+  const money = (v) => (v === "" || v == null ? null : "$" + Math.round(v).toLocaleString("en-US"));
+  const today = new Date().toISOString().slice(0, 10);
+
+  // Same projection as the vending page's Ohio map: lon/lat -> SVG units.
+  const px = (lon) => 90.21 * lon + 7683.6;
+  const py = (lat) => -118.28 * lat + 4999.1;
+  for (const [name, lat, lon, anchor] of [
+    ["Toledo", 41.6528, -83.5379], ["Cleveland", 41.4993, -81.6944], ["Akron", 41.0814, -81.519, "end"],
+    ["Youngstown", 41.0998, -80.6495, "end"], ["Columbus", 39.9612, -82.9988], ["Dayton", 39.7589, -84.1916],
+    ["Cincinnati", 39.1031, -84.512], ["Athens", 39.3292, -82.1013, "end"]
+  ]) {
+    const g = svg("g", { class: "city" }, $("cities"));
+    svg("text", { x: px(lon) + (anchor ? -10 : 10), y: py(lat) - 8, "text-anchor": anchor || "start" }, g).textContent = name;
+  }
+
+  let events = [], results = [], pinnedTown = null;
+  const sorts = { d: { key: "when", dir: 1 }, r: { key: "median_sales", dir: -1 } };
+  const townOf = (e) => e.city || e.place || "";
+
+  function cmp(a, b, { key, dir }) {
+    const x = a[key], y = b[key];
+    if (x === y) return 0;
+    if (x === "" || x == null) return 1;
+    if (y === "" || y == null) return -1;
+    return (x > y ? 1 : -1) * dir;
+  }
+  const na = (text) => html("span", { class: "na" }, text);
+
+  function fmtDate(e) {
+    if (!e.date) return e.date_text ? [e.date_text, "date as listed"] : ["Not listed", ""];
+    const d = new Date(e.date + "T12:00:00");
+    const label = d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" });
+    return [label, e.date < today ? "past date" : ""];
+  }
+
+  // ---------- event directory ----------
+  function renderDirectory() {
+    const q = $("d-q").value.trim().toLowerCase(), region = $("d-region").value, season = $("d-season").value, io = $("d-io").value;
+    const upcoming = $("d-upcoming").checked, hasFee = $("d-fee").checked;
+    const shown = events.filter((e) =>
+      (!q || [e.event, e.city, e.county].join(" ").toLowerCase().includes(q)) &&
+      (!region || e.region === region) &&
+      (!season || e.season === season) &&
+      (!io || e.indoor_outdoor === io || e.indoor_outdoor === "both") &&
+      (!upcoming || (e.date && e.date >= today)) &&
+      (!hasFee || e.booth_fee != null) &&
+      (!pinnedTown || townOf(e) === pinnedTown)).sort((a, b) => cmp(a, b, sorts.d));
+
+    const body = $("d-rows");
+    body.replaceChildren();
+    $("d-count").textContent = `${shown.length} of ${events.length} events`;
+    if (!shown.length) {
+      const tr = html("tr", { class: "empty-row" }); const td = html("td", { colspan: 8 }, events.length ? "No events match these filters." : "The event directory hasn't loaded.");
+      tr.append(td); body.append(tr);
+    }
+    for (const e of shown) {
+      const tr = html("tr");
+      const ev = html("td", { class: "event" }); ev.append(html("b", null, e.event), html("span", null, [e.city, e.county && e.county + " County", e.region && e.region + " Ohio"].filter(Boolean).join(" · ")));
+      const [dl, dsub] = fmtDate(e);
+      const dt = html("td"); dt.append(document.createTextNode(dl)); if (dsub) dt.append(html("span", { class: "sub" }, dsub));
+      const fee = html("td", { class: "num" });
+      if (e.booth_fee != null) { fee.append(document.createTextNode(money(e.booth_fee))); if (e.booth_fee_note) fee.append(html("span", { class: "sub" }, e.booth_fee_note)); } else fee.append(na("Not published"));
+      const rule = html("td", { class: "num" }); rule.append(e.rule_7x ? document.createTextNode(money(e.rule_7x)) : na("–"));
+      const set = html("td"); set.append(e.indoor_outdoor ? document.createTextNode(e.indoor_outdoor[0].toUpperCase() + e.indoor_outdoor.slice(1)) : na("–"));
+      const vc = html("td", { class: "num" }); vc.append(e.vendor_count ? document.createTextNode(e.vendor_count) : na("–"));
+      const src = html("td"); if (e.source) { const a = html("a", { class: "src", href: e.source, target: "_blank", rel: "noopener" }, "Organizer ↗"); src.append(a); }
+      tr.append(ev, dt, html("td", { class: "num" }, e.days ?? "–"), fee, rule, set, vc, src);
+      body.append(tr);
+    }
+    $("d-clear").classList.toggle("is-on", !!pinnedTown);
+    $("d-clear").textContent = pinnedTown ? `${pinnedTown} only ✕` : "";
+  }
+
+  // ---------- vendor results ----------
+  function renderResults() {
+    const region = $("r-region").value, cat = $("r-cat").value, year = $("r-year").value, q = $("r-q").value.trim().toLowerCase();
+    const shown = results.filter((r) =>
+      (!region || r.region === region) && (!cat || r.category === cat) && (!year || String(r.year) === year) &&
+      (!q || (r.event + " " + (r.place || "")).toLowerCase().includes(q)) &&
+      (!pinnedTown || townOf(r) === pinnedTown)).sort((a, b) => cmp(a, b, sorts.r));
+    const body = $("r-rows");
+    body.replaceChildren();
+    if (!shown.length) {
+      const tr = html("tr", { class: "empty-row" });
+      const td = html("td", { colspan: 8 });
+      if (results.length) td.textContent = "No results match these filters.";
+      else { td.append(document.createTextNode("No event has 3 vendor reports yet. Every report gets us closer. ")); td.append(html("a", { href: "../#report" }, "Report an event")); }
+      tr.append(td); body.append(tr);
+    }
+    for (const r of shown) {
+      const tr = html("tr");
+      const ev = html("td", { class: "event" }); ev.append(html("b", null, r.event), html("span", null, [r.place, r.region && r.region + " Ohio", r.year].filter(Boolean).join(" · ")));
+      const ratio = r.median_sales_per_fee;
+      const rc = ratio === "" || ratio == null ? "" : ratio >= 7 ? "good" : ratio < 3 ? "bad" : "";
+      tr.append(ev, html("td", null, r.category), html("td", { class: "num" }, r.reports),
+        html("td", { class: "num" }, money(r.median_sales)),
+        html("td", { class: "num" }, money(r.sales_low) + "–" + money(r.sales_high).slice(1)),
+        html("td", { class: "num" }, money(r.median_fee) || "–"),
+        html("td", { class: "num ratio " + rc }, ratio === "" || ratio == null ? "–" : ratio.toFixed(1) + "×"),
+        html("td", { class: "num" }, r.return_pct == null ? "–" : r.return_pct + "%"));
+      body.append(tr);
+    }
+  }
+
+  // ---------- map ----------
+  function drawMap() {
+    const layer = $("dots");
+    layer.replaceChildren();
+    const towns = new Map();
+    for (const e of events) {
+      if (e.lat == null) continue;
+      const t = towns.get(townOf(e)) || { town: townOf(e), lat: e.lat, lon: e.lon, n: 0, results: 0 };
+      t.n += 1; towns.set(t.town, t);
+    }
+    for (const r of results) {
+      if (r.lat == null) continue;
+      const t = towns.get(townOf(r)) || { town: townOf(r), lat: r.lat, lon: r.lon, n: 0, results: 0 };
+      t.results += r.reports; towns.set(t.town, t);
+    }
+    for (const t of [...towns.values()].sort((a, b) => b.n - a.n)) {
+      const g = svg("g", { class: "ev " + (t.results ? "result" : "listed") + (pinnedTown === t.town ? " is-on" : ""), tabindex: 0, role: "button" }, layer);
+      svg("circle", { cx: px(t.lon), cy: py(t.lat), r: Math.min(13, 3.5 + Math.sqrt(t.n) * 2.2) }, g);
+      svg("title", {}, g).textContent = `${t.town}: ${t.n} event${t.n === 1 ? "" : "s"} listed` + (t.results ? `, ${t.results} vendor reports` : "");
+      const pick = () => { pinnedTown = pinnedTown === t.town ? null : t.town; renderAll(); if (pinnedTown) $("directory").scrollIntoView(); };
+      g.addEventListener("click", pick);
+      g.addEventListener("keydown", (ev) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); pick(); } });
+    }
+  }
+
+  // ---------- benchmark ----------
+  function drawBenchmark(b) {
+    if (!b || !b.overall) { $("b-caveat").textContent = "The benchmark hasn't loaded."; return; }
+    $("b-caveat").textContent = `${b.label}. ${b.caveat}`;
+    const groups = [b.overall, ...b.by_show_type, ...b.by_category];
+    const max = Math.max(...groups.map((g) => g.sales_high));
+    const box = $("b-bars");
+    box.replaceChildren();
+    groups.forEach((g, i) => {
+      const row = html("div", { class: "bar" + (i === 0 ? " total" : "") });
+      const name = html("div", null, g.group); name.append(html("span", { class: "n" }, ` ${g.reports} reports`));
+      const track = html("div", { class: "track", title: `Middle half: ${money(g.sales_low)} to ${money(g.sales_high)}` });
+      const range = html("div", { class: "range" }); range.style.left = (100 * g.sales_low / max) + "%"; range.style.width = (100 * (g.sales_high - g.sales_low) / max) + "%";
+      const mid = html("div", { class: "mid" }); mid.style.left = `calc(${100 * g.median_sales / max}% - 1px)`;
+      track.append(range, mid);
+      row.append(name, track, html("div", { class: "val" }, money(g.median_sales)));
+      box.append(row);
+    });
+    $("b-foot").textContent = `Line = median show total, shaded = middle half of reports. ${b.source}; states: ${b.states.join(", ")}. Only groups with ${b.min_reports}+ reports are shown.`;
+  }
+
+  function renderAll() { renderDirectory(); renderResults(); drawMap(); }
+
+  function stats() {
+    const fees = events.map((e) => e.booth_fee).filter((v) => v != null).sort((a, b) => a - b);
+    $("s-events").textContent = events.length || "–";
+    $("s-fees").textContent = events.length ? fees.length : "–";
+    $("s-medfee").textContent = fees.length ? money(fees[Math.floor(fees.length / 2)]) : "–";
+    $("s-reports").textContent = results.reduce((n, r) => n + r.reports, 0);
+  }
+
+  function setResults(data) {
+    results = (data.events || []).map((r) => ({ ...r, return_pct: r.would_return_yes == null ? null : Math.round((100 * r.would_return_yes) / r.reports) }));
+    const fill = (id, values) => { for (const v of [...new Set(values)].sort()) { const o = html("option", { value: v }, v); $(id).append(o); } };
+    fill("r-cat", results.map((r) => r.category));
+    fill("r-year", results.map((r) => String(r.year)));
+  }
+
+  // sorting
+  for (const [prefix, tbody] of [["d", "d-rows"], ["r", "r-rows"]]) {
+    $(tbody).closest("table").querySelectorAll("th[data-k]").forEach((th) => th.addEventListener("click", () => {
+      const s = sorts[prefix], k = th.dataset.k;
+      s.dir = s.key === k ? -s.dir : (["event", "category", "date", "indoor_outdoor"].includes(k) ? 1 : -1);
+      s.key = k;
+      th.closest("tr").querySelectorAll("th").forEach((t) => t.removeAttribute("aria-sort"));
+      th.setAttribute("aria-sort", s.dir === 1 ? "ascending" : "descending");
+      prefix === "d" ? renderDirectory() : renderResults();
+    }));
+  }
+  for (const id of ["d-q", "d-region", "d-season", "d-io", "d-upcoming", "d-fee"]) $(id).addEventListener(id === "d-q" ? "input" : "change", renderDirectory);
+  for (const id of ["r-q", "r-region", "r-cat", "r-year"]) $(id).addEventListener(id === "r-q" ? "input" : "change", renderResults);
+  $("d-clear").addEventListener("click", () => { pinnedTown = null; renderAll(); });
+
+  // ?demo=1 adds made-up vendor results so that table can be previewed before real reports exist.
+  const SAMPLE = { events: [
+    { event: "Sample Holiday Market", place: "Columbus", year: 2025, category: "Jewelry", reports: 6, median_sales: 950, sales_low: 700, sales_high: 1300, median_fee: 150, median_sales_per_fee: 6.3, would_return_yes: 4, region: "Central", lat: 39.962, lon: -83.0 },
+    { event: "Sample Lakeside Craft Fair", place: "Cleveland", year: 2025, category: "Art & prints", reports: 5, median_sales: 1400, sales_low: 1100, sales_high: 1900, median_fee: 175, median_sales_per_fee: 8.0, would_return_yes: 5, region: "Northeast", lat: 41.499, lon: -81.693 },
+    { event: "Sample Fall Festival", place: "Dayton", year: 2026, category: "Baked goods / food", reports: 3, median_sales: 180, sales_low: 60, sales_high: 300, median_fee: 85, median_sales_per_fee: 2.1, would_return_yes: 0, region: "Southwest", lat: 39.758, lon: -84.191 }
+  ] };
+  const demo = new URLSearchParams(location.search).has("demo");
+  if (demo) document.body.classList.add("is-sample");
+
+  const get = (name) => fetch("../data/" + name, { cache: "no-cache" }).then((r) => (r.ok ? r.json() : Promise.reject(r.status)));
+  Promise.allSettled([get("events.json"), get("results.json"), get("benchmark.json")]).then(([ev, res, bench]) => {
+    events = (ev.status === "fulfilled" ? ev.value.events || [] : []).map((e) => ({ ...e,
+      // upcoming events sort first by date; past ones after, most recent first; undated last
+      when: !e.date ? null : e.date >= today ? "0" + e.date : "1" + (99999999 - Number(e.date.replace(/-/g, ""))) }));
+    setResults(demo ? SAMPLE : res.status === "fulfilled" ? res.value : { events: [] });
+    drawBenchmark(bench.status === "fulfilled" ? bench.value : null);
+    stats();
+    renderAll();
+  });
+})();
+</script>
+</body>
+</html>
