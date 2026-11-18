@@ -292,6 +292,15 @@
               </div>
               <span class="err"></span>
             </div>
+            <div class="field full" data-f="first_five">
+              <span class="label">Was this one of your first 5 events as a vendor? <span class="req">*</span></span>
+              <div class="chips" role="radiogroup" aria-label="Was this one of your first 5 events as a vendor?">
+                <label><input type="radio" name="first_five" value="yes"><span>Yes, one of my first 5</span></label>
+                <label><input type="radio" name="first_five" value="no"><span>No, I'd done more than 5 before</span></label>
+              </div>
+              <span class="hint">New vendors' results can look different, so this helps us compare shows fairly.</span>
+              <span class="err"></span>
+            </div>
             <div class="field" data-f="sales">
               <label for="f-sales">Your sales <span class="req">*</span></label>
               <div class="money">
@@ -457,6 +466,7 @@
         category: (form.querySelector('[name="category"]:checked') || {}).value || "",
         would_return: (form.querySelector('[name="would_return"]:checked') || {}).value || null,
         setting: (form.querySelector('[name="setting"]:checked') || {}).value || null,
+        first_five: (form.querySelector('[name="first_five"]:checked') || {}).value || "",
         email: v("email"), consent: form.consent.checked, source, turnstile: token
       };
       if (!token) { status.className = "status bad"; status.textContent = "One moment: the spam check is still loading."; return; }
