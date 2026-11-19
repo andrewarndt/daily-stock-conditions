@@ -73,6 +73,9 @@
   .data-card .eyebrow { color: var(--sage-ink); }
   .data-title { display: block; margin: 0.25rem 0 0.2rem; font-family: var(--serif); font-size: 1.5rem; font-weight: 500; color: var(--ink); line-height: 1.2; }
   .data-sub { display: block; font-size: 0.95rem; color: var(--sage-ink); }
+  .data-card.report-card { color: var(--rust-ink); background: radial-gradient(22rem 12rem at 95% 0%, color-mix(in srgb, var(--gold-tint) 70%, transparent), transparent 70%), var(--rust-tint); border-color: color-mix(in srgb, var(--rust) 25%, transparent); }
+  .report-card .eyebrow, .report-card .data-sub { color: var(--rust-ink); }
+  .report-card .arrow { background: var(--rust-btn) !important; color: var(--on-rust) !important; }
   .data-card .arrow { flex: 0 0 auto; display: grid; place-items: center; width: 3rem; height: 3rem; border-radius: 50%; background: var(--sage); color: var(--paper); font-size: 1.3rem; }
 
   /* report */
@@ -160,6 +163,7 @@
       </a>
       <div class="toplinks">
         <a class="plain" href="#why">Why</a>
+        <a class="plain" href="report/">Ohio Vendor Report</a>
         <a class="plain" href="map/">Map and data</a>
         <a class="btn small" href="#report">Report an event</a>
       </div>
@@ -235,6 +239,14 @@
         <p>Every event you report and every vendor you send here makes the numbers sharper for all of us. Spread the word.</p>
       </div>
     </div>
+    <a class="data-card report-card" href="report/">
+      <span>
+        <span class="eyebrow">New · The Ohio Vendor Report</span>
+        <span class="data-title">What Ohio shows charge, and what they don't tell you</span>
+        <span class="data-sub">Booth fees by region, shoppers per booth, and six questions to ask before you pay. Free to read and share.</span>
+      </span>
+      <span class="arrow" aria-hidden="true">→</span>
+    </a>
     <a class="data-card" href="map/">
       <span>
         <span class="eyebrow">Map and data</span>
@@ -397,7 +409,7 @@
 </section>
 
 <footer>
-  <div class="wrap">CraftReport · a 4A Holdings Company project · <a href="map/">Map and data</a></div>
+  <div class="wrap">CraftReport · a 4A Holdings Company project · <a href="report/">Ohio Vendor Report</a> · <a href="map/">Map and data</a></div>
 </footer>
 
 <script>

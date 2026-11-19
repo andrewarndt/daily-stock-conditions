@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- HIDDEN PAGE: same rules as ../index.html (noindex, no sitemap, no site nav links, no Google tag).
+     The Ohio Vendor Report: the shareable piece that brings vendors to the form.
+     Every number is computed in the page from ../data/events.json and ../data/benchmark.json
+     (written by D:\GitHub\craftreport\src\import_venue_data.py), so rerunning the import updates it.
+     og.png (link preview for Facebook) is made from D:\GitHub\craftreport\outreach\og-report.html.
+     Links into the form carry ?s= through, so a group's share link still credits that group. -->
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>The Ohio Vendor Report — CraftReport</title>
+<!-- REPORT-META:START -->
+<meta name="description" content="What Ohio craft shows charge vendors, what they publish and what they leave out, and what to ask before you pay for a booth. Free, by vendors for vendors.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://4aholdingscompany.com/craftreport/report/">
+<meta property="og:title" content="The Ohio Vendor Report: what Ohio craft shows charge, and what they don't tell you">
+<meta property="og:description" content="Booth fees across Ohio by region, which shows publish their attendance, and what to ask before you pay. Free, made by a vendor for vendors.">
+<!-- REPORT-META:END -->
+<meta property="og:image" content="https://4aholdingscompany.com/craftreport/report/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&display=swap">
+<link rel="stylesheet" href="../assets/craftreport.css">
+<style>
+  .wrap { max-width: 60rem; }
+  .hero { background:
+      radial-gradient(30rem 18rem at 92% 0%, var(--rust-tint), transparent 70%),
+      radial-gradient(24rem 16rem at 0% 100%, var(--sage-tint), transparent 70%),
+      var(--sand); padding-bottom: 3.5rem; }
+  .hero h1 { margin: 1.2rem 0 0.8rem; font-size: clamp(2.1rem, 5.5vw, 3.3rem); line-height: 1.06; letter-spacing: -0.03em; max-width: 44rem; }
+  .hero h1 em { font-style: italic; color: var(--rust); }
+  .hero .lead { max-width: 42rem; margin: 0; font-size: 1.08rem; }
+  .byline { margin: 1rem 0 0; color: var(--muted); font-size: 0.9rem; }
+
+  .share { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.3rem; align-items: center; }
+  .share .done { color: var(--sage-ink); font-weight: 700; font-size: 0.88rem; min-height: 1.2em; }
+
+  .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.8rem; margin: -1.75rem 0 2rem; position: relative; }
+  .stat { padding: 1rem 1.1rem; }
+  .stat b { display: block; font-family: var(--serif); font-weight: 500; color: var(--ink); font-size: 1.9rem; line-height: 1.05; }
+  .stat span { display: block; color: var(--muted); font-size: 0.84rem; margin-top: 0.3rem; line-height: 1.35; }
+
+  .finding { margin-bottom: 1.5rem; }
+  .finding .num { display: inline-grid; place-items: center; width: 1.9rem; height: 1.9rem; border-radius: 50%; background: var(--rust-tint); color: var(--rust-ink); font-weight: 700; font-size: 0.9rem; margin-right: 0.4rem; vertical-align: 0.15rem; }
+  .finding h2 { font-size: clamp(1.4rem, 3.4vw, 1.85rem); }
+  .finding > p { max-width: 44rem; }
+  .takeaway { margin: 1rem 0 0; padding: 0.8rem 1rem; border-radius: var(--radius-sm); background: var(--gold-tint); color: var(--gold-ink); font-size: 0.93rem; }
+  .takeaway strong { color: inherit; }
+  .small-note { color: var(--muted); font-size: 0.82rem; margin: 0.7rem 0 0; }
+
+  /* single-series horizontal bars: label | bar | value */
+  .bars { display: grid; gap: 0.45rem; margin-top: 1rem; }
+  .bar { display: grid; grid-template-columns: minmax(7rem, 15rem) minmax(0, 1fr) 5.5rem; gap: 0.8rem; align-items: center; padding: 0.2rem 0.3rem; border-radius: 0.5rem; outline: none; }
+  .bar:hover, .bar:focus-visible { background: var(--row-hover); }
+  .bar:focus-visible { box-shadow: 0 0 0 2px var(--rust); }
+  .bar .lab { font-size: 0.9rem; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bar .lab small { display: block; color: var(--muted); font-size: 0.76rem; }
+  .bar .track { height: 0.95rem; background: var(--rule); border-radius: 0 4px 4px 0; }
+  .bar .fill { height: 100%; border-radius: 0 4px 4px 0; background: var(--rust); min-width: 3px; }
+  .bars.sage .fill { background: var(--sage); }
+  .bars.gold .fill { background: var(--gold); }
+  .bar .val { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; color: var(--ink); font-size: 0.92rem; }
+
+  .tip { position: fixed; z-index: 10; pointer-events: none; max-width: 17rem; padding: 0.55rem 0.75rem; border-radius: 0.6rem; background: var(--ink); color: var(--ground); font-size: 0.82rem; line-height: 1.4; box-shadow: var(--shadow-lift); opacity: 0; transition: opacity 0.1s ease; }
+  .tip.on { opacity: 1; }
+
+  .two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1.5rem; }
+  .two h3 { margin: 0 0 0.2rem; font-size: 1.1rem; }
+  .two .bar { grid-template-columns: minmax(5.5rem, 8.5rem) minmax(0, 1fr) 4.6rem; }
+
+  .checklist { list-style: none; margin: 1rem 0 0; padding: 0; display: grid; gap: 0.7rem; counter-reset: q; }
+  .checklist li { position: relative; padding: 0.85rem 1rem 0.85rem 3.2rem; background: var(--ground); border-radius: var(--radius-sm); border: 1px solid var(--rule); counter-increment: q; }
+  .checklist li::before { content: counter(q); position: absolute; left: 0.9rem; top: 0.8rem; display: grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: 50%; background: var(--sage-tint); color: var(--sage-ink); font-weight: 700; font-size: 0.85rem; }
+  .checklist strong { color: var(--ink); }
+  .checklist span { display: block; color: var(--muted); font-size: 0.9rem; }
+
+  .cta { margin: 2rem 0 1.5rem; padding: 2rem 1.8rem; border-radius: var(--radius); color: var(--on-rust); background: radial-gradient(26rem 14rem at 100% 0%, color-mix(in srgb, var(--gold) 45%, transparent), transparent 70%), var(--rust-btn); box-shadow: var(--shadow-lift); }
+  .cta h2 { color: var(--on-rust); margin-top: 0; }
+  .cta p { max-width: 40rem; margin: 0 0 1.2rem; }
+  .cta .btn { background: var(--paper); color: var(--rust-ink); }
+  .cta .btn:hover { background: var(--ground); }
+  .cta .btn.ghost { background: transparent; color: var(--on-rust); box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--on-rust) 60%, transparent); }
+  .cta .btns { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+
+  .post { margin-top: 1rem; padding: 1rem 1.1rem; border-radius: var(--radius-sm); background: var(--ground); border: 1px dashed var(--line); font-size: 0.93rem; color: var(--body); white-space: pre-wrap; overflow-wrap: anywhere; }
+  .method { font-size: 0.88rem; color: var(--muted); }
+  .method li { margin-bottom: 0.4rem; }
+  .loading { color: var(--muted); }
+
+  /* report body built from the monthly Word document (src/build_vendor_report.py) */
+  .doc p, .doc li { max-width: 46rem; }
+  .doc h3 { margin: 1.4rem 0 0.4rem; font-size: 1.2rem; }
+  .doc ul, .doc ol { padding-left: 1.3rem; }
+  .doc li { margin-bottom: 0.35rem; }
+  .doc li.sub { margin-left: 1.3rem; }
+  .doc figure { margin: 1.2rem 0; }
+  .doc img { display: block; max-width: 100%; height: auto; border-radius: var(--radius-sm); border: 1px solid var(--rule); }
+  .doc figcaption { color: var(--muted); font-size: 0.85rem; margin-top: 0.4rem; }
+  .doc .table-scroll { margin: 1rem 0; }
+  .doc th { cursor: default; }
+  .doc td { white-space: normal; min-width: 6rem; }
+
+  @media (max-width: 760px) {
+    .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .two { grid-template-columns: minmax(0, 1fr); }
+    .bar { grid-template-columns: minmax(0, 1fr) 4.6rem; }
+    .bar .track { grid-column: 1 / -1; grid-row: 2; }
+  }
+  @media print {
+    .share, .cta .btns, .topbar .toplinks, .tip { display: none !important; }
+    .hero, .cta { background: none; color: inherit; box-shadow: none; }
+    .cta h2 { color: inherit; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <nav class="topbar"><a class="brand" href="../"><span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 9 5 4h14l1.5 5"/><path d="M3.5 9a2.8 2.8 0 0 0 5.67 0 2.8 2.8 0 0 0 5.66 0 2.8 2.8 0 0 0 5.67 0"/><path d="M5 11.5V20h14v-8.5"/><path d="M10 20v-4.5h4V20"/></svg></span>CraftReport</a><div class="toplinks"><a class="plain" href="../">Home</a><a class="plain" href="../map/">Map and data</a><a class="btn small js-form" href="../#report">Report an event</a></div></nav>
+<!-- REPORT-HERO:START -->
+    <span class="eyebrow">The Ohio Vendor Report · November 2026</span>
+    <h1>What Ohio craft shows <em>charge</em>, and what they don't tell you.</h1>
+    <p class="lead">Before you pay for a booth you should know what you're buying. We looked at every Ohio show we could find: what they charge, what they publish about themselves, and the one number almost none of them share.</p>
+    <p class="byline">Free to read and share. Made by an Ohio vendor, for Ohio vendors.</p>
+<!-- REPORT-HERO:END -->
+    <div class="share">
+      <button class="btn small" type="button" data-share="copy">Copy link</button>
+      <a class="btn small soft" data-share="facebook" href="#" target="_blank" rel="noopener">Share on Facebook</a>
+      <button class="btn small soft" type="button" data-share="native" hidden>Share…</button>
+      <span class="done" aria-live="polite"></span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+<!-- REPORT-BODY:START -->
+  <div class="stats" id="stats">
+    <div class="card stat"><b data-k="shows">…</b><span>Ohio shows tracked</span></div>
+    <div class="card stat"><b data-k="fee">…</b><span>typical booth fee</span></div>
+    <div class="card stat"><b data-k="att">…</b><span>say how many shoppers came</span></div>
+    <div class="card stat"><b data-k="sales">0</b><span>publish what vendors sold</span></div>
+  </div>
+
+  <section class="panel finding" id="regions">
+    <span class="eyebrow">Finding</span>
+    <h2><span class="num">1</span>Where you vend changes what you pay</h2>
+    <p>Typical (median) booth fee for one show, by region. These are the fees organizers post on their own pages.</p>
+    <div class="bars" id="by-region"><p class="loading">Loading…</p></div>
+    <p class="takeaway" id="region-take"></p>
+  </section>
+
+  <section class="panel finding" id="fees">
+    <span class="eyebrow">Finding</span>
+    <h2><span class="num">2</span>Juried shows cost more. Do they sell more?</h2>
+    <p id="juried-text">Shows that review your work before letting you in charge more for the booth.</p>
+    <div class="two">
+      <div>
+        <h3>Typical booth fee</h3>
+        <div class="bars" id="by-juried"></div>
+      </div>
+      <div>
+        <h3>How booth fees spread out</h3>
+        <div class="bars gold" id="by-bucket"></div>
+      </div>
+    </div>
+    <p class="takeaway"><strong>Nobody knows yet whether the higher fee pays off.</strong> That takes vendors' sales numbers, which is what the CraftReport form collects.</p>
+  </section>
+
+  <section class="panel finding" id="shoppers">
+    <span class="eyebrow">Finding</span>
+    <h2><span class="num">3</span>Same booth fee, ten times the shoppers</h2>
+    <p>Shoppers per booth is the organizer's attendance divided by their vendor count. It's a rough measure of how many people walk past you. These are the only Ohio shows that published both numbers.</p>
+    <div class="bars sage" id="by-shoppers"><p class="loading">Loading…</p></div>
+    <p class="takeaway" id="shopper-take"></p>
+    <p class="small-note">Attendance is the organizer's own claim and usually a best guess. A show with fewer shoppers can still be a great show for the right product, which is why real sales numbers matter.</p>
+  </section>
+
+  <section class="panel finding" id="published">
+    <span class="eyebrow">Finding</span>
+    <h2><span class="num">4</span>What Ohio shows tell vendors, and what they leave out</h2>
+    <p>Share of the Ohio shows we track that publish each detail on their vendor page.</p>
+    <div class="bars sage" id="by-published"><p class="loading">Loading…</p></div>
+    <p class="takeaway"><strong>The most important number is the one nobody publishes:</strong> what vendors actually sell. That's the gap CraftReport fills, one report at a time.</p>
+  </section>
+
+  <section class="panel finding" id="benchmark">
+    <span class="eyebrow">For reference</span>
+    <h2>What vendors sell at juried shows nationally</h2>
+    <p id="bench-text">Median sales for one whole show, from exhibitor reviews in the art-show trade press. These are bigger fine-art and craft festivals in other states, not Ohio.</p>
+    <div class="bars gold" id="by-bench"><p class="loading">Loading…</p></div>
+    <p class="small-note" id="bench-note"></p>
+  </section>
+
+  <section class="panel finding" id="ask">
+    <span class="eyebrow">Before you pay</span>
+    <h2>Six questions to ask any organizer</h2>
+    <p>A good organizer will answer these happily. If they won't, that tells you something too.</p>
+    <ol class="checklist">
+      <li><strong>How many people came last year, and how did you count them?</strong><span>A ticket count or a door clicker beats "about 5,000".</span></li>
+      <li><strong>How many vendors will there be, and how many sell what I sell?</strong><span>Ten jewelry booths split the same shoppers ten ways.</span></li>
+      <li><strong>How are you promoting it, and how much are you spending?</strong><span>Ask for specifics: paid ads, signs, radio, local news. "We post on Facebook" isn't a plan.</span></li>
+      <li><strong>Can I talk to a vendor who did it last year?</strong><span>Better yet, look it up on CraftReport once enough vendors have reported it.</span></li>
+      <li><strong>What happens with bad weather or a cancellation?</strong><span>Get the refund or rain-date policy in writing before you pay.</span></li>
+      <li><strong>Is the fee for the whole event, or per day?</strong><span>A $70 booth for three days is $210. Compare whole-event costs.</span></li>
+    </ol>
+    <p class="takeaway" id="rule-take"></p>
+  </section>
+<!-- REPORT-BODY:END -->
+  <section class="cta" id="help">
+    <h2>The missing number is yours.</h2>
+    <p>Every Ohio vendor knows what their shows really brought in. Report your past events. It takes about 2 minutes each and stays anonymous. Report 3 or more with your email and we'll send you the full results report, show by show and category by category.</p>
+    <div class="btns">
+      <a class="btn js-form" href="../#report">Report an event</a>
+      <button class="btn ghost" type="button" data-share="copy">Copy this report's link</button>
+    </div>
+  </section>
+
+  <section class="panel finding" id="spread">
+    <span class="eyebrow">Spread the word</span>
+    <h2>Share it in your vendor groups</h2>
+    <p>The report gets better with every vendor who reports a show. If it helped you, post it where other Ohio vendors will see it. Here's a post you can copy:</p>
+    <div class="post" id="post-text"></div>
+    <div class="share">
+      <button class="btn small" type="button" data-share="post">Copy the post</button>
+      <a class="btn small soft" data-share="facebook" href="#" target="_blank" rel="noopener">Share on Facebook</a>
+      <span class="done" aria-live="polite"></span>
+    </div>
+  </section>
+
+<!-- REPORT-METHOD:START -->
+  <section class="method" id="method">
+    <h2 style="font-size:1.2rem">How this report was made</h2>
+    <ul>
+      <li>Ohio show details (booth fees, dates, juried or not, vendor counts, attendance) come from the organizers' own websites and event listings, gathered by hand. Each show's source link is in the <a href="../map/#directory">event directory</a>.</li>
+      <li>"Typical" means the median: half the shows charge more, half charge less. Groups with fewer than 3 shows are left out of the charts.</li>
+      <li>A show that lists a per-day fee is counted at its whole-event cost where the number of days is known.</li>
+      <li>Vendor sales results from the CraftReport form are only ever shown as medians and ranges, and only once at least 3 vendors have reported the same show and category.</li>
+      <li id="updated"></li>
+    </ul>
+  </section>
+<!-- REPORT-METHOD:END -->
+</main>
+
+<footer>
+  <div class="wrap">CraftReport · a 4A Holdings Company project · <a href="../">Main page</a> · <a href="../map/">Map and data</a></div>
+</footer>
+
+<div class="tip" id="tip" role="tooltip"></div>
+
+<script>
+(function () {
+  "use strict";
+  const PAGE = "https://4aholdingscompany.com/craftreport/report/";
+  const REGIONS = ["Northwest", "Northeast", "Central", "Southwest", "Southeast"];
+  const MIN_GROUP = 3;
+
+  // Keep the visitor's ?s= tag so a Facebook group's link still gets credit on the form.
+  const incoming = (new URLSearchParams(location.search).get("s") || "").toLowerCase().replace(/[^a-z0-9-]/g, "").slice(0, 40);
+  const formTag = incoming || "report";
+  document.querySelectorAll(".js-form").forEach((a) => { a.href = "../?s=" + encodeURIComponent(formTag) + "#report"; });
+  const shareUrl = (tag) => PAGE + "?s=" + tag;
+
+  const money = (n) => "$" + Math.round(n).toLocaleString("en-US");
+  const median = (a) => {
+    const s = a.slice().sort((x, y) => x - y), m = s.length >> 1;
+    return s.length ? (s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2) : null;
+  };
+  const isNum = (v) => typeof v === "number" && isFinite(v);
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+
+  // Bars: rows of {label, sub, value, display, tip}. One series per chart, one hue.
+  function bars(id, rows, max) {
+    const box = document.getElementById(id);
+    box.textContent = "";
+    const top = max || Math.max(...rows.map((r) => r.value), 1);
+    rows.forEach((r) => {
+      const row = el("div", "bar");
+      row.tabIndex = 0;
+      row.dataset.tip = r.tip;
+      row.setAttribute("aria-label", r.tip);
+      const lab = el("span", "lab", r.label);
+      if (r.sub) lab.appendChild(el("small", null, r.sub));
+      const track = el("span", "track"), fill = el("span", "fill");
+      fill.style.display = "block";
+      fill.style.width = Math.max(0, Math.min(100, (r.value / top) * 100)) + "%";
+      track.appendChild(fill);
+      row.append(lab, track, el("span", "val", r.display));
+      box.appendChild(row);
+    });
+  }
+
+  // Hover / focus tooltip shared by every chart.
+  const tip = document.getElementById("tip");
+  function showTip(target, x, y) {
+    tip.textContent = target.dataset.tip;
+    tip.classList.add("on");
+    const w = tip.offsetWidth, h = tip.offsetHeight;
+    tip.style.left = Math.min(window.innerWidth - w - 8, Math.max(8, x + 14)) + "px";
+    tip.style.top = (y - h - 12 < 8 ? y + 18 : y - h - 12) + "px";
+  }
+  document.addEventListener("mousemove", (e) => {
+    const t = e.target.closest && e.target.closest(".bar");
+    if (t) showTip(t, e.clientX, e.clientY); else tip.classList.remove("on");
+  });
+  document.addEventListener("focusin", (e) => {
+    const t = e.target.closest && e.target.closest(".bar");
+    if (!t) return tip.classList.remove("on");
+    const r = t.getBoundingClientRect();
+    showTip(t, r.left + r.width / 2, r.top);
+  });
+  document.addEventListener("focusout", () => tip.classList.remove("on"));
+  window.addEventListener("scroll", () => tip.classList.remove("on"), { passive: true });
+
+  // Sharing.
+  let postText = "";
+  function flash(btn, msg) {
+    const done = btn.closest(".share, .cta") && btn.closest("section, header").querySelector(".done");
+    if (done) { done.textContent = msg; setTimeout(() => { done.textContent = ""; }, 2500); }
+    else { const old = btn.textContent; btn.textContent = msg; setTimeout(() => { btn.textContent = old; }, 2000); }
+  }
+  async function copy(text) {
+    try { await navigator.clipboard.writeText(text); return true; }
+    catch (e) {
+      const t = el("textarea"); t.value = text; document.body.appendChild(t); t.select();
+      let ok = false; try { ok = document.execCommand("copy"); } catch (_) {}
+      t.remove(); return ok;
+    }
+  }
+  document.querySelectorAll('[data-share="facebook"]').forEach((a) => {
+    a.href = "https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(shareUrl("report-share-fb"));
+  });
+  const nativeBtn = document.querySelector('[data-share="native"]');
+  if (navigator.share) nativeBtn.hidden = false;
+  document.addEventListener("click", async (e) => {
+    const b = e.target.closest("button[data-share]");
+    if (!b) return;
+    const kind = b.dataset.share;
+    if (kind === "copy") flash(b, (await copy(shareUrl("report-share-link"))) ? "Link copied" : "Couldn't copy, sorry");
+    if (kind === "post") flash(b, (await copy(postText)) ? "Post copied. Paste it in your group." : "Couldn't copy, sorry");
+    if (kind === "native") {
+      try { await navigator.share({ title: "The Ohio Vendor Report", text: "What Ohio craft shows charge, and what they don't tell you.", url: shareUrl("report-share-app") }); } catch (_) {}
+    }
+  });
+
+  function setPost(text) {
+    postText = text;
+    const box = document.getElementById("post-text");
+    if (box) box.textContent = text;
+  }
+
+  // Monthly version built from the Word document: no charts to fill, just the post to copy.
+  if (!document.getElementById("stats")) {
+    const title = (document.querySelector(".hero h1") || {}).textContent || "The Ohio Vendor Report";
+    const edition = ((document.querySelector(".hero .eyebrow") || {}).textContent || "").replace(/^The Ohio Vendor Report\s*·\s*/i, "");
+    const headline = title.trim().replace(/([^.!?])$/, "$1.");
+    setPost("Free Ohio Vendor Report" + (edition ? " (" + edition.trim() + ")" : "") + ": " + headline +
+      " Upcoming Ohio shows, what they charge, and what to ask before you pay. Made by an Ohio vendor, for vendors: " + shareUrl("report-share-post"));
+    return;
+  }
+
+  function build(evData, bench) {
+    const ev = evData.events || [];
+    const mult = evData.rule_multiple || 7;
+    const fee = (x) => (isNum(x.booth_fee) ? x.booth_fee : null);
+    const withFee = ev.filter((x) => fee(x) != null);
+    const allFees = withFee.map(fee);
+    const typical = median(allFees);
+    const att = ev.filter((x) => isNum(x.attendance) && x.attendance > 0).length;
+
+    const set = (k, v) => { document.querySelector('[data-k="' + k + '"]').textContent = v; };
+    set("shows", ev.length);
+    set("fee", typical != null ? money(typical) : "–");
+    set("att", att + " of " + ev.length);
+
+    // 1. By region
+    const reg = REGIONS.map((r) => {
+      const f = withFee.filter((x) => x.region === r).map(fee);
+      return { r, n: f.length, med: median(f), total: ev.filter((x) => x.region === r).length };
+    }).filter((g) => g.n >= MIN_GROUP).sort((a, b) => b.med - a.med);
+    bars("by-region", reg.map((g) => ({
+      label: g.r + " Ohio", sub: g.n + " of " + g.total + " shows list a fee", value: g.med, display: money(g.med),
+      tip: g.r + " Ohio: typical booth fee " + money(g.med) + ", from " + g.n + " shows that list one.",
+    })));
+    if (reg.length >= 2) {
+      const hi = reg[0], lo = reg[reg.length - 1];
+      const pct = Math.round((hi.med / lo.med - 1) * 100);
+      document.getElementById("region-take").innerHTML = "";
+      const t = document.getElementById("region-take");
+      t.append(el("strong", null, hi.r + " Ohio shows charge about " + pct + "% more than " + lo.r + " Ohio. "),
+        document.createTextNode("A higher fee isn't a worse deal if the crowd is bigger. It just means you need to sell more to come out ahead."));
+    }
+
+    // 2. Juried vs not, and fee spread
+    const jur = withFee.filter((x) => x.juried === true).map(fee);
+    const non = withFee.filter((x) => x.juried !== true).map(fee);
+    const jRows = [];
+    if (jur.length >= MIN_GROUP) jRows.push({ label: "Juried", sub: jur.length + " shows", value: median(jur), display: money(median(jur)), tip: "Juried shows: typical fee " + money(median(jur)) + " (" + jur.length + " shows)." });
+    if (non.length >= MIN_GROUP) jRows.push({ label: "Not juried or not stated", sub: non.length + " shows", value: median(non), display: money(median(non)), tip: "Shows that aren't juried or don't say: typical fee " + money(median(non)) + " (" + non.length + " shows)." });
+    bars("by-juried", jRows);
+    if (jRows.length === 2) {
+      const p = Math.round((median(jur) / median(non) - 1) * 100);
+      document.getElementById("juried-text").textContent = "Shows that review your work before letting you in (juried) charge about " + p + "% more for the booth: " + money(median(jur)) + " against " + money(median(non)) + ".";
+    }
+    const buckets = [["Under $75", 0, 75], ["$75 to $149", 75, 150], ["$150 to $249", 150, 250], ["$250 to $499", 250, 500], ["$500 or more", 500, Infinity]];
+    bars("by-bucket", buckets.map(([name, lo, hi]) => {
+      const n = allFees.filter((f) => f >= lo && f < hi).length;
+      return { label: name, value: n, display: n + (n === 1 ? " show" : " shows"), tip: n + " of " + allFees.length + " shows charge " + name.toLowerCase() + " for a booth." };
+    }));
+
+    // 3. Shoppers per booth
+    const spb = ev.filter((x) => isNum(x.attendance) && isNum(x.vendor_count) && x.vendor_count > 0 && x.attendance > 0)
+      .map((x) => ({ x, v: x.attendance / x.vendor_count })).sort((a, b) => b.v - a.v);
+    bars("by-shoppers", spb.map(({ x, v }) => ({
+      label: x.event, sub: [x.city, fee(x) != null ? money(fee(x)) + " booth" : "fee not listed"].join(" · "),
+      value: v, display: Math.round(v).toLocaleString("en-US"),
+      tip: x.event + " (" + x.city + "): about " + x.attendance.toLocaleString("en-US") + " shoppers and " + x.vendor_count + " vendors, so roughly " + Math.round(v) + " shoppers per booth." + (fee(x) != null ? " Booth fee " + money(fee(x)) + "." : ""),
+    })));
+    if (spb.length >= 2) {
+      const hi = spb[0].v, lo = spb[spb.length - 1].v;
+      const t = document.getElementById("shopper-take");
+      t.append(el("strong", null, "From about " + Math.round(lo) + " to " + Math.round(hi) + " shoppers per booth, often for nearly the same fee. "),
+        document.createTextNode("Two booths at the same price can be very different deals. Only " + spb.length + " of " + ev.length + " Ohio shows publish enough to work this out."));
+    }
+
+    // 4. What shows publish
+    const has = (f) => ev.filter(f).length;
+    const pub = [
+      ["Booth fee", has((x) => fee(x) != null)],
+      ["Juried or not", has((x) => x.juried === true || x.juried === false)],
+      ["Number of vendors", has((x) => isNum(x.vendor_count) && x.vendor_count > 0)],
+      ["Indoor or outdoor", has((x) => !!x.indoor_outdoor)],
+      ["Expected shoppers", att],
+      ["What vendors sold", 0],
+    ];
+    bars("by-published", pub.map(([name, n]) => ({
+      label: name, sub: n + " of " + ev.length + " shows", value: n, display: Math.round((n / ev.length) * 100) + "%",
+      tip: name + ": published by " + n + " of the " + ev.length + " Ohio shows we track.",
+    })), ev.length);
+
+    // Benchmark
+    const groups = (bench.by_category || []).filter((g) => (g.reports || 0) >= (bench.min_reports || 3) && isNum(g.median_sales));
+    if (bench.overall && isNum(bench.overall.median_sales)) groups.unshift(Object.assign({}, bench.overall, { group: "All categories" }));
+    bars("by-bench", groups.map((g) => ({
+      label: g.group, sub: g.reports + " vendor reports", value: g.median_sales, display: money(g.median_sales),
+      tip: g.group + ": median sales " + money(g.median_sales) + " for a show" + (isNum(g.sales_low) ? " (middle half: " + money(g.sales_low) + " to " + money(g.sales_high) + ")" : "") + ", from " + g.reports + " reports.",
+    })));
+    document.getElementById("bench-note").textContent = "Source: " + (bench.source || "trade press") + ". " + (bench.caveat || "");
+
+    // Rule of thumb
+    if (typical != null) {
+      const t = document.getElementById("rule-take");
+      t.append(el("strong", null, "A common rule of thumb: sell at least " + mult + " times your booth fee. "),
+        document.createTextNode("At Ohio's typical " + money(typical) + " booth, that's about " + money(typical * mult) + " in sales. If the answers above don't make that look likely, it may not be your show."));
+    }
+
+    // The post to copy
+    setPost("Free Ohio Vendor Report: what " + ev.length + " Ohio craft shows charge for a booth, how fees differ by region, and the 6 questions to ask before you pay. Only " + att + " of those " + ev.length + " shows say how many shoppers actually come. Made by an Ohio vendor, for vendors: " + shareUrl("report-share-post"));
+
+    const up = evData.updated || bench.updated;
+    if (up && document.getElementById("updated")) document.getElementById("updated").textContent = "Show data last updated " + new Date(up + "T12:00:00").toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) + ".";
+  }
+
+  Promise.all([
+    fetch("../data/events.json", { cache: "no-cache" }).then((r) => r.json()),
+    fetch("../data/benchmark.json", { cache: "no-cache" }).then((r) => r.json()).catch(() => ({})),
+  ]).then(([e, b]) => build(e, b)).catch(() => {
+    document.querySelectorAll(".loading").forEach((p) => { p.textContent = "The data didn't load. Please refresh the page."; });
+  });
+})();
+</script>
+</body>
+</html>
