@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-18T19:15:33.320Z",
+  "updated": "2026-11-19T13:45:12.819Z",
   "source": "live",
   "indicators": [
     {
@@ -133,7 +133,7 @@
         2.82797
       ],
       "live": true,
-      "nextRelease": "2026-11-18"
+      "nextRelease": "2026-11-25"
     },
     {
       "id": "existing_home_sales",
@@ -203,7 +203,7 @@
       "id": "building_permits",
       "name": "Building Permits",
       "desc": "US Census Bureau",
-      "date": "2026-11-18"
+      "date": "2026-11-25"
     },
     {
       "id": "trade_balance",
