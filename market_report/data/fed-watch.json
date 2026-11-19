@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-19T13:01:36.869Z",
+  "updated": "2026-11-19T14:02:25.897Z",
   "source": "live",
   "live": true,
   "provider": "Kalshi (KXFEDDECISION)",
@@ -52,17 +52,17 @@
         {
           "key": "hold",
           "label": "Hold",
-          "pct": 38.5
+          "pct": 38.9
         },
         {
           "key": "hike25",
           "label": "Hike 25 bp",
-          "pct": 57.1
+          "pct": 57.6
         },
         {
           "key": "hike50",
           "label": "Hike 50+ bp",
-          "pct": 2.4
+          "pct": 1.5
         }
       ]
     }
