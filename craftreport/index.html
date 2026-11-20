@@ -39,6 +39,11 @@
   .trust { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0; padding: 0; list-style: none; }
   .trust li { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.3rem 0.75rem; border-radius: 999px; background: var(--paper); border: 1px solid var(--line); font-size: 0.85rem; font-weight: 600; color: var(--body); }
   .trust li::before { content: "\2713"; color: var(--sage); font-weight: 800; }
+  .counts { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.4rem; }
+  .counts[hidden] { display: none; }
+  .count { min-width: 9rem; padding: 0.7rem 1rem; border-radius: 0.9rem; background: var(--paper); border: 1px solid var(--line); }
+  .count b { display: block; font-family: var(--serif); font-size: 1.9rem; line-height: 1.05; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .count span { font-size: 0.85rem; color: var(--muted); }
 
   .how { padding: 1.5rem; }
   .how h3 { margin: 0 0 1rem; font-size: 1.3rem; }
@@ -184,6 +189,10 @@
           <li>Totals only, never your numbers</li>
           <li>Past shows count too</li>
         </ul>
+        <div class="counts" id="counts" hidden aria-live="polite">
+          <div class="count"><b id="c-total">0</b><span>reports so far</span></div>
+          <div class="count"><b id="c-30">0</b><span>in the past 30 days</span></div>
+        </div>
       </div>
 
       <aside class="card how" aria-label="How it works">
@@ -428,6 +437,19 @@
     const source = (new URLSearchParams(location.search).get("s") || "").replace(/[^a-z0-9-]/gi, "").slice(0, 40);
     let token = "", widget = null, known = new Map();
 
+    // Report counter (counts only, from the Worker's /stats).
+    const counts = { total: 0, last30: 0 };
+    const showCounts = () => {
+      document.getElementById("c-total").textContent = counts.total.toLocaleString();
+      document.getElementById("c-30").textContent = counts.last30.toLocaleString();
+      document.getElementById("counts").hidden = false;
+    };
+    if (API_URL) {
+      fetch(API_URL.replace(/\/$/, "") + "/stats").then((r) => (r.ok ? r.json() : null)).then((d) => {
+        if (d && Number.isFinite(d.total)) { counts.total = d.total; counts.last30 = d.last30 || 0; showCounts(); }
+      }).catch(() => {});
+    }
+
     // Suggest known Ohio events and towns, so the same show is spelled the same way.
     fetch("data/events.json").then((r) => r.json()).then((d) => {
       const evs = d.events || [], cities = new Set();
@@ -488,6 +510,7 @@
         const out = await res.json().catch(() => ({}));
         if (res.ok && out.ok) {
           showErrors({}); slot.classList.add("is-sent"); status.textContent = "";
+          counts.total++; counts.last30++; showCounts();
           slot.scrollIntoView({ behavior: "smooth", block: "start" });
         } else {
           showErrors(out.fields);
