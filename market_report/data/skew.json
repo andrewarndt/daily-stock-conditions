@@ -1,7 +1,7 @@
 {
-  "updated": "2026-11-19T21:30:51.293Z",
-  "source": "live",
-  "live": true,
+  "updated": "2026-11-20T21:30:49.492Z",
+  "source": "seed",
+  "live": false,
   "asof": "2026-11-19",
   "expiry": "2026-12-18",
   "spot": 7175.8301,
