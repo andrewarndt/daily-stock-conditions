@@ -11,13 +11,11 @@
      Links into the form carry ?s= through, so a group's share link still credits that group. -->
 <meta name="robots" content="noindex, nofollow, noarchive">
 <title>The Ohio Vendor Report — CraftReport</title>
-<!-- REPORT-META:START -->
 <meta name="description" content="What Ohio craft shows charge vendors, what they publish and what they leave out, and what to ask before you pay for a booth. Free, by vendors for vendors.">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://4aholdingscompany.com/craftreport/report/">
 <meta property="og:title" content="The Ohio Vendor Report: what Ohio craft shows charge, and what they don't tell you">
 <meta property="og:description" content="Booth fees across Ohio by region, which shows publish their attendance, and what to ask before you pay. Free, made by a vendor for vendors.">
-<!-- REPORT-META:END -->
 <meta property="og:image" content="https://4aholdingscompany.com/craftreport/report/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -93,6 +91,18 @@
   .method li { margin-bottom: 0.4rem; }
   .loading { color: var(--muted); }
 
+  .jump { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+  .jump a { padding: 0.4rem 0.9rem; border-radius: 999px; background: var(--paper); border: 1px solid var(--line); color: var(--body); text-decoration: none; font-size: 0.86rem; font-weight: 600; }
+  .jump a:hover { border-color: var(--rust); color: var(--rust-ink); }
+  .jump a[hidden] { display: none; }
+  .part-head { margin: 2.5rem 0 1.2rem; scroll-margin-top: 1rem; }
+  .part-head h2 { margin-top: 0.3rem; }
+  .part-head p { margin: 0; max-width: 44rem; color: var(--muted); }
+  .part-head .lead { color: var(--body); font-size: 1.05rem; }
+  .monthly { scroll-margin-top: 1rem; }
+  .monthly .part-head { margin-top: 0.5rem; }
+  .monthly-note { color: var(--muted); font-size: 0.82rem; margin: -0.6rem 0 0; }
+
   /* report body built from the monthly Word document (src/build_vendor_report.py) */
   .doc p, .doc li { max-width: 46rem; }
   .doc h3 { margin: 1.4rem 0 0.4rem; font-size: 1.2rem; }
@@ -124,12 +134,13 @@
 <header class="hero">
   <div class="wrap">
     <nav class="topbar"><a class="brand" href="../"><span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 9 5 4h14l1.5 5"/><path d="M3.5 9a2.8 2.8 0 0 0 5.67 0 2.8 2.8 0 0 0 5.66 0 2.8 2.8 0 0 0 5.67 0"/><path d="M5 11.5V20h14v-8.5"/><path d="M10 20v-4.5h4V20"/></svg></span>CraftReport</a><div class="toplinks"><a class="plain" href="../">Home</a><a class="plain" href="../map/">Map and data</a><a class="btn small js-form" href="../#report">Report an event</a></div></nav>
-<!-- REPORT-HERO:START -->
+<!-- REPORT-EDITION:START -->
     <span class="eyebrow">The Ohio Vendor Report · November 2026</span>
+<!-- REPORT-EDITION:END -->
     <h1>What Ohio craft shows <em>charge</em>, and what they don't tell you.</h1>
     <p class="lead">Before you pay for a booth you should know what you're buying. We looked at every Ohio show we could find: what they charge, what they publish about themselves, and the one number almost none of them share.</p>
     <p class="byline">Free to read and share. Made by an Ohio vendor, for Ohio vendors.</p>
-<!-- REPORT-HERO:END -->
+    <nav class="jump" aria-label="In this report"><a href="#this-month" id="jump-month" hidden>This month's top shows</a><a href="#bigger-picture">What Ohio shows charge</a><a href="#ask">Before you pay</a><a href="#help">Add your numbers</a></nav>
     <div class="share">
       <button class="btn small" type="button" data-share="copy">Copy link</button>
       <a class="btn small soft" data-share="facebook" href="#" target="_blank" rel="noopener">Share on Facebook</a>
@@ -140,12 +151,20 @@
 </header>
 
 <main class="wrap">
-<!-- REPORT-BODY:START -->
   <div class="stats" id="stats">
     <div class="card stat"><b data-k="shows">…</b><span>Ohio shows tracked</span></div>
     <div class="card stat"><b data-k="fee">…</b><span>typical booth fee</span></div>
     <div class="card stat"><b data-k="att">…</b><span>say how many shoppers came</span></div>
     <div class="card stat"><b data-k="sales">0</b><span>publish what vendors sold</span></div>
+  </div>
+
+<!-- REPORT-MONTHLY:START -->
+<!-- REPORT-MONTHLY:END -->
+
+  <div class="part-head" id="bigger-picture">
+    <span class="eyebrow">The bigger picture</span>
+    <h2>What Ohio shows charge, and what they publish</h2>
+    <p>From every Ohio show in the CraftReport directory. These numbers update as the directory grows.</p>
   </div>
 
   <section class="panel finding" id="regions">
@@ -212,7 +231,6 @@
     </ol>
     <p class="takeaway" id="rule-take"></p>
   </section>
-<!-- REPORT-BODY:END -->
   <section class="cta" id="help">
     <h2>The missing number is yours.</h2>
     <p>Every Ohio vendor knows what their shows really brought in. Report your past events. It takes about 2 minutes each and stays anonymous. Report 3 or more with your email and we'll send you the full results report, show by show and category by category.</p>
@@ -234,7 +252,6 @@
     </div>
   </section>
 
-<!-- REPORT-METHOD:START -->
   <section class="method" id="method">
     <h2 style="font-size:1.2rem">How this report was made</h2>
     <ul>
@@ -245,7 +262,6 @@
       <li id="updated"></li>
     </ul>
   </section>
-<!-- REPORT-METHOD:END -->
 </main>
 
 <footer>
@@ -355,15 +371,10 @@
     if (box) box.textContent = text;
   }
 
-  // Monthly version built from the Word document: no charts to fill, just the post to copy.
-  if (!document.getElementById("stats")) {
-    const title = (document.querySelector(".hero h1") || {}).textContent || "The Ohio Vendor Report";
-    const edition = ((document.querySelector(".hero .eyebrow") || {}).textContent || "").replace(/^The Ohio Vendor Report\s*·\s*/i, "");
-    const headline = title.trim().replace(/([^.!?])$/, "$1.");
-    setPost("Free Ohio Vendor Report" + (edition ? " (" + edition.trim() + ")" : "") + ": " + headline +
-      " Upcoming Ohio shows, what they charge, and what to ask before you pay. Made by an Ohio vendor, for vendors: " + shareUrl("report-share-post"));
-    return;
-  }
+  // This month's ranking (from the desk's Word document), when the page has one.
+  const monthly = document.getElementById("this-month");
+  const monthTitle = monthly ? ((monthly.querySelector("h2") || {}).textContent || "").trim() : "";
+  if (monthly) document.getElementById("jump-month").hidden = false;
 
   function build(evData, bench) {
     const ev = evData.events || [];
@@ -461,7 +472,7 @@
     }
 
     // The post to copy
-    setPost("Free Ohio Vendor Report: what " + ev.length + " Ohio craft shows charge for a booth, how fees differ by region, and the 6 questions to ask before you pay. Only " + att + " of those " + ev.length + " shows say how many shoppers actually come. Made by an Ohio vendor, for vendors: " + shareUrl("report-share-post"));
+    setPost(monthTitle ? "Free Ohio Vendor Report: " + monthTitle.replace(/[.!?]$/, "") + ", ranked on advertising, buzz, track record and distance. Plus what " + ev.length + " Ohio craft shows charge for a booth and 6 questions to ask before you pay. Made by an Ohio vendor, for vendors: " + shareUrl("report-share-post") : "Free Ohio Vendor Report: what " + ev.length + " Ohio craft shows charge for a booth, how fees differ by region, and the 6 questions to ask before you pay. Only " + att + " of those " + ev.length + " shows say how many shoppers actually come. Made by an Ohio vendor, for vendors: " + shareUrl("report-share-post"));
 
     const up = evData.updated || bench.updated;
     if (up && document.getElementById("updated")) document.getElementById("updated").textContent = "Show data last updated " + new Date(up + "T12:00:00").toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) + ".";
