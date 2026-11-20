@@ -439,7 +439,9 @@
 
     // Report counter (counts only, from the Worker's /stats).
     const counts = { total: 0, last30: 0 };
+    const SHOW_COUNTS_AT = 35; // keep the counter hidden until this many reports are in
     const showCounts = () => {
+      if (counts.total < SHOW_COUNTS_AT) return;
       document.getElementById("c-total").textContent = counts.total.toLocaleString();
       document.getElementById("c-30").textContent = counts.last30.toLocaleString();
       document.getElementById("counts").hidden = false;
