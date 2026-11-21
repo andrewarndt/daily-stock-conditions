@@ -92,9 +92,10 @@
   .field > label, .field > .label { font-weight: 700; color: var(--ink); font-size: 0.95rem; }
   .req { color: var(--rust); }
   .hint { color: var(--muted); font-size: 0.83rem; margin-top: -0.15rem; }
-  .report-form input[type="text"], .report-form input[type="email"], .report-form input[type="date"], .report-form input[type="number"] {
+  .report-form input[type="text"], .report-form input[type="email"], .report-form input[type="number"], .report-form select {
     width: 100%; font: inherit; font-size: 1rem; color: var(--ink); background: var(--ground); border: 1.5px solid var(--line); border-radius: 0.8rem; padding: 0.7rem 0.9rem; }
-  .report-form input:focus { outline: none; border-color: var(--rust); box-shadow: 0 0 0 3px var(--rust-tint); }
+  .report-form input:focus, .report-form select:focus { outline: none; border-color: var(--rust); box-shadow: 0 0 0 3px var(--rust-tint); }
+  .month-year { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 0.5rem; }
   .money { display: flex; gap: 0.5rem; align-items: stretch; }
   .money .amount { position: relative; flex: 1 1 auto; }
   .money .amount::before { content: "$"; position: absolute; left: 0.9rem; top: 50%; transform: translateY(-50%); color: var(--muted); font-weight: 600; }
@@ -240,7 +241,7 @@
       <div class="card">
         <span class="icon-tile gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/></svg></span>
         <h3>The analysis</h3>
-        <p>Which shows pay off, how sales compare with the booth fee, and which events vendors would go back to.</p>
+        <p>Which shows pay off and how sales compare with the booth fee.</p>
       </div>
       <div class="card">
         <span class="icon-tile sage"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20V10"/><path d="M12 10c0-3.5 2.5-6 6-6 0 3.5-2.5 6-6 6zM12 13c0-3-2.2-5-5-5 0 3 2.2 5 5 5z"/></svg></span>
@@ -289,37 +290,23 @@
               <span class="err"></span>
             </div>
             <div class="field" data-f="event_date">
-              <label for="f-date">First day of the event <span class="req">*</span></label>
-              <input id="f-date" name="event_date" type="date" min="2015-01-01">
-              <span class="hint">This also tells us the time of year.</span>
+              <label for="f-month">When was the event? <span class="req">*</span></label>
+              <div class="month-year">
+                <select id="f-month" name="event_month" aria-label="Month">
+                  <option value="">Month</option>
+                  <option value="01">January</option><option value="02">February</option><option value="03">March</option>
+                  <option value="04">April</option><option value="05">May</option><option value="06">June</option>
+                  <option value="07">July</option><option value="08">August</option><option value="09">September</option>
+                  <option value="10">October</option><option value="11">November</option><option value="12">December</option>
+                </select>
+                <select id="f-year" name="event_year" aria-label="Year"><option value="">Year</option></select>
+              </div>
+              <span class="hint">Month and year are enough. This also tells us the time of year.</span>
               <span class="err"></span>
             </div>
             <div class="field" data-f="days">
-              <label for="f-days">Days you vended <span class="req">*</span></label>
+              <label for="f-days">Days attended <span class="req">*</span></label>
               <input id="f-days" name="days" type="number" min="1" max="14" step="1" value="1" inputmode="numeric">
-              <span class="err"></span>
-            </div>
-            <div class="field full" data-f="category">
-              <span class="label">What do you sell? <span class="req">*</span></span>
-              <div class="chips" role="radiogroup" aria-label="What do you sell?">
-                <label><input type="radio" name="category" value="Food & drink"><span>Food &amp; drink</span></label>
-                <label><input type="radio" name="category" value="Paintings & prints"><span>Paintings &amp; prints</span></label>
-                <label><input type="radio" name="category" value="Woodwork & clay"><span>Woodwork &amp; clay</span></label>
-                <label><input type="radio" name="category" value="Jewelry"><span>Jewelry</span></label>
-                <label><input type="radio" name="category" value="Clothing"><span>Clothing</span></label>
-                <label><input type="radio" name="category" value="Custom work"><span>Custom work</span></label>
-                <label><input type="radio" name="category" value="Home decor"><span>Home decor</span></label>
-                <label><input type="radio" name="category" value="Other"><span>Other</span></label>
-              </div>
-              <span class="err"></span>
-            </div>
-            <div class="field full" data-f="first_five">
-              <span class="label">Was this one of your first 5 events as a vendor? <span class="req">*</span></span>
-              <div class="chips" role="radiogroup" aria-label="Was this one of your first 5 events as a vendor?">
-                <label><input type="radio" name="first_five" value="yes"><span>Yes, one of my first 5</span></label>
-                <label><input type="radio" name="first_five" value="no"><span>No, I'd done more than 5 before</span></label>
-              </div>
-              <span class="hint">New vendors' results can look different, so this helps us compare shows fairly.</span>
               <span class="err"></span>
             </div>
             <div class="field" data-f="sales">
@@ -345,27 +332,34 @@
               </div>
               <span class="err"></span>
             </div>
+            <div class="field full" data-f="category">
+              <span class="label">What do you sell? <span class="req">*</span></span>
+              <div class="chips" role="radiogroup" aria-label="What do you sell?">
+                <label><input type="radio" name="category" value="Food & drink"><span>Food &amp; drink</span></label>
+                <label><input type="radio" name="category" value="Paintings & prints"><span>Paintings &amp; prints</span></label>
+                <label><input type="radio" name="category" value="Woodwork & clay"><span>Woodwork &amp; clay</span></label>
+                <label><input type="radio" name="category" value="Jewelry"><span>Jewelry</span></label>
+                <label><input type="radio" name="category" value="Clothing"><span>Clothing</span></label>
+                <label><input type="radio" name="category" value="Custom work"><span>Custom work</span></label>
+                <label><input type="radio" name="category" value="Home decor"><span>Home decor</span></label>
+                <label><input type="radio" name="category" value="Other"><span>Other</span></label>
+              </div>
+              <span class="err"></span>
+            </div>
+            <div class="field full" data-f="first_five">
+              <span class="label">Was this one of your first 5 events as a vendor? <span class="req">*</span></span>
+              <div class="chips" role="radiogroup" aria-label="Was this one of your first 5 events as a vendor?">
+                <label><input type="radio" name="first_five" value="yes"><span>Yes, one of my first 5</span></label>
+                <label><input type="radio" name="first_five" value="no"><span>No, I'd done more than 5 before</span></label>
+              </div>
+              <span class="hint">New vendors' results can look different, so this helps us compare shows fairly.</span>
+              <span class="err"></span>
+            </div>
           </div>
 
           <div class="extras">
-            <p class="extras-title">A few quick extras <small>(optional)</small></p>
+            <p class="extras-title">Want the results? <small>(optional)</small></p>
             <div class="form-grid">
-              <div class="field">
-                <span class="label">Would you go back?</span>
-                <div class="chips">
-                  <label><input type="radio" name="would_return" value="yes"><span>Yes</span></label>
-                  <label><input type="radio" name="would_return" value="maybe"><span>Maybe</span></label>
-                  <label><input type="radio" name="would_return" value="no"><span>No</span></label>
-                </div>
-              </div>
-              <div class="field">
-                <span class="label">Indoor or outdoor?</span>
-                <div class="chips">
-                  <label><input type="radio" name="setting" value="indoor"><span>Indoor</span></label>
-                  <label><input type="radio" name="setting" value="outdoor"><span>Outdoor</span></label>
-                  <label><input type="radio" name="setting" value="both"><span>Both</span></label>
-                </div>
-              </div>
               <div class="field full" data-f="email">
                 <label for="f-email">Email, if you'd like the results report</label>
                 <input id="f-email" name="email" type="email" maxlength="254" autocomplete="email" placeholder="you@example.com">
@@ -452,6 +446,9 @@
       }).catch(() => {});
     }
 
+    // Year choices: next year back to 2015, so the list never goes stale.
+    for (let y = new Date().getFullYear() + 1; y >= 2015; y--) form.event_year.append(new Option(String(y), String(y)));
+
     // Suggest known Ohio events and towns, so the same show is spelled the same way.
     fetch("data/events.json").then((r) => r.json()).then((d) => {
       const evs = d.events || [], cities = new Set();
@@ -497,11 +494,11 @@
       if (!API_URL || !TURNSTILE_SITEKEY) { status.className = "status bad"; status.textContent = "The form isn't switched on yet. Check back soon."; return; }
       const v = (name) => { const el = form.querySelector(`[name="${name}"]:checked`) || form.elements[name]; return el && el.value !== undefined ? el.value : ""; };
       const body = {
-        event_name: v("event_name"), city: v("city"), event_date: v("event_date"), days: Number(v("days")),
+        event_name: v("event_name"), city: v("city"),
+        event_date: form.event_year.value && form.event_month.value ? `${form.event_year.value}-${form.event_month.value}` : "",
+        days: Number(v("days")),
         sales: v("sales"), sales_basis: v("sales_basis"), booth_fee: v("booth_fee"), booth_fee_basis: v("booth_fee_basis"),
         category: (form.querySelector('[name="category"]:checked') || {}).value || "",
-        would_return: (form.querySelector('[name="would_return"]:checked') || {}).value || null,
-        setting: (form.querySelector('[name="setting"]:checked') || {}).value || null,
         first_five: (form.querySelector('[name="first_five"]:checked') || {}).value || "",
         email: v("email"), consent: form.consent.checked, source, turnstile: token
       };
