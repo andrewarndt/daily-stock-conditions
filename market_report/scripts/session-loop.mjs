@@ -45,7 +45,7 @@ if (process.argv.includes("--help") || process.argv.includes("-h")) {
     "Publishes (commits + pushes) unless --dry-run. Real runs: gh workflow run market-session.yml");
   process.exit(0);
 }
-const KEYS = ["ALPACA_API_KEY_ID", "ALPACA_API_SECRET_KEY", "TWELVEDATA_API_KEY", "FRED_API_KEY"];
+const KEYS = ["ALPACA_API_KEY_ID", "ALPACA_API_SECRET_KEY", "TWELVEDATA_API_KEY", "FRED_API_KEY", "TRADIER_TOKEN"];
 const missingKeys = KEYS.filter((k) => !process.env[k]);
 // Local runs only: in Actions a missing secret degrades just its feeds (alerted), and must not break the chain.
 if (!process.env.GITHUB_ACTIONS && !DRY && !process.argv.includes("--health-only") && missingKeys.length) {

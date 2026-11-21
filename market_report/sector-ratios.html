@@ -483,7 +483,7 @@
     });
 
   // Skew Structure -- SPX implied volatility by strike. See
-  // scripts/fetch-skew.mjs (Cboe's public delayed-quotes options chain);
+  // scripts/fetch-skew.mjs (Tradier SPX options chain, IV solved from quote mids);
   // "1 month ago" fills in once the script's own rolling history reaches
   // back that far, same pattern as the AAII / Put-Call charts on
   // sentiment.html.
@@ -511,7 +511,7 @@
       ? "SPX options, by strike, " + data.expiry + " expiry, as of " + data.asof
       : "SPX options, by strike";
     statusEl.textContent = isLive
-      ? "Skew Structure below is live SPX options data (Cboe's delayed-quotes chain), refreshed once per weekday after close."
+      ? "Skew Structure below is live SPX options data (Tradier end-of-day quotes, IV solved from bid/ask mids), refreshed once per weekday after close."
       : "Skew Structure did not update in the last refresh -- it shows the previous reading.";
 
     var withMonthAgo = buckets.filter(function (b) { return Number.isFinite(b.monthAgo); });

@@ -44,6 +44,7 @@ jobs:
           ALPACA_API_SECRET_KEY: ${{ secrets.ALPACA_API_SECRET_KEY }}
           TWELVEDATA_API_KEY: ${{ secrets.TWELVEDATA_API_KEY }}
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          TRADIER_TOKEN: ${{ secrets.TRADIER_TOKEN }}  # SPX chain for skew (Cboe's CDN blocks us since 2026-11-20)
           GH_TOKEN: ${{ github.token }}
         run: |
           git config user.name "market-desk-bot"
