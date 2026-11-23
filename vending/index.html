@@ -811,6 +811,8 @@
         .then(function () {
           form.reset();
           status.textContent = "Thanks, your request was sent. I'll be in touch soon.";
+          // Google Ads "Vending form submit" conversion: only after the request actually sent.
+          if (window.gtag) gtag("event", "conversion", { send_to: "AW-18587229725/Nyz4CMjJ170dEJ28ip9F", value: 1.0, currency: "USD" });
         })
         .catch(function (err) {
           console.warn("Vending request: send failed", err);
@@ -821,5 +823,12 @@
   })();
 </script>
 <script src="/assets/site-links.js?v=3" data-focus="vending" defer></script>
+<script>
+  // Google Ads "Phone number click" conversion: any tel: link on this page.
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest && e.target.closest('a[href^="tel:"]');
+    if (a && window.gtag) gtag("event", "conversion", { send_to: "AW-18587229725/axz0CMvJ170dEJ28ip9F", value: 1.0, currency: "USD" });
+  });
+</script>
 </body>
 </html>

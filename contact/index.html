@@ -167,5 +167,12 @@
     }, 700);
   })();
 </script>
+<script>
+  // Google Ads "Phone number click" conversion: any tel: link on this page.
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest && e.target.closest('a[href^="tel:"]');
+    if (a && window.gtag) gtag("event", "conversion", { send_to: "AW-18587229725/axz0CMvJ170dEJ28ip9F", value: 1.0, currency: "USD" });
+  });
+</script>
 </body>
 </html>
