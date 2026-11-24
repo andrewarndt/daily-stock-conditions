@@ -231,8 +231,8 @@
 
   <footer>
     <p><strong>GEX (gamma exposure)</strong> estimates how much stock option dealers would have to buy or sell for each 1% move in the underlying, assuming they are long the calls and short the puts that customers hold: OCC open interest &times; Black-Scholes gamma (implied vol solved from closing quote mids) &times; 100 &times; spot&sup2; &times; 1%, calls positive, puts negative. <strong>Call wall</strong> = strike with the largest positive net GEX; <strong>put wall</strong> = most negative; <strong>gamma flip</strong> = strike where cumulative net GEX (from the lowest strike up) bottoms out. Spot above the flip is a positive-gamma regime (dealer hedging tends to dampen moves); below it, negative gamma (hedging tends to amplify them). &ldquo;Whole book&rdquo; sums every listed expiry; &ldquo;Next expiry&rdquo; uses only the nearest one.</p>
-    <p><strong>Expected moves</strong> are 1&sigma; = at-the-money implied vol &times; &radic;time, solved from closing quote mids; ranges are the close &plusmn; 1&sigma; and ignore skew. Day = to the next session&rsquo;s close; Week = this week&rsquo;s last expiry; Month = the standard third-Friday monthly. <span class="flag-tag">est</span> = no expiry listed that soon, so the nearest expiry&rsquo;s IV is scaled by &radic;time (most single stocks on the daily move). <span class="flag-tag">~</span> = the at-the-money straddle quoted wide (over 20% of mid), so treat the move as approximate. Earnings inside the window are included in the move.</p>
-    <p>Data: end-of-day option quotes and open interest from Tradier, OCC cleared volume for the 500-contract filter (20-session average), computed after each weekday close. The Dow is shown through DIA, its tracking ETF. During the cash session, <strong>Last</strong> and <strong>Chg</strong> (vs that close) update every 5 minutes from the IEX exchange feed, cross-checked against Yahoo Finance; the regime and price-vs-flip use the last price, while walls, flip and expected moves stay as computed at the close. A last price in italics has not traded on IEX for 20+ minutes.</p>
+    <p><strong>Expected moves</strong> are 1&sigma; = at-the-money implied vol &times; &radic;time, solved from closing quote mids; ranges are the close &plusmn; 1&sigma; and ignore skew. Day = to the next session&rsquo;s close, recomputed every night. Week and Month are <strong>frozen</strong>: Week is set at Friday&rsquo;s close (the week&rsquo;s last session) to the next week&rsquo;s last expiry and held all week; Month is set at the close of the month&rsquo;s last session to the next standard third-Friday monthly and held all month (shown as expired after that Friday until the month-end close sets the next one). Their ranges are centred on the close they were set at. <span class="flag-tag">late</span> = that close was missed, so the first close after it was used. <span class="flag-tag">est</span> = no expiry listed that soon, so the nearest expiry&rsquo;s IV is scaled by &radic;time (most single stocks on the daily move). <span class="flag-tag">~</span> = the at-the-money straddle quoted wide (over 20% of mid), so treat the move as approximate. Earnings inside the window are included in the move.</p>
+    <p>Data: end-of-day option quotes and open interest from Tradier, OCC cleared volume for the 500-contract filter (20-session average), computed after each weekday close. The Dow is shown through DIA, its tracking ETF. During the cash session, <strong>Last</strong> and <strong>Chg</strong> (vs that close) update every 5 minutes from the IEX exchange feed, cross-checked against Yahoo Finance; the regime and price-vs-flip use the last price, while walls, flip and the day move stay as computed at the close. A last price in italics has not traded on IEX for 20+ minutes.</p>
     <p class="disclaimer">For informational purposes only, not investment advice. Data comes from the third-party sources named on each tab and may be delayed or contain errors.</p>
   </footer>
 </div>
@@ -285,8 +285,16 @@
     if (flags.indexOf("scaled") >= 0) out += '<span class="flag-tag" title="No expiry listed that soon: nearest expiry\'s IV scaled by √time">est</span>';
     if (flags.indexOf("wide") >= 0) out += '<span class="flag-tag" title="At-the-money straddle quoted wide (>20% of mid); approximate">~</span>';
     if (flags.indexOf("next-monthly") >= 0) out += '<span class="flag-tag" title="This month\'s monthly had no usable quotes; next month\'s used">nx</span>';
+    if (flags.indexOf("late") >= 0) out += '<span class="flag-tag" title="The run at the scheduled close was missed, so this was set at the first close after it">late</span>';
     return out;
   }
+  // week / month moves are frozen: set at the close of the week's / month's last session, held until the next one
+  function setNote(m) {
+    if (!m || !m.anchor) return "";
+    var exp = index && m.target < index.session ? " · expired" : "";
+    return '<span class="exp" title="Frozen at this close (' + px(m.anchorSpot) + '); bands are centred on it">set ' + shortDate(m.anchor) + " close" + exp + "</span>";
+  }
+  function moveFlags(m) { return (m.flags || []).concat(m.late ? ["late"] : []); }
   // regime = price vs gamma flip; with a live price, measured from where the name trades now
   function regimeOf(lv, price) {
     if (!lv) return null;
@@ -426,8 +434,8 @@
     var moves = HZ.map(function (h) {
       var m = moveOf(d, h[0]);
       if (!m) return '<div><div class="gb-label">' + h[1] + '</div><div class="gb-pct">—</div></div>';
-      return '<div><div class="gb-label">' + h[1] + ' ±1<span class="lc">σ</span>' + flagTags(m.flags) + '<span class="exp">to ' + shortDate(m.target) + "</span></div>" +
-        '<div class="gb-pct">±' + m.sdPct.toFixed(2) + "%<small>±$" + px(d.spot * m.sdPct / 100) + "</small></div>" +
+      return '<div><div class="gb-label">' + h[1] + ' ±1<span class="lc">σ</span>' + flagTags(moveFlags(m)) + '<span class="exp">to ' + shortDate(m.target) + "</span>" + setNote(m) + "</div>" +
+        '<div class="gb-pct">±' + m.sdPct.toFixed(2) + "%<small>±$" + px(m.sdUsd != null ? m.sdUsd : d.spot * m.sdPct / 100) + "</small></div>" +
         '<div class="gb-range">' + px(m.bands["1"][0]) + " – " + px(m.bands["1"][1]) + ' <span>(2<span class="lc">σ</span> ' + px(m.bands["2"][0]) + " – " + px(m.bands["2"][1]) + ")</span></div></div>";
     }).join("");
     var lvl = function (label, v, cls) { return '<div class="gb-lv"><div class="gb-label">' + label + '</div><div class="v ' + (cls || "") + '">' + v + "</div></div>"; };
@@ -478,7 +486,7 @@
     document.getElementById("gex-legend").innerHTML =
       '<span><i class="sw" style="background:var(--up)"></i>' + (st.mode === "net" ? "Net GEX &gt; 0" : "Call GEX") + "</span>" +
       '<span><i class="sw" style="background:var(--down)"></i>' + (st.mode === "net" ? "Net GEX &lt; 0" : "Put GEX") + "</span>" +
-      '<span><i class="sw" style="background:var(--accent);opacity:0.3"></i>' + (mv ? hzName + " ±1σ to " + shortDate(mv.target) + ", dashed ±2σ" : "no move") + "</span>" +
+      '<span><i class="sw" style="background:var(--accent);opacity:0.3"></i>' + (mv ? hzName + " ±1σ to " + shortDate(mv.target) + (mv.anchor ? " (set " + shortDate(mv.anchor) + " close)" : "") + ", dashed ±2σ" : "no move") + "</span>" +
       '<span style="color:var(--accent)"><i class="swl"></i>Gamma flip</span>' +
       '<span style="color:var(--up)"><i class="swl"></i>Call wall</span>' +
       '<span style="color:var(--down)"><i class="swl"></i>Put wall</span>' +
@@ -692,7 +700,7 @@
       var g = t.gex || {}, L = lastPx(t.symbol), fd = g.flip ? (nowPx(t.symbol) / g.flip - 1) * 100 : null;
       var lastCell = L ? '<td class="num' + (L.old ? ' stale-px" title="Last IEX trade ' + clock(L.t) + ' ET' : "") + '">' + px(L.p) + "</td>" : '<td class="num muted">—</td>';
       var chgCell = L && L.chg != null ? '<td class="num change ' + (L.chg >= 0 ? "up" : "down") + '">' + pct(L.chg) + "</td>" : '<td class="num muted">—</td>';
-      var mvCell = function (m) { return m ? '<td class="num">' + m.sdPct.toFixed(2) + "%" + flagTags(m.flags) + "</td>" : '<td class="num muted">—</td>'; };
+      var mvCell = function (m) { return m ? '<td class="num"' + (m.anchor ? ' title="Set ' + shortDate(m.anchor) + ' close"' : "") + ">" + m.sdPct.toFixed(2) + "%" + flagTags(moveFlags(m)) + "</td>" : '<td class="num muted">—</td>'; };
       var rng = function (m) { return m ? '<td class="range">' + px(m.bands["1"][0]) + "–" + px(m.bands["1"][1]) + "</td>" : '<td class="range">—</td>'; };
       return '<tr data-sym="' + esc(t.symbol) + '"' + (t.symbol === current ? ' class="selected"' : "") + ">" +
         '<td class="sym">' + esc(t.symbol) + (t.etf ? '<span class="mem">ETF</span>' : "") + (t.sp500 ? '<span class="mem">SPX</span>' : "") + (t.ndx ? '<span class="mem">NDX</span>' : "") + "</td>" +
