@@ -30,9 +30,12 @@
       "name": "Glass Water Bottles with Silicone Sleeve & Bamboo Lid",
       "tagline": "Glass bottle, protective sleeve, bamboo lid",
       "description": "Glass water bottles with a protective silicone sleeve and a bamboo lid with a carry loop. Easy to toss in a bag, and the sleeve helps cushion the glass.",
-      "note": "Photos shown are illustrative. Email us to order or to ask about the bottle in stock.",
+      "note": "Photos shown are illustrative. Free shipping to the contiguous U.S.",
+      "shippingNote": "Free shipping &middot; contiguous U.S. only (Alaska and Hawaii: email us) &middot; returns accepted",
       "images": ["bottle-studio.jpg", "bottle-park.jpg", "bottle-backpack.jpg", "Gemini_Generated_Image_evc2r0evc2r0evc2.jpg", "Gemini_Generated_Image_tk5kxutk5kxutk5k.jpg"],
-      "options": []
+      "options": [
+        { "label": "Glass Water Bottle", "price": 18.00, "url": "https://buy.stripe.com/6oUbJ0aAX2vo7XtewX3Ru0o" }
+      ]
     },
     {
       "slug": "engraved-business-cards",

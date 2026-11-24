@@ -32,6 +32,7 @@ const CONTACT_EMAIL = "4aholdingscompany@gmail.com";
 
 // Flat shipping charged by every Stripe link (set on the Stripe shipping rate).
 // Stripe can't block Alaska/Hawaii, so this notice is the only warning.
+// A product can override it with "shippingNote" in data/products.json (e.g. free-shipping items).
 const SHIPPING_NOTE = "$9 flat shipping &middot; contiguous U.S. only (Alaska and Hawaii: email us) &middot; returns accepted except custom engravings";
 
 function formatPrice(amount) {
@@ -204,5 +205,5 @@ function actionsHtml(product) {
         <div class="product-actions">${buyButtons}
           <a class="inquire-button" href="${mailtoForProduct(product)}">&#9993; Ask about this</a>
         </div>
-        <p class="shipping-note">${SHIPPING_NOTE}</p>`;
+        <p class="shipping-note">${product.shippingNote || SHIPPING_NOTE}</p>`;
 }

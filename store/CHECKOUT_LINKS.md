@@ -30,7 +30,12 @@ Clicking one opens a real checkout — do not test by completing a payment.
 | `ceramic-vessels` | Diffuser with Oil | $29.75 | https://buy.stripe.com/9B65kC38v4Dw91x60r3Ru06 |
 | `ceramic-vessels` | Diffuser with Oil and Engraving | $31.50 | https://buy.stripe.com/8x2aEWcJ51rkdhNbkL3Ru05 |
 
-`water-bottles` has no link (deliberately skipped; it is "photos coming soon").
+| `water-bottles` | Glass Water Bottle (see note 2) | $18.00 | https://buy.stripe.com/6oUbJ0aAX2vo7XtewX3Ru0o |
+
+Note 2 (added 2026-11-23): the water bottle link ships **free**: it has no shipping rate (it still collects a U.S. shipping
+address) and shows "Free shipping - Contiguous U.S. only (Alaska and Hawaii excluded)." at checkout. Like the others, the
+Alaska/Hawaii exclusion is a notice only. Its Stripe product (prod_VgXrVhvS7pC8fb, price price_1UfAlbCQ2HNU9AjUSCtXTz3y) is
+separate from the in-person "Glass Water Bottle" product (prod_VbusMZLMHsFtQF, $12.40, craft-show link).
 
 ## Machine-readable version (suggested shape for `data/products.json`)
 
@@ -53,6 +58,9 @@ Clicking one opens a real checkout — do not test by completing a payment.
     { "label": "Diffuser with engraving", "price": 19.75, "url": "https://buy.stripe.com/cNi28q7oL3zsgtZ74v3Ru0l" },
     { "label": "Diffuser with oil", "price": 29.75, "url": "https://buy.stripe.com/9B65kC38v4Dw91x60r3Ru06" },
     { "label": "Diffuser with oil and engraving", "price": 31.50, "url": "https://buy.stripe.com/8x2aEWcJ51rkdhNbkL3Ru05" }
+  ],
+  "water-bottles": [
+    { "label": "Glass Water Bottle", "price": 18.00, "url": "https://buy.stripe.com/6oUbJ0aAX2vo7XtewX3Ru0o" }
   ]
 }
 ```
