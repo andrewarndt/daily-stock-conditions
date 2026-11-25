@@ -1,40 +1,40 @@
 {
-  "updated": "2026-11-25T20:27:17.745Z",
-  "quotesAsOf": "2026-11-25T20:27:13.420Z",
+  "updated": "2026-11-25T20:42:34.842Z",
+  "quotesAsOf": "2026-11-25T20:42:32.076Z",
   "source": "live",
   "indices": [
     {
       "id": "sp500",
       "name": "S&P 500",
-      "value": 716.26,
-      "change": -0.3686135955821977,
+      "value": 714.49,
+      "change": -0.6148196575370991,
       "changeType": "pct",
       "unit": "$",
       "ticker": "SPY",
       "live": true,
-      "asof": "2026-11-25T20:27:13.420765076Z"
+      "asof": "2026-11-25T20:42:32.07627189Z"
     },
     {
       "id": "dow",
       "name": "Dow Jones",
-      "value": 501.6,
-      "change": 0.36416023050143065,
+      "value": 500.86,
+      "change": 0.21609508183601606,
       "changeType": "pct",
       "unit": "$",
       "ticker": "DIA",
       "live": true,
-      "asof": "2026-11-25T20:21:02.255793305Z"
+      "asof": "2026-11-25T20:41:54.758278004Z"
     },
     {
       "id": "nasdaq",
       "name": "Nasdaq-100",
-      "value": 632.675,
-      "change": -0.8532877828621653,
+      "value": 629.85,
+      "change": -1.2959944837961483,
       "changeType": "pct",
       "unit": "$",
       "ticker": "QQQ",
       "live": true,
-      "asof": "2026-11-25T20:27:11.264181738Z"
+      "asof": "2026-11-25T20:42:25.384096321Z"
     },
     {
       "id": "ust10y",
@@ -70,31 +70,31 @@
     {
       "id": "btc",
       "name": "Bitcoin",
-      "value": 59995.43,
-      "change": 0.27314815,
+      "value": 59824,
+      "change": -0.013370771,
       "changeType": "pct",
       "live": true,
-      "asof": "2026-11-25T20:27:00.000Z",
+      "asof": "2026-11-25T20:42:00.000Z",
       "unit": "$"
     },
     {
       "id": "gold",
       "name": "Gold",
-      "value": 3577.44339,
-      "change": 0.84318214,
+      "value": 3570.00098,
+      "change": 0.6333909,
       "changeType": "pct",
       "live": true,
-      "asof": "2026-11-25T20:27:00.000Z",
+      "asof": "2026-11-25T20:42:00.000Z",
       "unit": "$"
     },
     {
       "id": "silver",
       "name": "Silver",
-      "value": 36.99,
-      "change": 0.40716571,
+      "value": 36.93,
+      "change": 0.24429926,
       "changeType": "pct",
       "live": true,
-      "asof": "2026-11-25T20:27:00.000Z",
+      "asof": "2026-11-25T20:42:00.000Z",
       "unit": "$",
       "ticker": "SLV"
     },
@@ -136,19 +136,19 @@
     "SPY": {
       "high": 718.39,
       "low": 695.54,
-      "last": 716.26,
+      "last": 714.49,
       "live": true
     },
     "IWM": {
       "high": 269.765,
       "low": 260.84,
-      "last": 268.94,
+      "last": 268.1,
       "live": true
     },
     "QQQ": {
       "high": 634.85,
       "low": 607.81,
-      "last": 632.675,
+      "last": 629.85,
       "live": true
     }
   }
