@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-24T21:45:07.623Z",
+  "updated": "2026-11-25T14:30:18.967Z",
   "source": "live",
   "series": [
     {
@@ -10,7 +10,7 @@
       "unit": "%",
       "value": 4,
       "prior": 4,
-      "asof": "2026-11-24",
+      "asof": "2026-11-25",
       "live": true
     },
     {
@@ -21,7 +21,7 @@
       "unit": "%",
       "value": 3.75,
       "prior": 3.75,
-      "asof": "2026-11-24",
+      "asof": "2026-11-25",
       "live": true
     },
     {
@@ -32,7 +32,7 @@
       "unit": "%",
       "value": 3.88,
       "prior": 3.88,
-      "asof": "2026-11-23",
+      "asof": "2026-11-24",
       "live": true
     },
     {
@@ -41,9 +41,9 @@
       "seriesId": "SOFR",
       "name": "SOFR",
       "unit": "%",
-      "value": 3.92,
+      "value": 3.94,
       "prior": 3.92,
-      "asof": "2026-11-23",
+      "asof": "2026-11-24",
       "live": true
     },
     {
@@ -91,7 +91,7 @@
       "value": 2979656,
       "prior": 2960603,
       "asof": "2026-11-18",
-      "live": true,
+      "live": false,
       "trend": "expanding",
       "trendChange": 17049,
       "trendLabel": "4-wk"
@@ -115,9 +115,9 @@
       "seriesId": "NFCI",
       "name": "Chicago Fed NFCI",
       "unit": "",
-      "value": -0.478,
-      "prior": -0.473,
-      "asof": "2026-11-13",
+      "value": -0.444,
+      "prior": -0.45,
+      "asof": "2026-11-20",
       "live": true,
       "condition": "Loose",
       "conditionClass": "up"
