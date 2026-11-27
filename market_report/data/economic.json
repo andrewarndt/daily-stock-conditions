@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-25T19:15:49.132Z",
+  "updated": "2026-11-27T13:45:34.887Z",
   "source": "live",
   "indicators": [
     {
@@ -19,7 +19,7 @@
         4.3
       ],
       "live": true,
-      "nextRelease": "2026-11-25"
+      "nextRelease": "2026-12-23"
     },
     {
       "id": "cpi",
@@ -133,7 +133,7 @@
         2.82797
       ],
       "live": true,
-      "nextRelease": "2026-11-25"
+      "nextRelease": "2026-12-17"
     },
     {
       "id": "existing_home_sales",
@@ -179,7 +179,7 @@
       "id": "pce_price_index",
       "name": "PCE Price Index",
       "desc": "Bureau of Economic Analysis",
-      "date": "2026-11-25"
+      "date": "2026-12-23"
     },
     {
       "id": "retail_sales",
@@ -191,19 +191,19 @@
       "id": "durable_goods",
       "name": "Durable Goods Orders",
       "desc": "US Census Bureau",
-      "date": "2026-11-25"
+      "date": "2026-12-03"
     },
     {
       "id": "new_home_sales",
       "name": "New Home Sales",
       "desc": "US Census Bureau",
-      "date": "2026-11-25"
+      "date": "2026-12-23"
     },
     {
       "id": "building_permits",
       "name": "Building Permits",
       "desc": "US Census Bureau",
-      "date": "2026-11-25"
+      "date": "2026-12-17"
     },
     {
       "id": "trade_balance",
@@ -215,7 +215,7 @@
       "id": "factory_orders",
       "name": "Factory Orders",
       "desc": "US Census Bureau",
-      "date": "2026-11-25"
+      "date": "2026-12-03"
     },
     {
       "id": "consumer_credit",
