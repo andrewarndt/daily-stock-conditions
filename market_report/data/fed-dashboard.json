@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-27T14:30:13.131Z",
+  "updated": "2026-11-27T21:45:23.852Z",
   "source": "live",
   "series": [
     {
@@ -54,7 +54,7 @@
       "unit": "%",
       "value": 3.9,
       "prior": 3.9,
-      "asof": "2026-11-27",
+      "asof": "2026-11-30",
       "live": true
     },
     {
@@ -63,12 +63,12 @@
       "seriesId": "WALCL",
       "name": "Fed Balance Sheet (Total Assets)",
       "unit": "$M",
-      "value": 6741452,
-      "prior": 6758867,
-      "asof": "2026-11-18",
+      "value": 6732044,
+      "prior": 6741452,
+      "asof": "2026-11-25",
       "live": true,
       "trend": "contracting",
-      "trendChange": -12152,
+      "trendChange": -13591,
       "trendLabel": "4-wk"
     },
     {
@@ -77,9 +77,9 @@
       "seriesId": "WTREGEN",
       "name": "Treasury General Account",
       "unit": "$M",
-      "value": 916613,
-      "prior": 914370,
-      "asof": "2026-11-18",
+      "value": 902038,
+      "prior": 916613,
+      "asof": "2026-11-25",
       "live": true
     },
     {
@@ -88,12 +88,12 @@
       "seriesId": "WRESBAL",
       "name": "Bank Reserves",
       "unit": "$M",
-      "value": 2979656,
-      "prior": 2960603,
-      "asof": "2026-11-18",
+      "value": 2963667,
+      "prior": 2979656,
+      "asof": "2026-11-25",
       "live": true,
       "trend": "expanding",
-      "trendChange": 17049,
+      "trendChange": 69897,
       "trendLabel": "4-wk"
     },
     {
@@ -102,11 +102,11 @@
       "seriesId": "RRPONTSYD",
       "name": "Overnight Reverse Repo",
       "unit": "$B",
-      "value": 0.3,
-      "prior": 0.301,
-      "asof": "2026-11-25",
+      "value": 0.35,
+      "prior": 0.3,
+      "asof": "2026-11-27",
       "live": true,
-      "change5d": -0.031000000000000028,
+      "change5d": -0.05500000000000005,
       "stressed": false
     },
     {
@@ -128,12 +128,12 @@
       "seriesId": "BAMLH0A0HYM2",
       "name": "High Yield OAS",
       "unit": "bps",
-      "value": 372,
-      "prior": 363,
-      "asof": "2026-11-24",
+      "value": 377,
+      "prior": 377,
+      "asof": "2026-11-26",
       "live": true,
       "trend": "up",
-      "trendChange": 29,
+      "trendChange": 25,
       "trendLabel": "5-day",
       "condition": "Tight",
       "conditionClass": "up"
@@ -144,12 +144,12 @@
       "seriesId": "BAMLC0A0CM",
       "name": "Investment Grade OAS",
       "unit": "bps",
-      "value": 98,
-      "prior": 97,
-      "asof": "2026-11-24",
+      "value": 99,
+      "prior": 99,
+      "asof": "2026-11-26",
       "live": true,
       "trend": "up",
-      "trendChange": 6,
+      "trendChange": 5,
       "trendLabel": "5-day",
       "condition": "Tight",
       "conditionClass": "up"
