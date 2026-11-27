@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-27T22:23:47.713Z",
+  "updated": "2026-11-27T22:54:08.383Z",
   "source": "live",
   "labels": [
     "Jun",
@@ -31,10 +31,10 @@
         17.53,
         18.37,
         20.78,
-        26.29
+        23.82
       ],
       "live": true,
-      "asof": "2026-11-25"
+      "asof": "2026-11-27"
     },
     "vixeq": {
       "name": "Avg constituent IV",
@@ -61,7 +61,7 @@
       ],
       "live": true,
       "asof": "2026-11-25",
-      "avg12mo": 36.68083665338643
+      "avg12mo": 36.697919999999975
     }
   },
   "termStructure": [
@@ -78,9 +78,9 @@
       "id": "vix",
       "tenorLabel": "30D",
       "name": "30-Day",
-      "value": 28.29,
-      "monthAgo": 18.39,
-      "asof": "2026-11-25",
+      "value": 26.8,
+      "monthAgo": 17.52,
+      "asof": "2026-11-26",
       "live": true
     },
     {
