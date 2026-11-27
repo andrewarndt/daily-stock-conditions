@@ -1,12 +1,12 @@
 {
-  "updated": "2026-11-25T18:00:02.570Z",
+  "updated": "2026-11-27T14:00:44.926Z",
   "source": "live",
   "live": true,
-  "asof": "2026-11-18",
-  "bullish": 33.3,
-  "neutral": 24.4,
-  "bearish": 42.2,
-  "spread": -8.9,
+  "asof": "2026-11-25",
+  "bullish": 37.1,
+  "neutral": 17.5,
+  "bearish": 45.4,
+  "spread": -8.3,
   "history": [
     {
       "date": "2026-07-29",
@@ -109,6 +109,12 @@
       "bullish": 33.3,
       "neutral": 24.4,
       "bearish": 42.2
+    },
+    {
+      "date": "2026-11-25",
+      "bullish": 37.1,
+      "neutral": 17.5,
+      "bearish": 45.4
     }
   ]
 }
