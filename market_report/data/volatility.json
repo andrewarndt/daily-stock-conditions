@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-28T02:08:38.839Z",
+  "updated": "2026-11-28T02:38:55.516Z",
   "source": "live",
   "labels": [
     "Jun",
@@ -18,10 +18,10 @@
         14.92,
         16.34,
         19.42,
-        26.8
+        23.81
       ],
       "live": true,
-      "asof": "2026-11-26"
+      "asof": "2026-11-27"
     },
     "vix3m": {
       "name": "3M ATM IV",
@@ -44,10 +44,10 @@
         35.8,
         39.83,
         42.3,
-        51.59
+        47.89
       ],
       "live": true,
-      "asof": "2026-11-25"
+      "asof": "2026-11-27"
     },
     "dspx": {
       "name": "Dispersion Index",
@@ -57,11 +57,11 @@
         32.55,
         36.25,
         37.43,
-        43.24
+        41.35
       ],
       "live": true,
-      "asof": "2026-11-25",
-      "avg12mo": 36.697919999999975
+      "asof": "2026-11-27",
+      "avg12mo": 36.71645418326691
     }
   },
   "termStructure": [
@@ -69,45 +69,45 @@
       "id": "vix9d",
       "tenorLabel": "9D",
       "name": "9-Day",
-      "value": 29.61,
-      "monthAgo": 17.92,
-      "asof": "2026-11-25",
+      "value": 24.1,
+      "monthAgo": 15.6,
+      "asof": "2026-11-27",
       "live": true
     },
     {
       "id": "vix",
       "tenorLabel": "30D",
       "name": "30-Day",
-      "value": 26.8,
-      "monthAgo": 17.52,
-      "asof": "2026-11-26",
+      "value": 23.81,
+      "monthAgo": 16.91,
+      "asof": "2026-11-27",
       "live": true
     },
     {
       "id": "vix3m",
       "tenorLabel": "3M",
       "name": "3-Month",
-      "value": 26.29,
-      "monthAgo": 19.94,
-      "asof": "2026-11-25",
+      "value": 23.82,
+      "monthAgo": 19.22,
+      "asof": "2026-11-27",
       "live": true
     },
     {
       "id": "vix6m",
       "tenorLabel": "6M",
       "name": "6-Month",
-      "value": 26.89,
-      "monthAgo": 21.63,
-      "asof": "2026-11-25",
+      "value": 25.02,
+      "monthAgo": 21.24,
+      "asof": "2026-11-27",
       "live": true
     },
     {
       "id": "vix1y",
       "tenorLabel": "1Y",
       "name": "1-Year",
-      "value": 26.12,
-      "monthAgo": 22.59,
-      "asof": "2026-11-25",
+      "value": 24.9,
+      "monthAgo": 22.35,
+      "asof": "2026-11-27",
       "live": true
     }
   ]
